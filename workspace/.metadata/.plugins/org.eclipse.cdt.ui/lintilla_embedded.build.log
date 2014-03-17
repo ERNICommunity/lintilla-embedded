@@ -1,0 +1,137 @@
+22:03:43 **** Build of configuration Release for project lintilla_embedded ****
+make all 
+Building file: ../lintilla_embedded.cpp
+Starting C++ compile
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-g++" -c -g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -MMD -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=152    -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\cores\arduino" -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\variants\mega" -MMD -MP -MF"lintilla_embedded.cpp.d" -MT"lintilla_embedded.cpp.d" -x c++ "../lintilla_embedded.cpp"  -o  "lintilla_embedded.cpp.o"
+Finished building: ../lintilla_embedded.cpp
+ 
+Building file: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/CDC.cpp
+Starting C++ compile
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-g++" -c -g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -MMD -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=152    -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\cores\arduino" -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\variants\mega" -MMD -MP -MF"arduino/CDC.cpp.d" -MT"arduino/CDC.cpp.d" -x c++ "C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/CDC.cpp"  -o  "arduino/CDC.cpp.o"
+Finished building: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/CDC.cpp
+ 
+Building file: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/HID.cpp
+Starting C++ compile
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-g++" -c -g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -MMD -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=152    -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\cores\arduino" -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\variants\mega" -MMD -MP -MF"arduino/HID.cpp.d" -MT"arduino/HID.cpp.d" -x c++ "C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/HID.cpp"  -o  "arduino/HID.cpp.o"
+Finished building: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/HID.cpp
+ 
+Building file: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/HardwareSerial.cpp
+Starting C++ compile
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-g++" -c -g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -MMD -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=152    -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\cores\arduino" -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\variants\mega" -MMD -MP -MF"arduino/HardwareSerial.cpp.d" -MT"arduino/HardwareSerial.cpp.d" -x c++ "C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/HardwareSerial.cpp"  -o  "arduino/HardwareSerial.cpp.o"
+Finished building: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/HardwareSerial.cpp
+ 
+Building file: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/IPAddress.cpp
+Starting C++ compile
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-g++" -c -g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -MMD -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=152    -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\cores\arduino" -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\variants\mega" -MMD -MP -MF"arduino/IPAddress.cpp.d" -MT"arduino/IPAddress.cpp.d" -x c++ "C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/IPAddress.cpp"  -o  "arduino/IPAddress.cpp.o"
+Finished building: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/IPAddress.cpp
+ 
+Building file: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/Print.cpp
+Starting C++ compile
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-g++" -c -g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -MMD -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=152    -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\cores\arduino" -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\variants\mega" -MMD -MP -MF"arduino/Print.cpp.d" -MT"arduino/Print.cpp.d" -x c++ "C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/Print.cpp"  -o  "arduino/Print.cpp.o"
+Finished building: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/Print.cpp
+ 
+Building file: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/Stream.cpp
+Starting C++ compile
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-g++" -c -g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -MMD -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=152    -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\cores\arduino" -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\variants\mega" -MMD -MP -MF"arduino/Stream.cpp.d" -MT"arduino/Stream.cpp.d" -x c++ "C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/Stream.cpp"  -o  "arduino/Stream.cpp.o"
+Finished building: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/Stream.cpp
+ 
+Building file: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/Tone.cpp
+Starting C++ compile
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-g++" -c -g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -MMD -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=152    -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\cores\arduino" -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\variants\mega" -MMD -MP -MF"arduino/Tone.cpp.d" -MT"arduino/Tone.cpp.d" -x c++ "C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/Tone.cpp"  -o  "arduino/Tone.cpp.o"
+Finished building: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/Tone.cpp
+ 
+Building file: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/USBCore.cpp
+Starting C++ compile
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-g++" -c -g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -MMD -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=152    -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\cores\arduino" -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\variants\mega" -MMD -MP -MF"arduino/USBCore.cpp.d" -MT"arduino/USBCore.cpp.d" -x c++ "C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/USBCore.cpp"  -o  "arduino/USBCore.cpp.o"
+Finished building: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/USBCore.cpp
+ 
+Building file: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/WInterrupts.c
+Starting C compile
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-gcc" -c -g -Os -w -ffunction-sections -fdata-sections -MMD -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=152    -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\cores\arduino" -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\variants\mega" -MMD -MP -MF"arduino/WInterrupts.c.d" -MT"arduino/WInterrupts.c.d" "C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/WInterrupts.c"  -o  "arduino/WInterrupts.c.o"
+Finished building: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/WInterrupts.c
+ 
+Building file: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/WMath.cpp
+Starting C++ compile
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-g++" -c -g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -MMD -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=152    -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\cores\arduino" -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\variants\mega" -MMD -MP -MF"arduino/WMath.cpp.d" -MT"arduino/WMath.cpp.d" -x c++ "C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/WMath.cpp"  -o  "arduino/WMath.cpp.o"
+Finished building: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/WMath.cpp
+ 
+Building file: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/WString.cpp
+Starting C++ compile
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-g++" -c -g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -MMD -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=152    -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\cores\arduino" -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\variants\mega" -MMD -MP -MF"arduino/WString.cpp.d" -MT"arduino/WString.cpp.d" -x c++ "C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/WString.cpp"  -o  "arduino/WString.cpp.o"
+Finished building: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/WString.cpp
+ 
+Building file: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/hooks.c
+Starting C compile
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-gcc" -c -g -Os -w -ffunction-sections -fdata-sections -MMD -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=152    -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\cores\arduino" -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\variants\mega" -MMD -MP -MF"arduino/hooks.c.d" -MT"arduino/hooks.c.d" "C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/hooks.c"  -o  "arduino/hooks.c.o"
+Finished building: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/hooks.c
+ 
+Building file: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/main.cpp
+Starting C++ compile
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-g++" -c -g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -MMD -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=152    -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\cores\arduino" -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\variants\mega" -MMD -MP -MF"arduino/main.cpp.d" -MT"arduino/main.cpp.d" -x c++ "C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/main.cpp"  -o  "arduino/main.cpp.o"
+Finished building: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/main.cpp
+ 
+Building file: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/malloc.c
+Starting C compile
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-gcc" -c -g -Os -w -ffunction-sections -fdata-sections -MMD -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=152    -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\cores\arduino" -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\variants\mega" -MMD -MP -MF"arduino/malloc.c.d" -MT"arduino/malloc.c.d" "C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/malloc.c"  -o  "arduino/malloc.c.o"
+Finished building: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/malloc.c
+ 
+Building file: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/new.cpp
+Starting C++ compile
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-g++" -c -g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -MMD -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=152    -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\cores\arduino" -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\variants\mega" -MMD -MP -MF"arduino/new.cpp.d" -MT"arduino/new.cpp.d" -x c++ "C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/new.cpp"  -o  "arduino/new.cpp.o"
+Finished building: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/new.cpp
+ 
+Building file: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/wiring.c
+Starting C compile
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-gcc" -c -g -Os -w -ffunction-sections -fdata-sections -MMD -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=152    -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\cores\arduino" -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\variants\mega" -MMD -MP -MF"arduino/wiring.c.d" -MT"arduino/wiring.c.d" "C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/wiring.c"  -o  "arduino/wiring.c.o"
+Finished building: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/wiring.c
+ 
+Building file: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/wiring_analog.c
+Starting C compile
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-gcc" -c -g -Os -w -ffunction-sections -fdata-sections -MMD -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=152    -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\cores\arduino" -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\variants\mega" -MMD -MP -MF"arduino/wiring_analog.c.d" -MT"arduino/wiring_analog.c.d" "C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/wiring_analog.c"  -o  "arduino/wiring_analog.c.o"
+Finished building: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/wiring_analog.c
+ 
+Building file: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/wiring_digital.c
+Starting C compile
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-gcc" -c -g -Os -w -ffunction-sections -fdata-sections -MMD -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=152    -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\cores\arduino" -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\variants\mega" -MMD -MP -MF"arduino/wiring_digital.c.d" -MT"arduino/wiring_digital.c.d" "C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/wiring_digital.c"  -o  "arduino/wiring_digital.c.o"
+Finished building: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/wiring_digital.c
+ 
+Building file: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/wiring_pulse.c
+Starting C compile
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-gcc" -c -g -Os -w -ffunction-sections -fdata-sections -MMD -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=152    -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\cores\arduino" -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\variants\mega" -MMD -MP -MF"arduino/wiring_pulse.c.d" -MT"arduino/wiring_pulse.c.d" "C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/wiring_pulse.c"  -o  "arduino/wiring_pulse.c.o"
+Finished building: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/wiring_pulse.c
+ 
+Building file: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/wiring_shift.c
+Starting C compile
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-gcc" -c -g -Os -w -ffunction-sections -fdata-sections -MMD -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=152    -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\cores\arduino" -I"C:\HackSessions\Tools\arduino-1.5.2\hardware\arduino\avr\variants\mega" -MMD -MP -MF"arduino/wiring_shift.c.d" -MT"arduino/wiring_shift.c.d" "C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/wiring_shift.c"  -o  "arduino/wiring_shift.c.o"
+Finished building: C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/cores/arduino/wiring_shift.c
+ 
+Starting archiver
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-ar" rcs "C:/git/erni/lintilla-embedded/src/Release/arduino.ar"    ./arduino/CDC.cpp.o ./arduino/HID.cpp.o ./arduino/HardwareSerial.cpp.o ./arduino/IPAddress.cpp.o ./arduino/Print.cpp.o ./arduino/Stream.cpp.o ./arduino/Tone.cpp.o ./arduino/USBCore.cpp.o ./arduino/WInterrupts.c.o ./arduino/WMath.cpp.o ./arduino/WString.cpp.o ./arduino/hooks.c.o ./arduino/main.cpp.o ./arduino/malloc.c.o ./arduino/new.cpp.o ./arduino/wiring.c.o ./arduino/wiring_analog.c.o ./arduino/wiring_digital.c.o ./arduino/wiring_pulse.c.o ./arduino/wiring_shift.c.o 
+Finished building: C:/git/erni/lintilla-embedded/src/Release/arduino.ar
+ 
+Starting combiner
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-gcc" -Os -Wl,--gc-sections -mmcu=atmega2560 -o "C:/git/erni/lintilla-embedded/src/Release/lintilla_embedded.elf"    ./lintilla_embedded.cpp.o   C:/git/erni/lintilla-embedded/src/Release/arduino.ar   "C:/git/erni/lintilla-embedded/src/Release/arduino.ar" "-LC:/git/erni/lintilla-embedded/src/Release" -lm
+Finished building: lintilla_embedded.elf
+ 
+Create eeprom image
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-objcopy" -O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0 "C:/git/erni/lintilla-embedded/src/Release/lintilla_embedded.elf" "C:/git/erni/lintilla-embedded/src/Release/lintilla_embedded.eep"
+Finished building: lintilla_embedded.eep
+ 
+Create Flash image (ihex format)
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-objcopy" -O ihex -R .eeprom "C:/git/erni/lintilla-embedded/src/Release/lintilla_embedded.elf" "C:/git/erni/lintilla-embedded/src/Release/lintilla_embedded.hex"
+Finished building: Release/lintilla_embedded.hex
+ 
+Building target: lintilla_embedded
+Printing size:
+"C:/HackSessions/Tools/arduino-1.5.2/hardware/tools/avr/bin/avr-size" -A "C:/git/erni/lintilla-embedded/src/Release/lintilla_embedded.hex"
+C:/git/erni/lintilla-embedded/src/Release/lintilla_embedded.hex  :
+section   size   addr
+.sec1    678      0
+Total    678
+
+
+Finished building target: lintilla_embedded
+ 
+
+22:03:52 Build Finished (took 9s.484ms)
+

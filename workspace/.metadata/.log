@@ -1,0 +1,13 @@
+!SESSION 2014-03-17 21:58:41.283 -----------------------------------------------
+eclipse.buildId=M20130204-1200
+java.version=1.6.0_45
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=de_CH
+Framework arguments:  -product org.eclipse.epp.package.automotive.product
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.automotive.product
+
+!ENTRY org.eclipse.ui 2 2 2014-03-17 21:59:25.492
+!MESSAGE Invalid preference category path: org.eclipse.mylyn.preferencePages.Mylyn (bundle: org.eclipse.mylyn.context.ui, page: org.eclipse.mylyn.context.ui.preferences)
+
+!ENTRY org.eclipse.cdt.core 1 0 2014-03-17 22:03:02.677
+!MESSAGE Indexed 'lintilla_embedded' (21 sources, 74 headers) in 3.00 sec: 3'055 declarations; 8'002 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0.00 %)

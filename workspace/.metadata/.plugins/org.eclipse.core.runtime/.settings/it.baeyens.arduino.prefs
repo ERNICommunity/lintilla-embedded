@@ -1,0 +1,9 @@
+Arduino\ Board=Arduino Mega 2560 or Mega ADK
+Arduino\ Custom\ Option\ Selections=
+Arduino\ IDE\ Version=1.5.2
+Arduino\ Path=C\:\\HackSessions\\Tools\\arduino-1.5.2
+Arduino\ Port=COM3
+Arduino\ boards\ file=C\:\\HackSessions\\Tools\\arduino-1.5.2\\hardware\\arduino\\avr\\boards.txt
+FsStatus=1
+Private\ Library\ Path=C\:\\HackSessions\\Tools\\arduino-1.5.2\\libraries
+eclipse.preferences.version=1
