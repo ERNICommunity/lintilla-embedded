@@ -16,4 +16,10 @@
 		<item value="8" key="DIALOG_Y_ORIGIN"/>
 		<item value="374" key="DIALOG_X_ORIGIN"/>
 	</section>
+	<section name="ImportExportAction">
+		<item value="it.baeyens.arduino.Import_Source_Folder" key="ImportExportPage.STORE_SELECTED_IMPORT_WIZARD_ID"/>
+		<list key="ImportExportPage.STORE_EXPANDED_IMPORT_CATEGORIES">
+			<item value="it.baeyens.arduino.eclipse.importWizards"/>
+		</list>
+	</section>
 </section>

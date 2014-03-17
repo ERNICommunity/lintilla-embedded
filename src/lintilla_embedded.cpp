@@ -1,15 +1,810 @@
 // Do not remove the include below
 #include "lintilla_embedded.h"
 
+#include <Adafruit_CC3000.h>
+#include <ccspi.h>
+#include <SPI.h>
+#include <string.h>
+#include "utility/debug.h"
+
+//#include "LanClient.h"
+
+#include "LcdKeypad.h"
+#include "Blanking.h"
+#include "TimerContext.h"
+#include "Timer.h"
+#include "TimerAdapter.h"
+#include "SN754410Driver.h"
+#include "MotorPWM.h"
+#include "UltrasonicSensor.h"
+#include "UltrasonicSensorHCSR04.h"
+#include "EEPROM.h"
+#include "Ivm.h"
+#include "IF_IvmMemory.h"
+#include "IvmSerialEeprom.h"
+#include "LintillaIvm.h"
+#include "CmdAdapter.h"
+#include "CmdSequence.h"
+#include "Cmd.h"
+
+//#include <aJSON.h>
+
+#include <avr/power.h>
+#include <avr/sleep.h>
+
+//int getFreeRam(void)
+//{
+//  extern int  __bss_end;
+//  extern int  *__brkval;
+//  int free_memory;
+//  if((int)__brkval == 0) {
+//    free_memory = ((int)&free_memory) - ((int)&__bss_end);
+//  }
+//  else {
+//    free_memory = ((int)&free_memory) - ((int)__brkval);
+//  }
+//
+//  return free_memory;
+//}
+
+//LanClient* lanClient;
+
+class DistanceCount;
+DistanceCount* lDistCount = 0;
+DistanceCount* rDistCount = 0;
+
+LcdKeypad lcdKeypad;
+MotorPWM*         motorL;
+MotorPWM*         motorR;
+UltrasonicSensor* ultrasonicSensorFront;
+Timer*            ramDebugTimer;
+Timer*            speedSensorReadTimer;
+Timer*            displayTimer;
+Timer*            speedCtrlTimer;
+Blanking*         displayBlanking;
+Ivm*              ivm;
+CmdSequence*      cmdSeq;
+
+bool isRunning = false;
+bool isIvmAccessMode = false;
+bool isIvmRobotIdEditMode = false;
+
+// Robot Configuration
+int cSpeed      = 200;
+int cSpinSpeed  = 150;
+
+// H-bridge enable pin for speed control
+int speedPin1 = 44;
+int speedPin2 = 45;
+
+// H-bridge leg 1
+int motor1APin = 46;
+int motor3APin = 47;
+
+// H-bridge leg 2
+int motor2APin = 48;
+int motor4APin = 49;
+
+// value for motor speed
+int speed_value_motor_left  = 0;
+int speed_value_motor_right = 0;
+bool isLeftMotorFwd = true;
+bool isRightMotorFwd = true;
+bool isObstacleDetected = false;
+
+// LCD Backlight Intensity
+bool isLcdBackLightOn   = true;
+
+// Ultrasonic Sensor
+unsigned int triggerPin  = 34;
+unsigned int echoPin     = 36;
+unsigned long dist       = UltrasonicSensor::DISTANCE_LIMIT_EXCEEDED;   // [cm]
+
+// Battery Voltage Surveillance
+float       battVoltage        = 0;   // [V]
+
+const int   BATT_SENSE_PIN     = A9;
+
+const float BATT_WARN_THRSHD   = 6.20;
+const float BATT_SHUT_THRSHD   = 6.00;
+
+const float BATT_SENS_FACTOR_1 = 2.0;
+const float BATT_SENS_FACTOR_2 = 2.450;
+const float BATT_SENS_FACTOR_3 = 2.530;
+const float BATT_SENS_FACTOR_4 = 2.000;
+const float BATT_SENS_FACTOR_5 = 2.456;
+
+float       BATT_SENS_FACTOR   = 2.0;
+
+// Wheel Speed Sensors
+const unsigned int SPEED_SENSORS_READ_TIMER_INTVL_MILLIS = 100;
+
+const int IRQ_PIN_18 = 5;
+const int IRQ_PIN_19 = 4;
+const int IRQ_PIN_20 = 3;
+const int IRQ_PIN_21 = 2;
+
+const int L_SPEED_SENS_IRQ = IRQ_PIN_18;
+const int R_SPEED_SENS_IRQ = IRQ_PIN_19;
+
+volatile unsigned long int speedSensorCountLeft  = 0;
+volatile unsigned long int speedSensorCountRight = 0;
+
+volatile long int leftWheelSpeed  = 0;
+volatile long int rightWheelSpeed = 0;
+
+// These are the interrupt and control pins
+#define ADAFRUIT_CC3000_IRQ   3  // MUST be an interrupt pin!
+// These can be any two pins
+#define ADAFRUIT_CC3000_VBAT  12 // WEN, was on  5 before
+#define ADAFRUIT_CC3000_CS    13 // WCS, was on 10 before
+// Use hardware SPI for the remaining pins
+// On an UNO, SCK = 13, MISO = 12, and MOSI = 11
+Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ, ADAFRUIT_CC3000_VBAT,
+                                         SPI_CLOCK_DIV2); // you can change this clock speed but DI
+
+#define WLAN_SSID       "LintillaNet"        // cannot be longer than 32 characters!
+#define WLAN_PASS       "AnswerIs42"
+// Security can be WLAN_SEC_UNSEC, WLAN_SEC_WEP, WLAN_SEC_WPA or WLAN_SEC_WPA2
+#define WLAN_SECURITY   WLAN_SEC_WPA2
+
+#define LISTEN_PORT           9999    // What TCP port to listen on for connections.  The echo protocol uses port 7.
+
+Adafruit_CC3000_Server echoServer(LISTEN_PORT);
+
+//aJsonStream* jsonStream;
+
+class RamDebugTimerAdapter : public TimerAdapter
+{
+  void timeExpired()
+  {
+    Serial.print("Free RAM: "); Serial.println(getFreeRam(), DEC);
+  }
+};
+
+class DistanceCount
+{
+public:
+  DistanceCount()
+  : m_cumulativeDistanceCount(0)
+  { };
+
+  void reset()
+  {
+    m_cumulativeDistanceCount = 0;
+  };
+
+  void add(unsigned long int delta)
+  {
+    m_cumulativeDistanceCount += delta;
+  }
+
+  unsigned long int cumulativeDistanceCount()
+  {
+    return m_cumulativeDistanceCount;
+  }
+
+private:
+  unsigned long int m_cumulativeDistanceCount;
+};
+
+void readSpeedSensors()
+{
+  noInterrupts();
+
+  leftWheelSpeed  = speedSensorCountLeft;  speedSensorCountLeft  = 0;
+  rightWheelSpeed = speedSensorCountRight; speedSensorCountRight = 0;
+
+  lDistCount->add(leftWheelSpeed);
+  rDistCount->add(rightWheelSpeed);
+
+  interrupts();
+}
+
+class SpeedSensorReadTimerAdapter : public TimerAdapter
+{
+  void timeExpired()
+  {
+    readSpeedSensors();
+  }
+};
+
+void selectMode();
+void speedControl();
+void updateActors();
+void lcdBackLightControl();
+
+void moveBackward();
+void moveForward();
+void spinOnPlace(bool right);
+void motorStop();
+
+bool displayConnectionDetails(void);
+
+class LintillaCmdAdapter : public CmdAdapter
+{
+  virtual void stopAction()
+  {
+    motorStop();
+    Serial.print("LintillaCmdAdapter::stopAction()\n");
+  }
+
+  virtual void moveForwardAction()
+  {
+    moveForward();
+    Serial.print("LintillaCmdAdapter::moveForwardAction()\n");
+  }
+
+  virtual void moveBackwardAction()
+  {
+    moveBackward();
+    Serial.print("LintillaCmdAdapter::moveBackwardAction()\n");
+  }
+
+  virtual void spinOnPlaceLeftAction()
+  {
+    spinOnPlace(false);
+    Serial.print("LintillaCmdAdapter::spinOnPlaceLeftAction()\n");
+  }
+
+  virtual void spinOnPlaceRightAction()
+  {
+    spinOnPlace(true);
+    Serial.print("LintillaCmdAdapter::spinOnPlaceRightAction()\n");
+  }
+};
+
+class SpeedCtrlTimerAdapter : public TimerAdapter
+{
+  void timeExpired()
+  {
+    speedControl();
+    updateActors();
+  }
+};
+
+void updateBattVoltageSenseFactor()
+{
+  unsigned char robotId = ivm->getDeviceId(); // EEPROM.read(0);
+  switch (robotId)
+  {
+    case 1:
+      BATT_SENS_FACTOR = BATT_SENS_FACTOR_1;
+      break;
+    case 2:
+      BATT_SENS_FACTOR = BATT_SENS_FACTOR_2;
+      break;
+    case 3:
+      BATT_SENS_FACTOR = BATT_SENS_FACTOR_3;
+      break;
+    case 4:
+      BATT_SENS_FACTOR = BATT_SENS_FACTOR_4;
+      break;
+    case 5:
+      BATT_SENS_FACTOR = BATT_SENS_FACTOR_5;
+      break;
+    default:
+      BATT_SENS_FACTOR = 2.0;
+  }
+}
+
+void sleepNow();
+
+void readBattVoltage()
+{
+  unsigned int rawBattVoltage = analogRead(BATT_SENSE_PIN);
+  battVoltage = rawBattVoltage * BATT_SENS_FACTOR * 5 / 1023;
+
+  if (BATT_WARN_THRSHD >= battVoltage)
+  {
+    isLcdBackLightOn = false;
+    lcdBackLightControl();
+  }
+
+  // emergency shutdown on battery low alarm
+  if (BATT_SHUT_THRSHD >= battVoltage)
+  {
+    sleepNow();
+  }
+}
+
+void sleepNow()
+{
+  /* Now is the time to set the sleep mode. In the Atmega8 datasheet
+   * http://www.atmel.com/dyn/resources/prod_documents/doc2486.pdf on page 35
+   * there is a list of sleep modes which explains which clocks and
+   * wake up sources are available in which sleep modus.
+   *
+   * In the avr/sleep.h file, the call names of these sleep modus are to be found:
+   *
+   * The 5 different modes are:
+   * SLEEP_MODE_IDLE -the least power savings
+   * SLEEP_MODE_ADC
+   * SLEEP_MODE_PWR_SAVE
+   * SLEEP_MODE_STANDBY
+   * SLEEP_MODE_PWR_DOWN -the most power savings
+   *
+   * the power reduction management <avr/power.h> is described in
+   * http://www.nongnu.org/avr-libc/user-manual/group__avr__power.html
+   */
+
+  set_sleep_mode(SLEEP_MODE_PWR_DOWN); // sleep mode is set here
+
+  sleep_enable(); // enables the sleep bit in the mcucr register
+                  // so sleep is possible. just a safety pin
+  power_adc_disable();
+  power_spi_disable();
+  power_timer0_disable();
+  power_timer1_disable();
+  power_timer2_disable();
+  power_twi_disable();
+  sleep_mode(); // here the device is actually put to sleep!!
+
+  // THE PROGRAM CONTINUES FROM HERE AFTER WAKING UP
+
+  sleep_disable();  // first thing after waking from sleep:
+                    // disable sleep...
+
+  power_all_enable();
+}
+
+void updateDisplay();
+
+class DisplayTimerAdapter : public TimerAdapter
+{
+  void timeExpired()
+  {
+    readBattVoltage();
+    selectMode();
+    updateDisplay();
+  }
+};
+
+void countLeftSpeedSensor()
+{
+  noInterrupts();
+  speedSensorCountLeft++;
+  interrupts();
+}
+
+void countRightSpeedSensor()
+{
+  noInterrupts();
+  speedSensorCountRight++;
+  interrupts();
+}
 
 //The setup function is called once at startup of the sketch
 void setup()
 {
-// Add your initialization code here
+  // Serial for Debugging
+  Serial.begin(115200);
+  Serial.println(F("Hello from Lintilla!\n"));
+  Serial.print("Free RAM: "); Serial.println(getFreeRam(), DEC);
+
+  ramDebugTimer = new Timer(new RamDebugTimerAdapter(), Timer::IS_RECURRING, 1000);
+
+  // Inventory Management
+  ivm = new LintillaIvm();
+  updateBattVoltageSenseFactor();
+
+  // Ultrasonic Ranging
+  ultrasonicSensorFront = new UltrasonicSensorHCSR04(triggerPin, echoPin);
+
+  // Speed Sensors
+  speedSensorReadTimer  = new Timer(new SpeedSensorReadTimerAdapter(), Timer::IS_RECURRING, SPEED_SENSORS_READ_TIMER_INTVL_MILLIS);
+  attachInterrupt(L_SPEED_SENS_IRQ, countLeftSpeedSensor,  RISING);
+  attachInterrupt(R_SPEED_SENS_IRQ, countRightSpeedSensor, RISING);
+
+  // Distance Counters
+  lDistCount = new DistanceCount();
+  rDistCount = new DistanceCount();
+
+  // Motor Drivers and Speed Control
+  motorL = new SN754410_Driver(speedPin1, motor1APin, motor2APin);
+  motorR = new SN754410_Driver(speedPin2, motor3APin, motor4APin);
+  speedCtrlTimer = new Timer(new SpeedCtrlTimerAdapter(), Timer::IS_RECURRING, 200);
+
+  // Lcd Display
+  displayTimer = new Timer(new DisplayTimerAdapter(), Timer::IS_RECURRING, 200);
+  displayBlanking = new Blanking();
+  lcdBackLightControl();
+  updateDisplay();
+
+  // Command Sequence
+  cmdSeq = new CmdSequence(new LintillaCmdAdapter());
+  Cmd* cmd;
+  const int cSpinTime     =  350;
+  const int cFwdTime      =  400;
+  const int cInterDelay   =  300;
+  const int cEndLoopDelay = 1000;
+  for (int i = 0; i <= 3; i++)
+  {
+    new CmdMoveForward(cmdSeq, cFwdTime);
+    new CmdStop(cmdSeq, cInterDelay);
+    new CmdSpinOnPlaceRight(cmdSeq, cSpinTime);
+    new CmdStop(cmdSeq, cInterDelay);
+  }
+  new CmdStop(cmdSeq, cEndLoopDelay);
+  cmdSeq->printCmdNameList();
+
+  //---------------------------------------------------------------------------
+
+
+//  lanClient = new LanClient();
+//  if (lanClient->begin())
+//  {
+//    lanClient->requestConnect();
+//  }
+
+  Serial.println(F("Hello, CC3000!\n"));
+
+  Serial.print("Free RAM: "); Serial.println(getFreeRam(), DEC);
+
+  /* Initialise the module */
+  Serial.println(F("\nInitializing..."));
+  if (!cc3000.begin())
+  {
+    Serial.println(F("Couldn't begin()! Check your wiring?"));
+    while(1);
+  }
+
+  if (!cc3000.connectToAP(WLAN_SSID, WLAN_PASS, WLAN_SECURITY)) {
+    Serial.println(F("Failed!"));
+    while(1);
+  }
+
+  Serial.println(F("Connected!"));
+
+  Serial.println(F("Request DHCP"));
+  while (!cc3000.checkDHCP())
+  {
+    delay(100); // ToDo: Insert a DHCP timeout!
+  }
+
+  /* Display the IP address DNS, Gateway, etc. */
+  while (! displayConnectionDetails()) {
+    delay(1000);
+  }
+
+  // Start listening for connections
+  echoServer.begin();
+  Serial.println(F("Listening for connections..."));
+
+//  jsonStream = new aJsonStream(&(Stream)echoServer.available());
+}
+
+void selectMode()
+{
+  if (!isRunning)
+  {
+    if (lcdKeypad.isSelectKey())
+    {
+      isIvmAccessMode = true;
+    }
+    else if (!isIvmRobotIdEditMode && lcdKeypad.isRightKey())
+    {
+      isIvmAccessMode = false;
+    }
+
+    if (isIvmAccessMode)
+    {
+      if (lcdKeypad.isLeftKey())
+      {
+        isIvmRobotIdEditMode = true;
+      }
+    }
+
+    if (isIvmRobotIdEditMode)
+    {
+      unsigned char robotId = ivm->getDeviceId();
+
+      if (lcdKeypad.isSelectKey())
+      {
+        isIvmRobotIdEditMode = false;
+      }
+      if (lcdKeypad.isUpKey())
+      {
+        robotId++;
+        ivm->setDeviceId(robotId);
+        updateBattVoltageSenseFactor();
+      }
+      if (lcdKeypad.isDownKey())
+      {
+        robotId--;
+        ivm->setDeviceId(robotId);
+        updateBattVoltageSenseFactor();
+      }
+    }
+  }
+}
+
+void speedControl()
+{
+  if (0 != ultrasonicSensorFront)
+  {
+    dist = ultrasonicSensorFront->getDistanceCM();
+  }
+  isObstacleDetected = isLeftMotorFwd && (dist > 0) && (dist < 15);
+
+  if (lcdKeypad.isRightKey() || isObstacleDetected || (battVoltage < BATT_WARN_THRSHD))
+  {
+    isRunning = false;
+    cmdSeq->stop();
+  }
+  else if (lcdKeypad.isLeftKey() && !isIvmAccessMode)
+  {
+    isRunning = true;
+    lDistCount->reset();
+    rDistCount->reset();
+    cmdSeq->start();
+  }
+}
+
+void lcdBackLightControl()
+{
+  if (!isIvmAccessMode)
+  {
+    if (lcdKeypad.isUpKey() && (!isLcdBackLightOn))
+    {
+      isLcdBackLightOn = true;
+    }
+    else if (lcdKeypad.isDownKey() && (isLcdBackLightOn))
+    {
+      isLcdBackLightOn = false;
+    }
+  }
+  lcdKeypad.setBackLightOn(isLcdBackLightOn);
+}
+
+void updateDisplay()
+{
+  lcdBackLightControl();
+
+  lcdKeypad.setCursor(0, 0);
+
+  if (isIvmAccessMode)
+  {
+    lcdKeypad.print("IVM Data (V.");
+    lcdKeypad.print(ivm->getIvmVersion());
+    lcdKeypad.print(")     ");
+
+    lcdKeypad.setCursor(0, 1);
+
+    lcdKeypad.print("Robot ID: ");
+
+    if (isIvmRobotIdEditMode && displayBlanking->isSignalBlanked())
+    {
+      lcdKeypad.print("      ");
+    }
+    else
+    {
+      lcdKeypad.print(ivm->getDeviceId());
+    }
+    lcdKeypad.print("     ");
+  }
+  else
+  {
+    lcdKeypad.print("Dst:");
+    if (dist == UltrasonicSensor::DISTANCE_LIMIT_EXCEEDED)
+    {
+      lcdKeypad.print("infin ");
+    }
+    else
+    {
+      lcdKeypad.print(dist > 99 ? "" : dist > 9 ? " " : "  ");
+      lcdKeypad.print(dist);
+      lcdKeypad.print("cm ");
+    }
+
+    if (displayBlanking->isSignalBlanked() && (battVoltage < BATT_WARN_THRSHD))
+    {
+      lcdKeypad.print("      ");
+    }
+    else
+    {
+      lcdKeypad.print("B:");
+      lcdKeypad.print(battVoltage);
+      lcdKeypad.print("[V]");
+    }
+
+
+    int lWSpd = static_cast<int>(leftWheelSpeed);
+    int rWspd = static_cast<int>(rightWheelSpeed);
+
+    lcdKeypad.setCursor(0, 1);
+    lcdKeypad.print("v ");
+    lcdKeypad.print("l:");
+    lcdKeypad.print(lWSpd > 99 ? "" : lWSpd > 9 ? " " : "  ");
+    lcdKeypad.print(lWSpd);
+    lcdKeypad.print(" r:");
+    lcdKeypad.print(rWspd > 99 ? "" : rWspd > 9 ? " " : "  ");
+    lcdKeypad.print(rWspd);
+  }
+}
+
+void updateActors()
+{
+  int speedAndDirectionLeft  = speed_value_motor_left  * (isLeftMotorFwd  ? 1 : -1);
+  int speedAndDirectionRight = speed_value_motor_right * (isRightMotorFwd ? 1 : -1);
+
+  motorL->setSpeed(speedAndDirectionLeft);
+  motorR->setSpeed(speedAndDirectionRight);
+}
+
+void moveStraight(bool forward)
+{
+  isLeftMotorFwd  = forward;
+  isRightMotorFwd = forward;
+  speed_value_motor_left  = cSpeed;
+  speed_value_motor_right = cSpeed;
+  updateActors();
+}
+
+void spinOnPlace(bool right)
+{
+  isLeftMotorFwd = right;
+  isRightMotorFwd = !right;
+  speed_value_motor_left  = cSpinSpeed;
+  speed_value_motor_right = cSpinSpeed;
+  updateActors();
+}
+
+void moveForward()
+{
+  moveStraight(true);
+}
+
+void moveBackward()
+{
+  moveStraight(false);
+}
+
+void motorStop()
+{
+  speed_value_motor_left  = 0;
+  speed_value_motor_right = 0;
+  updateActors();
+}
+
+/* Process message like: {"straight":{"distance": 10,"topspeed": 100},"turn":{"angle": 45},"emergencyStop":{"stop":false}}*/
+//void processLintillaMessageReceived(aJsonObject *msg)
+//{
+////  bool emergencyStopValue = false;
+////  int topspeed = 0;
+////  int distanceValue = 0;
+////  int angleValue = 0;
+//  double batteryVoltage = 0.0;
+//
+//  /* Lintilla Command List Example
+//  {
+//      "commands": [
+//          {
+//              "straight": {
+//                  "distance": 10,
+//                  "topspeed": 100
+//              }
+//          },
+//          {
+//              "turn": {
+//                  "angle": 45
+//              }
+//          },
+//          {
+//              "straight": {
+//                  "distance": 20,
+//                  "topspeed": 50
+//              }
+//          },
+//          {
+//              "emergencyStop": null
+//          },
+//          {
+//              "readVoltage": null
+//          }
+//      ]
+//  }
+//  */
+//
+//  aJsonObject* commands = aJson.getObjectItem(msg, "commands");
+//  if (0 == commands)
+//  {
+//    Serial.println("NO commands");
+//  }
+//  else
+//  {
+//    Serial.println("commands");
+//
+//    aJsonObject* aCommand = commands->child;
+//    while (0 != aCommand)
+//    {
+//      aJsonObject* readVoltageCmd = aJson.getObjectItem(aCommand, "readVoltage");
+//      if (0 != readVoltageCmd)
+//      {
+//        batteryVoltage = battVoltage;
+//
+//        aJsonObject* readVoltageMsgRoot = aJson.createObject();
+//        aJsonObject* readVoltageMsgElem = aJson.createObject();
+//
+//        aJson.addItemToObject(readVoltageMsgRoot, "readVoltage", readVoltageMsgElem);
+//        aJson.addNumberToObject(readVoltageMsgElem, "voltage", batteryVoltage);
+//
+//        aJson.print(readVoltageMsgRoot, jsonStream);
+//        Serial.println(); /* Add newline. */
+//
+//        aJson.deleteItem(readVoltageMsgElem);
+//        aJson.deleteItem(readVoltageMsgRoot);
+//      }
+//      aJson.deleteItem(readVoltageCmd);
+//
+//      aJsonObject* straightCmd = aJson.getObjectItem(aCommand, "straight");
+//      if (0 != straightCmd)
+//      {
+//        Serial.println("straight");
+//      }
+//      aJson.deleteItem(straightCmd);
+//
+//      aCommand = aCommand->next;
+//    }
+//  }
+//}
+
+/**************************************************************************/
+/*!
+    @brief  Tries to read the IP address and other connection details
+*/
+/**************************************************************************/
+bool displayConnectionDetails(void)
+{
+  uint32_t ipAddress, netmask, gateway, dhcpserv, dnsserv;
+
+  if(!cc3000.getIPAddress(&ipAddress, &netmask, &gateway, &dhcpserv, &dnsserv))
+  {
+    Serial.println(F("Unable to retrieve the IP Address!\r\n"));
+    return false;
+  }
+  else
+  {
+    Serial.print(F("\nIP Addr: ")); cc3000.printIPdotsRev(ipAddress);
+    Serial.print(F("\nNetmask: ")); cc3000.printIPdotsRev(netmask);
+    Serial.print(F("\nGateway: ")); cc3000.printIPdotsRev(gateway);
+    Serial.print(F("\nDHCPsrv: ")); cc3000.printIPdotsRev(dhcpserv);
+    Serial.print(F("\nDNSserv: ")); cc3000.printIPdotsRev(dnsserv);
+    Serial.println();
+    return true;
+  }
 }
 
 // The loop function is called in an endless loop
 void loop()
 {
-//Add your repeated code here
+  TimerContext::instance()->handleTick();
+
+//  if (jsonStream->available()) {
+//    /* First, skip any accidental whitespace like newlines. */
+//    jsonStream->skip();
+//  }
+
+//  if (jsonStream->available()) {
+//    /* Something real on input, let's take a look. */
+//    aJsonObject* msg = aJson.parse(jsonStream);
+//    processLintillaMessageReceived(msg);
+//    aJson.deleteItem(msg);
+//  }
+
+
+  // Try to get a client which is connected.
+  Adafruit_CC3000_ClientRef client = echoServer.available();
+
+
+  if (client) {
+     // Check if there is data available to read.
+     if (client.available() > 0)
+     {
+       // Read a byte and write it to all clients.
+       uint8_t ch = client.read();
+       client.write(ch);
+     }
+  }
+
 }

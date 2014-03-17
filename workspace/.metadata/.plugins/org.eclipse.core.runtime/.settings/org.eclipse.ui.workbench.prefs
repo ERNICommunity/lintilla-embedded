@@ -1,3 +1,4 @@
 OPEN_ON_SINGLE_CLICK=true
+RUN_IN_BACKGROUND=true
 SELECT_ON_HOVER=true
 eclipse.preferences.version=1
