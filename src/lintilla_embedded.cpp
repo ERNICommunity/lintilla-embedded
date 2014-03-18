@@ -65,7 +65,7 @@ Blanking*         displayBlanking;
 Ivm*              ivm;
 CmdSequence*      cmdSeq;
 
-bool isRunning = false;
+//bool isRunning = false;
 bool isIvmAccessMode = false;
 bool isIvmRobotIdEditMode = false;
 
@@ -414,10 +414,9 @@ void setup()
   // Command Sequence
   cmdSeq = new CmdSequence(new LintillaCmdAdapter());
   Cmd* cmd;
-  const int cSpinTime     =  350;
-  const int cFwdTime      =  400;
-  const int cInterDelay   =  300;
-  const int cEndLoopDelay = 1000;
+  const int cSpinTime     =  300;
+  const int cFwdTime      =  300;
+  const int cInterDelay   =  500;
   for (int i = 0; i <= 3; i++)
   {
     new CmdMoveForward(cmdSeq, cFwdTime);
@@ -425,7 +424,6 @@ void setup()
     new CmdSpinOnPlaceRight(cmdSeq, cSpinTime);
     new CmdStop(cmdSeq, cInterDelay);
   }
-  new CmdStop(cmdSeq, cEndLoopDelay);
   cmdSeq->printCmdNameList();
 
   //---------------------------------------------------------------------------
@@ -476,7 +474,7 @@ void setup()
 
 void selectMode()
 {
-  if (!isRunning)
+  if (!cmdSeq->isRunning())
   {
     if (lcdKeypad.isSelectKey())
     {
@@ -529,12 +527,12 @@ void speedControl()
 
   if (lcdKeypad.isRightKey() || isObstacleDetected || (battVoltage < BATT_WARN_THRSHD))
   {
-    isRunning = false;
+//    isRunning = false;
     cmdSeq->stop();
   }
-  else if (lcdKeypad.isLeftKey() && !isIvmAccessMode)
+  else if (!cmdSeq->isRunning() && lcdKeypad.isLeftKey() && !isIvmAccessMode)
   {
-    isRunning = true;
+//    isRunning = true;
     lDistCount->reset();
     rDistCount->reset();
     cmdSeq->start();
@@ -803,6 +801,14 @@ void loop()
      {
        // Read a byte and write it to all clients.
        uint8_t ch = client.read();
+       if (!cmdSeq->isRunning() && ('g' == ch))
+       {
+         cmdSeq->start();
+       }
+       else if ('h' == ch)
+       {
+         cmdSeq->stop();
+       }
        client.write(ch);
      }
   }

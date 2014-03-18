@@ -4,8 +4,12 @@
  *  Created on: 10.03.2014
  *      Author: niklausd
  */
-
+#ifdef Arduino
 #include "Arduino.h"
+#else
+#include <stdio.h>
+#endif
+
 #include "CmdAdapter.h"
 #include "CmdSequence.h"
 #include "Cmd.h"
@@ -47,7 +51,11 @@ void Cmd::setNext(Cmd* next)
 
 void Cmd::printName()
 {
+#ifdef Arduino
   Serial.println(m_name);
+#else
+  printf("%s\n", m_name);
+#endif
 }
 
 CmdSequence* Cmd::cmdSequence()

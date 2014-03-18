@@ -21,6 +21,8 @@ public:
   void start();
   void stop();
 
+  bool isRunning();
+
   void execNextCmd();
 
   void attach(Cmd* cmd);
@@ -36,6 +38,7 @@ private:
   void execCmd();
 
 private:
+  bool        m_isRunning;
   Cmd*        m_firstCmd;
   Cmd*        m_currentCmd;
   CmdAdapter* m_adapter;
