@@ -1,4 +1,4 @@
-01:29:01 **** Build of configuration Release for project lintilla_embedded ****
+01:35:03 **** Build of configuration Release for project lintilla_embedded ****
 make all 
 Building file: C:/git/erni/lintilla-embedded/lib/prod/lintilla_ivm/LintillaIvm.cpp
 Starting C++ compile
@@ -318,5 +318,5 @@ Total   40378
 Finished building target: lintilla_embedded
  
 
-01:29:18 Build Finished (took 16s.370ms)
+01:35:15 Build Finished (took 12s.225ms)
 
