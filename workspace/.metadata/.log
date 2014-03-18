@@ -872,3 +872,244 @@ Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.e
 
 !ENTRY org.eclipse.cdt.core 1 0 2014-03-18 01:34:16.980
 !MESSAGE Indexed 'lintilla_embedded' (58 sources, 120 headers) in 5.61 sec: 6'209 declarations; 19'226 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0.00 %)
+!SESSION 2014-03-18 01:41:55.500 -----------------------------------------------
+eclipse.buildId=M20130204-1200
+java.version=1.6.0_45
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=de_CH
+Framework arguments:  -product org.eclipse.epp.package.automotive.product
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.automotive.product
+
+!ENTRY org.eclipse.core.resources 4 2 2014-03-18 01:42:23.892
+!MESSAGE Problems occurred when invoking code from plug-in: "org.eclipse.core.resources".
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Resource '/lintilla_embedded/Release/sources.mk' does not exist.
+	at org.eclipse.core.internal.resources.Resource.checkExists(Resource.java:341)
+	at org.eclipse.core.internal.resources.Resource.checkAccessible(Resource.java:215)
+	at org.eclipse.core.internal.resources.File.setContents(File.java:357)
+	at org.eclipse.core.internal.resources.File.setContents(File.java:464)
+	at it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator.save(ArduinoGnuMakefileGenerator.java:805)
+	at it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator.populateSourcesMakefile(ArduinoGnuMakefileGenerator.java:1115)
+	at it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator.generateMakefiles(ArduinoGnuMakefileGenerator.java:650)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.performMakefileGeneration(CommonBuilder.java:1008)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.performPrebuildGeneration(CommonBuilder.java:873)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:748)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:510)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:459)
+	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:726)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:199)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:239)
+	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:292)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:295)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:256)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:394)
+	at org.eclipse.core.internal.resources.Project$1.run(Project.java:618)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2344)
+	at org.eclipse.core.internal.resources.Project.internalBuild(Project.java:597)
+	at org.eclipse.core.internal.resources.Project.build(Project.java:114)
+	at it.baeyens.arduino.actions.JobHandler.run(BuildHandler.java:42)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:53)
+!SUBENTRY 1 org.eclipse.core.resources 4 368 2014-03-18 01:42:23.892
+!MESSAGE Resource '/lintilla_embedded/Release/sources.mk' does not exist.
+!SUBENTRY 1 org.eclipse.core.resources 4 368 2014-03-18 01:42:23.892
+!MESSAGE Resource '/lintilla_embedded/Release/sources.mk' does not exist.
+
+!ENTRY it.baeyens.core 4 0 2014-03-18 01:42:30.734
+!MESSAGE Failed to build the code
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Errors occurred during the build.
+	at org.eclipse.core.internal.resources.Project$1.run(Project.java:620)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2344)
+	at org.eclipse.core.internal.resources.Project.internalBuild(Project.java:597)
+	at org.eclipse.core.internal.resources.Project.build(Project.java:114)
+	at it.baeyens.arduino.actions.JobHandler.run(BuildHandler.java:42)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:53)
+Contains: Errors running builder 'CDT Builder' on project 'lintilla_embedded'.
+org.eclipse.core.internal.resources.ResourceException: Resource '/lintilla_embedded/Release/sources.mk' does not exist.
+	at org.eclipse.core.internal.resources.Resource.checkExists(Resource.java:341)
+	at org.eclipse.core.internal.resources.Resource.checkAccessible(Resource.java:215)
+	at org.eclipse.core.internal.resources.File.setContents(File.java:357)
+	at org.eclipse.core.internal.resources.File.setContents(File.java:464)
+	at it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator.save(ArduinoGnuMakefileGenerator.java:805)
+	at it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator.populateSourcesMakefile(ArduinoGnuMakefileGenerator.java:1115)
+	at it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator.generateMakefiles(ArduinoGnuMakefileGenerator.java:650)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.performMakefileGeneration(CommonBuilder.java:1008)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.performPrebuildGeneration(CommonBuilder.java:873)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:748)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:510)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:459)
+	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:726)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:199)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:239)
+	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:292)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:295)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:256)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:394)
+	at org.eclipse.core.internal.resources.Project$1.run(Project.java:618)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2344)
+	at org.eclipse.core.internal.resources.Project.internalBuild(Project.java:597)
+	at org.eclipse.core.internal.resources.Project.build(Project.java:114)
+	at it.baeyens.arduino.actions.JobHandler.run(BuildHandler.java:42)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:53)
+Contains: Resource '/lintilla_embedded/Release/sources.mk' does not exist.
+!SUBENTRY 1 org.eclipse.core.resources 4 566 2014-03-18 01:42:30.735
+!MESSAGE Errors occurred during the build.
+!SUBENTRY 2 org.eclipse.cdt.managedbuilder.core 4 75 2014-03-18 01:42:30.735
+!MESSAGE Errors running builder 'CDT Builder' on project 'lintilla_embedded'.
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Resource '/lintilla_embedded/Release/sources.mk' does not exist.
+	at org.eclipse.core.internal.resources.Resource.checkExists(Resource.java:341)
+	at org.eclipse.core.internal.resources.Resource.checkAccessible(Resource.java:215)
+	at org.eclipse.core.internal.resources.File.setContents(File.java:357)
+	at org.eclipse.core.internal.resources.File.setContents(File.java:464)
+	at it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator.save(ArduinoGnuMakefileGenerator.java:805)
+	at it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator.populateSourcesMakefile(ArduinoGnuMakefileGenerator.java:1115)
+	at it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator.generateMakefiles(ArduinoGnuMakefileGenerator.java:650)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.performMakefileGeneration(CommonBuilder.java:1008)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.performPrebuildGeneration(CommonBuilder.java:873)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:748)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:510)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:459)
+	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:726)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:199)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:239)
+	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:292)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:295)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:256)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:394)
+	at org.eclipse.core.internal.resources.Project$1.run(Project.java:618)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2344)
+	at org.eclipse.core.internal.resources.Project.internalBuild(Project.java:597)
+	at org.eclipse.core.internal.resources.Project.build(Project.java:114)
+	at it.baeyens.arduino.actions.JobHandler.run(BuildHandler.java:42)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:53)
+!SUBENTRY 3 org.eclipse.core.resources 4 368 2014-03-18 01:42:30.735
+!MESSAGE Resource '/lintilla_embedded/Release/sources.mk' does not exist.
+!SUBENTRY 2 org.eclipse.core.resources 4 368 2014-03-18 01:42:30.735
+!MESSAGE Resource '/lintilla_embedded/Release/sources.mk' does not exist.
+
+!ENTRY org.eclipse.core.resources 4 2 2014-03-18 01:42:39.000
+!MESSAGE Problems occurred when invoking code from plug-in: "org.eclipse.core.resources".
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Resource '/lintilla_embedded/Release/makefile' does not exist.
+	at org.eclipse.core.internal.resources.Resource.checkExists(Resource.java:341)
+	at org.eclipse.core.internal.resources.Resource.checkAccessible(Resource.java:215)
+	at org.eclipse.core.internal.resources.File.setContents(File.java:357)
+	at org.eclipse.core.internal.resources.File.setContents(File.java:464)
+	at it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator.save(ArduinoGnuMakefileGenerator.java:805)
+	at it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator.populateTopMakefile(ArduinoGnuMakefileGenerator.java:1148)
+	at it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator.regenerateMakefiles(ArduinoGnuMakefileGenerator.java:920)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.performMakefileGeneration(CommonBuilder.java:1006)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.performPrebuildGeneration(CommonBuilder.java:873)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:748)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:513)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:459)
+	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:726)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:199)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:239)
+	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:292)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:295)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:256)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:394)
+	at org.eclipse.core.internal.resources.Project$1.run(Project.java:618)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2344)
+	at org.eclipse.core.internal.resources.Project.internalBuild(Project.java:597)
+	at org.eclipse.core.internal.resources.Project.build(Project.java:114)
+	at it.baeyens.arduino.actions.JobHandler.run(BuildHandler.java:42)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:53)
+!SUBENTRY 1 org.eclipse.core.resources 4 368 2014-03-18 01:42:39.000
+!MESSAGE Resource '/lintilla_embedded/Release/makefile' does not exist.
+!SUBENTRY 1 org.eclipse.core.resources 4 368 2014-03-18 01:42:39.000
+!MESSAGE Resource '/lintilla_embedded/Release/makefile' does not exist.
+
+!ENTRY it.baeyens.core 4 0 2014-03-18 01:42:41.413
+!MESSAGE Failed to build the code
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Errors occurred during the build.
+	at org.eclipse.core.internal.resources.Project$1.run(Project.java:620)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2344)
+	at org.eclipse.core.internal.resources.Project.internalBuild(Project.java:597)
+	at org.eclipse.core.internal.resources.Project.build(Project.java:114)
+	at it.baeyens.arduino.actions.JobHandler.run(BuildHandler.java:42)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:53)
+Contains: Errors running builder 'CDT Builder' on project 'lintilla_embedded'.
+org.eclipse.core.internal.resources.ResourceException: Resource '/lintilla_embedded/Release/makefile' does not exist.
+	at org.eclipse.core.internal.resources.Resource.checkExists(Resource.java:341)
+	at org.eclipse.core.internal.resources.Resource.checkAccessible(Resource.java:215)
+	at org.eclipse.core.internal.resources.File.setContents(File.java:357)
+	at org.eclipse.core.internal.resources.File.setContents(File.java:464)
+	at it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator.save(ArduinoGnuMakefileGenerator.java:805)
+	at it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator.populateTopMakefile(ArduinoGnuMakefileGenerator.java:1148)
+	at it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator.regenerateMakefiles(ArduinoGnuMakefileGenerator.java:920)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.performMakefileGeneration(CommonBuilder.java:1006)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.performPrebuildGeneration(CommonBuilder.java:873)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:748)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:513)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:459)
+	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:726)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:199)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:239)
+	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:292)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:295)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:256)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:394)
+	at org.eclipse.core.internal.resources.Project$1.run(Project.java:618)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2344)
+	at org.eclipse.core.internal.resources.Project.internalBuild(Project.java:597)
+	at org.eclipse.core.internal.resources.Project.build(Project.java:114)
+	at it.baeyens.arduino.actions.JobHandler.run(BuildHandler.java:42)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:53)
+Contains: Resource '/lintilla_embedded/Release/makefile' does not exist.
+!SUBENTRY 1 org.eclipse.core.resources 4 566 2014-03-18 01:42:41.414
+!MESSAGE Errors occurred during the build.
+!SUBENTRY 2 org.eclipse.cdt.managedbuilder.core 4 75 2014-03-18 01:42:41.414
+!MESSAGE Errors running builder 'CDT Builder' on project 'lintilla_embedded'.
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Resource '/lintilla_embedded/Release/makefile' does not exist.
+	at org.eclipse.core.internal.resources.Resource.checkExists(Resource.java:341)
+	at org.eclipse.core.internal.resources.Resource.checkAccessible(Resource.java:215)
+	at org.eclipse.core.internal.resources.File.setContents(File.java:357)
+	at org.eclipse.core.internal.resources.File.setContents(File.java:464)
+	at it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator.save(ArduinoGnuMakefileGenerator.java:805)
+	at it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator.populateTopMakefile(ArduinoGnuMakefileGenerator.java:1148)
+	at it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator.regenerateMakefiles(ArduinoGnuMakefileGenerator.java:920)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.performMakefileGeneration(CommonBuilder.java:1006)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.performPrebuildGeneration(CommonBuilder.java:873)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:748)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:513)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:459)
+	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:726)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:199)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:239)
+	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:292)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:295)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:256)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:394)
+	at org.eclipse.core.internal.resources.Project$1.run(Project.java:618)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2344)
+	at org.eclipse.core.internal.resources.Project.internalBuild(Project.java:597)
+	at org.eclipse.core.internal.resources.Project.build(Project.java:114)
+	at it.baeyens.arduino.actions.JobHandler.run(BuildHandler.java:42)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:53)
+!SUBENTRY 3 org.eclipse.core.resources 4 368 2014-03-18 01:42:41.414
+!MESSAGE Resource '/lintilla_embedded/Release/makefile' does not exist.
+!SUBENTRY 2 org.eclipse.core.resources 4 368 2014-03-18 01:42:41.414
+!MESSAGE Resource '/lintilla_embedded/Release/makefile' does not exist.
+
+!ENTRY org.eclipse.cdt.core 1 0 2014-03-18 01:44:51.568
+!MESSAGE Indexed 'lintilla_embedded' (33 sources, 58 headers) in 2.34 sec: 3'057 declarations; 9'183 references; 21 unresolved inclusions; 3 syntax errors; 463 unresolved names (3.64 %)
+
+!ENTRY org.eclipse.cdt.core 1 0 2014-03-18 01:44:59.506
+!MESSAGE Indexed 'lintilla_embedded' (33 sources, 59 headers) in 1.69 sec: 3'066 declarations; 9'188 references; 21 unresolved inclusions; 3 syntax errors; 463 unresolved names (3.64 %)
