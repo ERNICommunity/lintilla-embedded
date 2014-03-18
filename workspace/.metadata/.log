@@ -852,3 +852,13 @@ org.eclipse.core.runtime.CoreException: The file does not exist.
 	at org.eclipse.equinox.launcher.Main.run(Main.java:1438)
 !SUBENTRY 1 org.eclipse.core.filebuffers 4 0 2014-03-18 01:22:13.787
 !MESSAGE The file does not exist.
+!SESSION 2014-03-18 01:27:42.724 -----------------------------------------------
+eclipse.buildId=M20130204-1200
+java.version=1.6.0_45
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=de_CH
+Framework arguments:  -product org.eclipse.epp.package.automotive.product
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.automotive.product
+
+!ENTRY org.eclipse.cdt.core 1 0 2014-03-18 01:28:52.022
+!MESSAGE Indexed 'lintilla_embedded' (58 sources, 120 headers) in 5.37 sec: 6'209 declarations; 19'226 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0.00 %)
