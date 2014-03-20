@@ -3,3 +3,11 @@
 /workspace/.metadata/.plugins/org.eclipse.core.resources/.safetable/org.eclipse.core.resources
 /workspace/.metadata/*.log
 /workspace/.metadata/.log
+/workspace/.metadata/.plugins/org.eclipse.cdt.core/*.log
+/workspace/.metadata/.plugins/org.eclipse.cdt.core/*.pdom
+/workspace/.metadata/.plugins/org.eclipse.cdt.ui/*.log
+/workspace/.metadata/.plugins/org.eclipse.cdt.ui/*.xml
+/workspace/.metadata/.plugins/org.eclipse.core.resources/.projects/lintilla_embedded/*.markers
+/workspace/.metadata/.plugins/org.eclipse.core.runtime/.settings/*.prefs
+/workspace/.metadata/.plugins/org.eclipse.e4.workbench/*.xmi
+/workspace/.metadata/.plugins/org.eclipse.ui.workbench
