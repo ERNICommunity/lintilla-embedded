@@ -72,11 +72,6 @@
 			<locationURI>lintilla_embeddedUltrasonicRanging/UltrasonicRanging</locationURI>
 		</link>
 		<link>
-			<name>ivm</name>
-			<type>2</type>
-			<locationURI>lintilla_embeddedivm/ivm</locationURI>
-		</link>
-		<link>
 			<name>lintilla_cmdhandler</name>
 			<type>2</type>
 			<locationURI>lintilla_embeddedlintilla_cmdhandler/lintilla_cmdhandler</locationURI>
