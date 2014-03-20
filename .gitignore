@@ -11,3 +11,12 @@
 /workspace/.metadata/.plugins/org.eclipse.core.runtime/.settings/*.prefs
 /workspace/.metadata/.plugins/org.eclipse.e4.workbench/*.xmi
 /workspace/.metadata/.plugins/org.eclipse.ui.workbench
+/workspace/.metadata/.plugins/org.eclipse.core.resources/.projects/lintilla_embedded/.indexes
+/workspace/.metadata/.plugins/org.eclipse.core.resources/.root
+/workspace/.metadata/.plugins/org.eclipse.ltk.core.refactoring/.refactorings
+/workspace/.metadata/.plugins/org.eclipse.ltk.ui.refactoring
+/workspace/.metadata/.plugins/org.eclipse.search
+/workspace/.metadata/.plugins/org.eclipse.ui.editors
+/workspace/.metadata/.plugins/org.eclipse.ui.views.log
+/workspace/.metadata/.plugins/org.eclipse.ui.workbench.texteditor
+/workspace/.metadata/.plugins/org.eclipse.xtext.builder
