@@ -59,7 +59,6 @@ MotorPWM*         motorR;
 UltrasonicSensor* ultrasonicSensorFront;
 Timer*            ramDebugTimer;
 Timer*            speedSensorReadTimer;
-Timer*            displayTimer;
 Timer*            speedCtrlTimer;
 Blanking*         displayBlanking;
 Ivm*              ivm;
@@ -116,7 +115,9 @@ const float BATT_SENS_FACTOR_5 = 2.456;
 
 float       BATT_SENS_FACTOR   = 2.0;
 
+//-----------------------------------------------------------------------------
 // Wheel Speed Sensors
+//-----------------------------------------------------------------------------
 const unsigned int SPEED_SENSORS_READ_TIMER_INTVL_MILLIS = 100;
 
 const int IRQ_PIN_18 = 5;
@@ -133,6 +134,9 @@ volatile unsigned long int speedSensorCountRight = 0;
 volatile long int leftWheelSpeed  = 0;
 volatile long int rightWheelSpeed = 0;
 
+//-----------------------------------------------------------------------------
+// WiFi Shield Support Definitions & Declarations
+//-----------------------------------------------------------------------------
 // These are the interrupt and control pins
 #define ADAFRUIT_CC3000_IRQ   3  // MUST be an interrupt pin!
 // These can be any two pins
@@ -143,17 +147,31 @@ volatile long int rightWheelSpeed = 0;
 Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ, ADAFRUIT_CC3000_VBAT,
                                          SPI_CLOCK_DIV2); // you can change this clock speed but DI
 
-#define WLAN_SSID       "LintillaNet"        // cannot be longer than 32 characters!
-#define WLAN_PASS       "AnswerIs42"
+#define WLAN_SSID       "DNNet"        // cannot be longer than 32 characters!
+#define WLAN_PASS       "jtv8a9r3"
+//#define WLAN_SSID       "LintillaNet"        // cannot be longer than 32 characters!
+//#define WLAN_PASS       "AnswerIs42"
 // Security can be WLAN_SEC_UNSEC, WLAN_SEC_WEP, WLAN_SEC_WPA or WLAN_SEC_WPA2
 #define WLAN_SECURITY   WLAN_SEC_WPA2
 
-#define LISTEN_PORT           9999    // What TCP port to listen on for connections.  The echo protocol uses port 7.
+#define LISTEN_PORT     9999    // What TCP port to listen on for connections.  The echo protocol uses port 7.
 
+uint32_t currentIpAddress = 0;
 Adafruit_CC3000_Server echoServer(LISTEN_PORT);
 
+void connectWiFi();
+bool displayConnectionDetails(void);
+
+//-----------------------------------------------------------------------------
+// Echo Server Definitions & Declarations
+//-----------------------------------------------------------------------------
+void startEchoServer();
+void processEchoServer();
 //aJsonStream* jsonStream;
 
+//-----------------------------------------------------------------------------
+// Debugging Definitions & Declarations
+//-----------------------------------------------------------------------------
 class RamDebugTimerAdapter : public TimerAdapter
 {
   void timeExpired()
@@ -218,8 +236,6 @@ void moveBackward();
 void moveForward();
 void spinOnPlace(bool right);
 void motorStop();
-
-bool displayConnectionDetails(void);
 
 class LintillaCmdAdapter : public CmdAdapter
 {
@@ -348,8 +364,12 @@ void sleepNow()
   power_all_enable();
 }
 
+//-----------------------------------------------------------------------------
+// Display
+//-----------------------------------------------------------------------------
+Timer* displayTimer;
 void updateDisplay();
-
+const unsigned int updateDisplayInterval = 200; // Display update interval [ms]
 class DisplayTimerAdapter : public TimerAdapter
 {
   void timeExpired()
@@ -372,6 +392,56 @@ void countRightSpeedSensor()
   noInterrupts();
   speedSensorCountRight++;
   interrupts();
+}
+
+void connectWiFi()
+{
+  //  lanClient = new LanClient();
+  //  if (lanClient->begin())
+  //  {
+  //    lanClient->requestConnect();
+  //  }
+
+  Serial.println(F("Hello, CC3000!\n"));
+  Serial.print("Free RAM: "); Serial.println(getFreeRam(), DEC);
+
+  /* Initialize the module */
+  Serial.println(F("\nInitializing..."));
+  if (!cc3000.begin())
+  {
+    Serial.println(F("Couldn't begin()! Check your wiring?"));
+    while(1);
+  }
+
+  if (!cc3000.connectToAP(WLAN_SSID, WLAN_PASS, WLAN_SECURITY)) {
+    Serial.println(F("Failed!"));
+    while(1);
+  }
+
+  Serial.println(F("Connected!"));
+
+  Serial.println(F("Request DHCP"));
+  while (!cc3000.checkDHCP())
+  {
+    delay(100); // ToDo: Insert a DHCP timeout!
+  }
+
+  /* Display the IP address DNS, Gateway, etc. */
+  while (! displayConnectionDetails()) {
+    delay(1000);
+  }
+}
+
+void startEchoServer()
+{
+  if (cc3000.checkConnected())
+  {
+    // jsonStream = new aJsonStream(&(Stream)echoServer.available());
+
+    // Start listening for connections
+    echoServer.begin();
+    Serial.println(F("Listening for connections..."));
+  }
 }
 
 //The setup function is called once at startup of the sketch
@@ -427,49 +497,8 @@ void setup()
   cmdSeq->printCmdNameList();
 
   //---------------------------------------------------------------------------
-
-
-//  lanClient = new LanClient();
-//  if (lanClient->begin())
-//  {
-//    lanClient->requestConnect();
-//  }
-
-  Serial.println(F("Hello, CC3000!\n"));
-
-  Serial.print("Free RAM: "); Serial.println(getFreeRam(), DEC);
-
-  /* Initialise the module */
-  Serial.println(F("\nInitializing..."));
-  if (!cc3000.begin())
-  {
-    Serial.println(F("Couldn't begin()! Check your wiring?"));
-    while(1);
-  }
-
-  if (!cc3000.connectToAP(WLAN_SSID, WLAN_PASS, WLAN_SECURITY)) {
-    Serial.println(F("Failed!"));
-    while(1);
-  }
-
-  Serial.println(F("Connected!"));
-
-  Serial.println(F("Request DHCP"));
-  while (!cc3000.checkDHCP())
-  {
-    delay(100); // ToDo: Insert a DHCP timeout!
-  }
-
-  /* Display the IP address DNS, Gateway, etc. */
-  while (! displayConnectionDetails()) {
-    delay(1000);
-  }
-
-  // Start listening for connections
-  echoServer.begin();
-  Serial.println(F("Listening for connections..."));
-
-//  jsonStream = new aJsonStream(&(Stream)echoServer.available());
+  connectWiFi();
+  startEchoServer();
 }
 
 void selectMode()
@@ -583,6 +612,9 @@ void updateDisplay()
   }
   else
   {
+    //-------------------------------------------
+    // LCD Display Line 1
+    //-------------------------------------------
     lcdKeypad.print("Dst:");
     if (dist == UltrasonicSensor::DISTANCE_LIMIT_EXCEEDED)
     {
@@ -606,18 +638,38 @@ void updateDisplay()
       lcdKeypad.print("[V]");
     }
 
+    //-------------------------------------------
+    // LCD Display Line 2
+    //-------------------------------------------
+    if (lcdKeypad.isUpKey())
+    {
+      // IP Address presentation
+      lcdKeypad.setCursor(0, 1);
+      lcdKeypad.print("                 ");
+      lcdKeypad.setCursor(0, 1);
+      lcdKeypad.print(0xff & (currentIpAddress >> 24));
+      lcdKeypad.print(".");
+      lcdKeypad.print(0xff & (currentIpAddress >> 16));
+      lcdKeypad.print(".");
+      lcdKeypad.print(0xff & (currentIpAddress >>  8));
+      lcdKeypad.print(".");
+      lcdKeypad.print(0xff & (currentIpAddress));
+    }
+    else
+    {
+      // Speed value presentation
+      int lWSpd = static_cast<int>(leftWheelSpeed);
+      int rWspd = static_cast<int>(rightWheelSpeed);
 
-    int lWSpd = static_cast<int>(leftWheelSpeed);
-    int rWspd = static_cast<int>(rightWheelSpeed);
-
-    lcdKeypad.setCursor(0, 1);
-    lcdKeypad.print("v ");
-    lcdKeypad.print("l:");
-    lcdKeypad.print(lWSpd > 99 ? "" : lWSpd > 9 ? " " : "  ");
-    lcdKeypad.print(lWSpd);
-    lcdKeypad.print(" r:");
-    lcdKeypad.print(rWspd > 99 ? "" : rWspd > 9 ? " " : "  ");
-    lcdKeypad.print(rWspd);
+      lcdKeypad.setCursor(0, 1);
+      lcdKeypad.print("v ");
+      lcdKeypad.print("l:");
+      lcdKeypad.print(lWSpd > 99 ? "" : lWSpd > 9 ? " " : "  ");
+      lcdKeypad.print(lWSpd);
+      lcdKeypad.print(" r:");
+      lcdKeypad.print(rWspd > 99 ? "" : rWspd > 9 ? " " : "  ");
+      lcdKeypad.print(rWspd);
+    }
   }
 }
 
@@ -769,7 +821,47 @@ bool displayConnectionDetails(void)
     Serial.print(F("\nDHCPsrv: ")); cc3000.printIPdotsRev(dhcpserv);
     Serial.print(F("\nDNSserv: ")); cc3000.printIPdotsRev(dnsserv);
     Serial.println();
+    currentIpAddress = ipAddress;
     return true;
+  }
+}
+
+void processEchoServer()
+{
+  if (cc3000.checkConnected())
+  {
+    //  if (jsonStream->available()) {
+    //    /* First, skip any accidental whitespace like newlines. */
+    //    jsonStream->skip();
+    //  }
+
+    //  if (jsonStream->available()) {
+    //    /* Something real on input, let's take a look. */
+    //    aJsonObject* msg = aJson.parse(jsonStream);
+    //    processLintillaMessageReceived(msg);
+    //    aJson.deleteItem(msg);
+    //  }
+
+    // Try to get a client which is connected.
+    Adafruit_CC3000_ClientRef client = echoServer.available();
+
+    if (client) {
+       // Check if there is data available to read.
+       if (client.available() > 0)
+       {
+         // Read a byte and write it to all clients.
+         uint8_t ch = client.read();
+         if (!cmdSeq->isRunning() && ('g' == ch))
+         {
+           cmdSeq->start();
+         }
+         else if ('h' == ch)
+         {
+           cmdSeq->stop();
+         }
+         client.write(ch);
+       }
+    }
   }
 }
 
@@ -777,40 +869,5 @@ bool displayConnectionDetails(void)
 void loop()
 {
   TimerContext::instance()->handleTick();
-
-//  if (jsonStream->available()) {
-//    /* First, skip any accidental whitespace like newlines. */
-//    jsonStream->skip();
-//  }
-
-//  if (jsonStream->available()) {
-//    /* Something real on input, let's take a look. */
-//    aJsonObject* msg = aJson.parse(jsonStream);
-//    processLintillaMessageReceived(msg);
-//    aJson.deleteItem(msg);
-//  }
-
-
-  // Try to get a client which is connected.
-  Adafruit_CC3000_ClientRef client = echoServer.available();
-
-
-  if (client) {
-     // Check if there is data available to read.
-     if (client.available() > 0)
-     {
-       // Read a byte and write it to all clients.
-       uint8_t ch = client.read();
-       if (!cmdSeq->isRunning() && ('g' == ch))
-       {
-         cmdSeq->start();
-       }
-       else if ('h' == ch)
-       {
-         cmdSeq->stop();
-       }
-       client.write(ch);
-     }
-  }
-
+  processEchoServer();
 }
