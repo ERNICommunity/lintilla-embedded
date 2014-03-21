@@ -1,13 +1,14 @@
 // Do not remove the include below
 #include "lintilla_embedded.h"
 
+#include <avr/power.h>
+#include <avr/sleep.h>
+
 #include <Adafruit_CC3000.h>
 #include <ccspi.h>
 #include <SPI.h>
 #include <string.h>
 #include "utility/debug.h"
-
-//#include "LanClient.h"
 
 #include "LcdKeypad.h"
 #include "Blanking.h"
@@ -26,99 +27,66 @@
 #include "CmdAdapter.h"
 #include "CmdSequence.h"
 #include "Cmd.h"
-
+//#include "LanClient.h"
 //#include <aJSON.h>
-
-#include <avr/power.h>
-#include <avr/sleep.h>
-
-//int getFreeRam(void)
-//{
-//  extern int  __bss_end;
-//  extern int  *__brkval;
-//  int free_memory;
-//  if((int)__brkval == 0) {
-//    free_memory = ((int)&free_memory) - ((int)&__bss_end);
-//  }
-//  else {
-//    free_memory = ((int)&free_memory) - ((int)__brkval);
-//  }
-//
-//  return free_memory;
-//}
 
 //LanClient* lanClient;
 
-class DistanceCount;
-DistanceCount* lDistCount = 0;
-DistanceCount* rDistCount = 0;
+//-----------------------------------------------------------------------------
 
-LcdKeypad lcdKeypad;
-MotorPWM*         motorL;
-MotorPWM*         motorR;
-UltrasonicSensor* ultrasonicSensorFront;
-Timer*            ramDebugTimer;
-Timer*            speedSensorReadTimer;
-Timer*            speedCtrlTimer;
-Blanking*         displayBlanking;
-Ivm*              ivm;
-CmdSequence*      cmdSeq;
+void(* resetFunc) (void) = 0; //declare reset function at address 0
 
-//bool isRunning = false;
-bool isIvmAccessMode = false;
-bool isIvmRobotIdEditMode = false;
+//-----------------------------------------------------------------------------
+// Debugging
+//-----------------------------------------------------------------------------
+Timer* ramDebugTimer;
+const unsigned int c_ramDbgInterval = 20000;
+class RamDebugTimerAdapter : public TimerAdapter
+{
+  void timeExpired()
+  {
+    Serial.print("Free RAM: "); Serial.println(getFreeRam(), DEC);
+  }
+};
 
-// Robot Configuration
-int cSpeed      = 200;
-int cSpinSpeed  = 150;
+//---------------------------------------------------------------------------
+// Inventory Management
+//---------------------------------------------------------------------------
+LintillaIvm* ivm;
 
-// H-bridge enable pin for speed control
-int speedPin1 = 44;
-int speedPin2 = 45;
-
-// H-bridge leg 1
-int motor1APin = 46;
-int motor3APin = 47;
-
-// H-bridge leg 2
-int motor2APin = 48;
-int motor4APin = 49;
-
-// value for motor speed
-int speed_value_motor_left  = 0;
-int speed_value_motor_right = 0;
-bool isLeftMotorFwd = true;
-bool isRightMotorFwd = true;
-bool isObstacleDetected = false;
-
-// LCD Backlight Intensity
-bool isLcdBackLightOn   = true;
-
-// Ultrasonic Sensor
-unsigned int triggerPin  = 34;
-unsigned int echoPin     = 36;
-unsigned long dist       = UltrasonicSensor::DISTANCE_LIMIT_EXCEEDED;   // [cm]
-
+//-----------------------------------------------------------------------------
 // Battery Voltage Surveillance
+//-----------------------------------------------------------------------------
 float       battVoltage        = 0;   // [V]
-
 const int   BATT_SENSE_PIN     = A9;
-
 const float BATT_WARN_THRSHD   = 6.20;
 const float BATT_SHUT_THRSHD   = 6.00;
 
-const float BATT_SENS_FACTOR_1 = 2.0;
-const float BATT_SENS_FACTOR_2 = 2.450;
-const float BATT_SENS_FACTOR_3 = 2.530;
-const float BATT_SENS_FACTOR_4 = 2.000;
-const float BATT_SENS_FACTOR_5 = 2.456;
+void readBattVoltage();
+void sleepNow();
 
-float       BATT_SENS_FACTOR   = 2.0;
+//---------------------------------------------------------------------------
+// Ultrasonic Ranging
+//---------------------------------------------------------------------------
+UltrasonicSensor* ultrasonicSensorFront;
 
-//-----------------------------------------------------------------------------
+const unsigned int triggerPin = 34;
+const unsigned int echoPin    = 36;
+unsigned long dist = UltrasonicSensor::DISTANCE_LIMIT_EXCEEDED;   // [cm]
+
+//---------------------------------------------------------------------------
 // Wheel Speed Sensors
-//-----------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 const unsigned int SPEED_SENSORS_READ_TIMER_INTVL_MILLIS = 100;
+Timer* speedSensorReadTimer;
+void readSpeedSensors();
+class SpeedSensorReadTimerAdapter : public TimerAdapter
+{
+  void timeExpired()
+  {
+    readSpeedSensors();
+  }
+};
 
 const int IRQ_PIN_18 = 5;
 const int IRQ_PIN_19 = 4;
@@ -134,9 +102,104 @@ volatile unsigned long int speedSensorCountRight = 0;
 volatile long int leftWheelSpeed  = 0;
 volatile long int rightWheelSpeed = 0;
 
-//-----------------------------------------------------------------------------
-// WiFi Shield Support Definitions & Declarations
-//-----------------------------------------------------------------------------
+void countLeftSpeedSensor();
+void countRightSpeedSensor();
+
+//---------------------------------------------------------------------------
+// Distance Counters
+//---------------------------------------------------------------------------
+class DistanceCount;
+DistanceCount* lDistCount;
+DistanceCount* rDistCount;
+
+//---------------------------------------------------------------------------
+// Motor Drivers and Speed Control
+//---------------------------------------------------------------------------
+MotorPWM* motorL;
+MotorPWM* motorR;
+
+const int cSpeed     = 200;
+const int cSpinSpeed = 150;
+
+// H-bridge enable pin for speed control
+const int speedPin1 = 44;
+const int speedPin2 = 45;
+
+// H-bridge leg 1
+const int motor1APin = 46;
+const int motor3APin = 47;
+
+// H-bridge leg 2
+int motor2APin = 48;
+int motor4APin = 49;
+
+// value for motor speed
+int speed_value_motor_left  = 0;
+int speed_value_motor_right = 0;
+bool isLeftMotorFwd = true;
+bool isRightMotorFwd = true;
+bool isObstacleDetected = false;
+
+void motorStop();
+void moveBackward();
+void moveForward();
+void moveStraight(bool forward);
+void spinOnPlace(bool right);
+
+Timer* speedCtrlTimer;
+const unsigned int cSpeedCtrlInterval = 200;
+void speedControl();
+void updateActors();
+class SpeedCtrlTimerAdapter : public TimerAdapter
+{
+  void timeExpired()
+  {
+    speedControl();
+    updateActors();
+  }
+};
+
+//---------------------------------------------------------------------------
+// Lcd Display
+//---------------------------------------------------------------------------
+LcdKeypad lcdKeypad;
+Blanking* displayBlanking;
+
+Timer* displayTimer;
+const unsigned int cUpdateDisplayInterval = 200; // Display update interval [ms]
+void selectMode();
+void updateDisplay();
+class DisplayTimerAdapter : public TimerAdapter
+{
+  void timeExpired()
+  {
+    readBattVoltage();
+    selectMode();
+    updateDisplay();
+  }
+};
+void lcdBackLightControl();
+
+// LCD Backlight Intensity
+bool isLcdBackLightOn = true;
+
+// Display Menu states
+bool isIvmAccessMode = false;
+bool isIvmRobotIdEditMode = false;
+
+//---------------------------------------------------------------------------
+// Command Sequence
+//---------------------------------------------------------------------------
+CmdSequence* cmdSeq;
+class LintillaCmdAdapter;
+
+//---------------------------------------------------------------------------
+// WiFi and Socket Server
+//---------------------------------------------------------------------------
+void startEchoServer();
+void processEchoServer();
+//aJsonStream* jsonStream;
+
 // These are the interrupt and control pins
 #define ADAFRUIT_CC3000_IRQ   3  // MUST be an interrupt pin!
 // These can be any two pins
@@ -159,27 +222,28 @@ Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ
 uint32_t currentIpAddress = 0;
 Adafruit_CC3000_Server echoServer(LISTEN_PORT);
 
+Timer* wifiReconnectTimer;
+const unsigned int cWifiReconnectInterval = 1000; // WiFi re-connect interval [ms]
 void connectWiFi();
-bool displayConnectionDetails(void);
-
-//-----------------------------------------------------------------------------
-// Echo Server Definitions & Declarations
-//-----------------------------------------------------------------------------
-void startEchoServer();
-void processEchoServer();
-//aJsonStream* jsonStream;
-
-//-----------------------------------------------------------------------------
-// Debugging Definitions & Declarations
-//-----------------------------------------------------------------------------
-class RamDebugTimerAdapter : public TimerAdapter
+class WifiReconnectTimerAdapter : public TimerAdapter
 {
   void timeExpired()
   {
-    Serial.print("Free RAM: "); Serial.println(getFreeRam(), DEC);
+    if (!cc3000.checkConnected())
+    {
+      Serial.print("Lintilla lost WiFi connection, rebooting!!\n");
+      resetFunc();
+//      connectWiFi();
+//      startEchoServer();
+    }
   }
 };
 
+bool displayConnectionDetails(void);
+
+//---------------------------------------------------------------------------
+// Distance Counters
+//---------------------------------------------------------------------------
 class DistanceCount
 {
 public:
@@ -206,36 +270,7 @@ private:
   unsigned long int m_cumulativeDistanceCount;
 };
 
-void readSpeedSensors()
-{
-  noInterrupts();
-
-  leftWheelSpeed  = speedSensorCountLeft;  speedSensorCountLeft  = 0;
-  rightWheelSpeed = speedSensorCountRight; speedSensorCountRight = 0;
-
-  lDistCount->add(leftWheelSpeed);
-  rDistCount->add(rightWheelSpeed);
-
-  interrupts();
-}
-
-class SpeedSensorReadTimerAdapter : public TimerAdapter
-{
-  void timeExpired()
-  {
-    readSpeedSensors();
-  }
-};
-
-void selectMode();
-void speedControl();
-void updateActors();
-void lcdBackLightControl();
-
-void moveBackward();
-void moveForward();
-void spinOnPlace(bool right);
-void motorStop();
+//-----------------------------------------------------------------------------
 
 class LintillaCmdAdapter : public CmdAdapter
 {
@@ -270,46 +305,218 @@ class LintillaCmdAdapter : public CmdAdapter
   }
 };
 
-class SpeedCtrlTimerAdapter : public TimerAdapter
-{
-  void timeExpired()
-  {
-    speedControl();
-    updateActors();
-  }
-};
+//-----------------------------------------------------------------------------
 
-void updateBattVoltageSenseFactor()
+void connectWiFi()
 {
-  unsigned char robotId = ivm->getDeviceId(); // EEPROM.read(0);
-  switch (robotId)
+  //  lanClient = new LanClient();
+  //  if (lanClient->begin())
+  //  {
+  //    lanClient->requestConnect();
+  //  }
+
+  Serial.println(F("Hello, CC3000!\n"));
+  Serial.print("Free RAM: "); Serial.println(getFreeRam(), DEC);
+
+  /* Initialize the module */
+  Serial.println(F("\nInitializing..."));
+  if (!cc3000.begin())
   {
-    case 1:
-      BATT_SENS_FACTOR = BATT_SENS_FACTOR_1;
-      break;
-    case 2:
-      BATT_SENS_FACTOR = BATT_SENS_FACTOR_2;
-      break;
-    case 3:
-      BATT_SENS_FACTOR = BATT_SENS_FACTOR_3;
-      break;
-    case 4:
-      BATT_SENS_FACTOR = BATT_SENS_FACTOR_4;
-      break;
-    case 5:
-      BATT_SENS_FACTOR = BATT_SENS_FACTOR_5;
-      break;
-    default:
-      BATT_SENS_FACTOR = 2.0;
+    Serial.println(F("Couldn't begin()! Check your wiring?"));
+    while(1);
+  }
+
+  /* Delete any old connection data on the module */
+  Serial.println(F("\nDeleting old connection profiles"));
+  if (!cc3000.deleteProfiles()) {
+    Serial.println(F("Failed!"));
+    return; // bail out
+  }
+
+  if (!cc3000.connectToAP(WLAN_SSID, WLAN_PASS, WLAN_SECURITY))
+  {
+    // time out after 10 s
+    Serial.println(F("Failed!"));
+    return;  // bail out
+  }
+
+  Serial.println(F("Connected!"));
+
+  Serial.println(F("Request DHCP"));
+  const unsigned int dhcpConnectRetryInterval = 1000; // [s]
+  unsigned int dhcpTimoutCounter = 10;                // 10 s
+  while ((dhcpTimoutCounter > 0) && !cc3000.checkDHCP())
+  {
+    dhcpTimoutCounter--;
+    delay(dhcpConnectRetryInterval);
+  }
+  if (0 == dhcpTimoutCounter)
+  {
+    return; // bail out
+  }
+
+  /* Display the IP address DNS, Gateway, etc. */
+  while (!displayConnectionDetails())
+  {
+    delay(1000);
   }
 }
 
-void sleepNow();
+//-----------------------------------------------------------------------------
+
+void countLeftSpeedSensor()
+{
+  noInterrupts();
+  speedSensorCountLeft++;
+  interrupts();
+}
+
+//-----------------------------------------------------------------------------
+
+void countRightSpeedSensor()
+{
+  noInterrupts();
+  speedSensorCountRight++;
+  interrupts();
+}
+
+//-----------------------------------------------------------------------------
+
+/**************************************************************************/
+/*!
+    @brief  Tries to read the IP address and other connection details
+*/
+/**************************************************************************/
+bool displayConnectionDetails(void)
+{
+  uint32_t ipAddress, netmask, gateway, dhcpserv, dnsserv;
+
+  if(!cc3000.getIPAddress(&ipAddress, &netmask, &gateway, &dhcpserv, &dnsserv))
+  {
+    Serial.println(F("Unable to retrieve the IP Address!\r\n"));
+    return false;
+  }
+  else
+  {
+    Serial.print(F("\nIP Addr: ")); cc3000.printIPdotsRev(ipAddress);
+    Serial.print(F("\nNetmask: ")); cc3000.printIPdotsRev(netmask);
+    Serial.print(F("\nGateway: ")); cc3000.printIPdotsRev(gateway);
+    Serial.print(F("\nDHCPsrv: ")); cc3000.printIPdotsRev(dhcpserv);
+    Serial.print(F("\nDNSserv: ")); cc3000.printIPdotsRev(dnsserv);
+    Serial.println();
+    currentIpAddress = ipAddress;
+    return true;
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+void lcdBackLightControl()
+{
+  if (!isIvmAccessMode)
+  {
+    if (lcdKeypad.isUpKey() && (!isLcdBackLightOn))
+    {
+      isLcdBackLightOn = true;
+    }
+    else if (lcdKeypad.isDownKey() && (isLcdBackLightOn))
+    {
+      isLcdBackLightOn = false;
+    }
+  }
+  lcdKeypad.setBackLightOn(isLcdBackLightOn);
+}
+
+//-----------------------------------------------------------------------------
+
+// The loop function is called in an endless loop
+void loop()
+{
+  TimerContext::instance()->handleTick();
+  processEchoServer();
+}
+
+//-----------------------------------------------------------------------------
+
+void motorStop()
+{
+  speed_value_motor_left  = 0;
+  speed_value_motor_right = 0;
+  updateActors();
+}
+
+//-----------------------------------------------------------------------------
+
+void moveBackward()
+{
+  moveStraight(false);
+}
+
+//-----------------------------------------------------------------------------
+
+void moveForward()
+{
+  moveStraight(true);
+}
+
+//-----------------------------------------------------------------------------
+
+void moveStraight(bool forward)
+{
+  isLeftMotorFwd  = forward;
+  isRightMotorFwd = forward;
+  speed_value_motor_left  = cSpeed;
+  speed_value_motor_right = cSpeed;
+  updateActors();
+}
+
+//-----------------------------------------------------------------------------
+
+void processEchoServer()
+{
+  if (cc3000.checkConnected())
+  {
+    //  if (jsonStream->available()) {
+    //    /* First, skip any accidental whitespace like newlines. */
+    //    jsonStream->skip();
+    //  }
+
+    //  if (jsonStream->available()) {
+    //    /* Something real on input, let's take a look. */
+    //    aJsonObject* msg = aJson.parse(jsonStream);
+    //    processLintillaMessageReceived(msg);
+    //    aJson.deleteItem(msg);
+    //  }
+
+    // Try to get a client which is connected.
+    Adafruit_CC3000_ClientRef client = echoServer.available();
+
+    if (client) {
+       // Check if there is data available to read.
+       if (client.available() > 0)
+       {
+         // Read a byte and write it to all clients.
+         uint8_t ch = client.read();
+         if (!cmdSeq->isRunning() && ('g' == ch))
+         {
+           cmdSeq->start();
+         }
+         else if ('h' == ch)
+         {
+           cmdSeq->stop();
+         }
+         client.write(ch);
+       }
+    }
+  }
+}
+
+//-----------------------------------------------------------------------------
 
 void readBattVoltage()
 {
   unsigned int rawBattVoltage = analogRead(BATT_SENSE_PIN);
-  battVoltage = rawBattVoltage * BATT_SENS_FACTOR * 5 / 1023;
+  battVoltage = rawBattVoltage * ivm->getBattVoltageSenseFactor() * 5 / 1023;
 
   if (BATT_WARN_THRSHD >= battVoltage)
   {
@@ -323,6 +530,152 @@ void readBattVoltage()
     sleepNow();
   }
 }
+
+//-----------------------------------------------------------------------------
+
+void readSpeedSensors()
+{
+  noInterrupts();
+
+  leftWheelSpeed  = speedSensorCountLeft;  speedSensorCountLeft  = 0;
+  rightWheelSpeed = speedSensorCountRight; speedSensorCountRight = 0;
+
+  lDistCount->add(leftWheelSpeed);
+  rDistCount->add(rightWheelSpeed);
+
+  interrupts();
+}
+
+//-----------------------------------------------------------------------------
+
+void selectMode()
+{
+  if (!cmdSeq->isRunning())
+  {
+    if (lcdKeypad.isSelectKey())
+    {
+      isIvmAccessMode = true;
+    }
+    else if (!isIvmRobotIdEditMode && lcdKeypad.isRightKey())
+    {
+      isIvmAccessMode = false;
+    }
+
+    if (isIvmAccessMode)
+    {
+      if (lcdKeypad.isLeftKey())
+      {
+        isIvmRobotIdEditMode = true;
+      }
+    }
+
+    if (isIvmRobotIdEditMode)
+    {
+      unsigned char robotId = ivm->getDeviceId();
+
+      if (lcdKeypad.isSelectKey())
+      {
+        isIvmRobotIdEditMode = false;
+      }
+      if (lcdKeypad.isUpKey())
+      {
+        robotId++;
+        ivm->setDeviceId(robotId);
+      }
+      if (lcdKeypad.isDownKey())
+      {
+        robotId--;
+        ivm->setDeviceId(robotId);
+      }
+    }
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+//The setup function is called once at startup of the sketch
+void setup()
+{
+  //---------------------------------------------------------------------------
+  // Debugging
+  //---------------------------------------------------------------------------
+  Serial.begin(115200);
+  Serial.println(F("Hello from Lintilla!\n"));
+  Serial.print("Free RAM: "); Serial.println(getFreeRam(), DEC);
+  ramDebugTimer = new Timer(new RamDebugTimerAdapter(), Timer::IS_RECURRING, c_ramDbgInterval);
+
+  //---------------------------------------------------------------------------
+  // Inventory Management
+  //---------------------------------------------------------------------------
+  ivm = new LintillaIvm();
+
+  //---------------------------------------------------------------------------
+  // Battery Voltage Surveillance
+  //---------------------------------------------------------------------------
+  pinMode(BATT_SENSE_PIN, INPUT);         //ensure Battery Sense pin is an input
+  digitalWrite(BATT_SENSE_PIN, LOW);      //ensure pullup is off on Battery Sense pin
+  readBattVoltage();
+  updateDisplay();
+
+  //---------------------------------------------------------------------------
+  // Ultrasonic Ranging
+  //---------------------------------------------------------------------------
+  ultrasonicSensorFront = new UltrasonicSensorHCSR04(triggerPin, echoPin);
+
+  //---------------------------------------------------------------------------
+  // Speed Sensors
+  //---------------------------------------------------------------------------
+  speedSensorReadTimer  = new Timer(new SpeedSensorReadTimerAdapter(), Timer::IS_RECURRING, SPEED_SENSORS_READ_TIMER_INTVL_MILLIS);
+  attachInterrupt(L_SPEED_SENS_IRQ, countLeftSpeedSensor,  RISING);
+  attachInterrupt(R_SPEED_SENS_IRQ, countRightSpeedSensor, RISING);
+
+  //---------------------------------------------------------------------------
+  // Distance Counters
+  //---------------------------------------------------------------------------
+  lDistCount = new DistanceCount();
+  rDistCount = new DistanceCount();
+
+  //---------------------------------------------------------------------------
+  // Motor Drivers and Speed Control
+  //---------------------------------------------------------------------------
+  motorL = new SN754410_Driver(speedPin1, motor1APin, motor2APin);
+  motorR = new SN754410_Driver(speedPin2, motor3APin, motor4APin);
+  speedCtrlTimer = new Timer(new SpeedCtrlTimerAdapter(), Timer::IS_RECURRING, cSpeedCtrlInterval);
+
+  //---------------------------------------------------------------------------
+  // Lcd Display
+  //---------------------------------------------------------------------------
+  displayTimer = new Timer(new DisplayTimerAdapter(), Timer::IS_RECURRING, cUpdateDisplayInterval);
+  displayBlanking = new Blanking();
+  lcdBackLightControl();
+  updateDisplay();
+
+  //---------------------------------------------------------------------------
+  // Command Sequence
+  //---------------------------------------------------------------------------
+  cmdSeq = new CmdSequence(new LintillaCmdAdapter());
+  Cmd* cmd;
+  const int cSpinTime     =  300;
+  const int cFwdTime      =  300;
+  const int cInterDelay   =  500;
+  for (int i = 0; i <= 3; i++)
+  {
+    new CmdMoveForward(cmdSeq, cFwdTime);
+    new CmdStop(cmdSeq, cInterDelay);
+    new CmdSpinOnPlaceRight(cmdSeq, cSpinTime);
+    new CmdStop(cmdSeq, cInterDelay);
+  }
+  cmdSeq->printCmdNameList();
+
+  //---------------------------------------------------------------------------
+  // WiFi and Socket Server
+  //---------------------------------------------------------------------------
+  connectWiFi();
+  startEchoServer();
+  wifiReconnectTimer = new Timer(new WifiReconnectTimerAdapter(), Timer::IS_RECURRING, cWifiReconnectInterval);
+}
+
+//-----------------------------------------------------------------------------
 
 void sleepNow()
 {
@@ -365,72 +718,39 @@ void sleepNow()
 }
 
 //-----------------------------------------------------------------------------
-// Display
+
+void speedControl()
+{
+  if (0 != ultrasonicSensorFront)
+  {
+    dist = ultrasonicSensorFront->getDistanceCM();
+  }
+  isObstacleDetected = isLeftMotorFwd && (dist > 0) && (dist < 15);
+
+  if (lcdKeypad.isRightKey() || isObstacleDetected || (battVoltage < BATT_WARN_THRSHD))
+  {
+    cmdSeq->stop();
+  }
+  else if (!cmdSeq->isRunning() && lcdKeypad.isLeftKey() && !isIvmAccessMode)
+  {
+    lDistCount->reset();
+    rDistCount->reset();
+    cmdSeq->start();
+  }
+}
+
 //-----------------------------------------------------------------------------
-Timer* displayTimer;
-void updateDisplay();
-const unsigned int updateDisplayInterval = 200; // Display update interval [ms]
-class DisplayTimerAdapter : public TimerAdapter
-{
-  void timeExpired()
-  {
-    readBattVoltage();
-    selectMode();
-    updateDisplay();
-  }
-};
 
-void countLeftSpeedSensor()
+void spinOnPlace(bool right)
 {
-  noInterrupts();
-  speedSensorCountLeft++;
-  interrupts();
+  isLeftMotorFwd = right;
+  isRightMotorFwd = !right;
+  speed_value_motor_left  = cSpinSpeed;
+  speed_value_motor_right = cSpinSpeed;
+  updateActors();
 }
 
-void countRightSpeedSensor()
-{
-  noInterrupts();
-  speedSensorCountRight++;
-  interrupts();
-}
-
-void connectWiFi()
-{
-  //  lanClient = new LanClient();
-  //  if (lanClient->begin())
-  //  {
-  //    lanClient->requestConnect();
-  //  }
-
-  Serial.println(F("Hello, CC3000!\n"));
-  Serial.print("Free RAM: "); Serial.println(getFreeRam(), DEC);
-
-  /* Initialize the module */
-  Serial.println(F("\nInitializing..."));
-  if (!cc3000.begin())
-  {
-    Serial.println(F("Couldn't begin()! Check your wiring?"));
-    while(1);
-  }
-
-  if (!cc3000.connectToAP(WLAN_SSID, WLAN_PASS, WLAN_SECURITY)) {
-    Serial.println(F("Failed!"));
-    while(1);
-  }
-
-  Serial.println(F("Connected!"));
-
-  Serial.println(F("Request DHCP"));
-  while (!cc3000.checkDHCP())
-  {
-    delay(100); // ToDo: Insert a DHCP timeout!
-  }
-
-  /* Display the IP address DNS, Gateway, etc. */
-  while (! displayConnectionDetails()) {
-    delay(1000);
-  }
-}
+//-----------------------------------------------------------------------------
 
 void startEchoServer()
 {
@@ -444,145 +764,18 @@ void startEchoServer()
   }
 }
 
-//The setup function is called once at startup of the sketch
-void setup()
+//-----------------------------------------------------------------------------
+
+void updateActors()
 {
-  // Serial for Debugging
-  Serial.begin(115200);
-  Serial.println(F("Hello from Lintilla!\n"));
-  Serial.print("Free RAM: "); Serial.println(getFreeRam(), DEC);
+  int speedAndDirectionLeft  = speed_value_motor_left  * (isLeftMotorFwd  ? 1 : -1);
+  int speedAndDirectionRight = speed_value_motor_right * (isRightMotorFwd ? 1 : -1);
 
-  ramDebugTimer = new Timer(new RamDebugTimerAdapter(), Timer::IS_RECURRING, 1000);
-
-  // Inventory Management
-  ivm = new LintillaIvm();
-  updateBattVoltageSenseFactor();
-
-  // Ultrasonic Ranging
-  ultrasonicSensorFront = new UltrasonicSensorHCSR04(triggerPin, echoPin);
-
-  // Speed Sensors
-  speedSensorReadTimer  = new Timer(new SpeedSensorReadTimerAdapter(), Timer::IS_RECURRING, SPEED_SENSORS_READ_TIMER_INTVL_MILLIS);
-  attachInterrupt(L_SPEED_SENS_IRQ, countLeftSpeedSensor,  RISING);
-  attachInterrupt(R_SPEED_SENS_IRQ, countRightSpeedSensor, RISING);
-
-  // Distance Counters
-  lDistCount = new DistanceCount();
-  rDistCount = new DistanceCount();
-
-  // Motor Drivers and Speed Control
-  motorL = new SN754410_Driver(speedPin1, motor1APin, motor2APin);
-  motorR = new SN754410_Driver(speedPin2, motor3APin, motor4APin);
-  speedCtrlTimer = new Timer(new SpeedCtrlTimerAdapter(), Timer::IS_RECURRING, 200);
-
-  // Lcd Display
-  displayTimer = new Timer(new DisplayTimerAdapter(), Timer::IS_RECURRING, 200);
-  displayBlanking = new Blanking();
-  lcdBackLightControl();
-  updateDisplay();
-
-  // Command Sequence
-  cmdSeq = new CmdSequence(new LintillaCmdAdapter());
-  Cmd* cmd;
-  const int cSpinTime     =  300;
-  const int cFwdTime      =  300;
-  const int cInterDelay   =  500;
-  for (int i = 0; i <= 3; i++)
-  {
-    new CmdMoveForward(cmdSeq, cFwdTime);
-    new CmdStop(cmdSeq, cInterDelay);
-    new CmdSpinOnPlaceRight(cmdSeq, cSpinTime);
-    new CmdStop(cmdSeq, cInterDelay);
-  }
-  cmdSeq->printCmdNameList();
-
-  //---------------------------------------------------------------------------
-  connectWiFi();
-  startEchoServer();
+  motorL->setSpeed(speedAndDirectionLeft);
+  motorR->setSpeed(speedAndDirectionRight);
 }
 
-void selectMode()
-{
-  if (!cmdSeq->isRunning())
-  {
-    if (lcdKeypad.isSelectKey())
-    {
-      isIvmAccessMode = true;
-    }
-    else if (!isIvmRobotIdEditMode && lcdKeypad.isRightKey())
-    {
-      isIvmAccessMode = false;
-    }
-
-    if (isIvmAccessMode)
-    {
-      if (lcdKeypad.isLeftKey())
-      {
-        isIvmRobotIdEditMode = true;
-      }
-    }
-
-    if (isIvmRobotIdEditMode)
-    {
-      unsigned char robotId = ivm->getDeviceId();
-
-      if (lcdKeypad.isSelectKey())
-      {
-        isIvmRobotIdEditMode = false;
-      }
-      if (lcdKeypad.isUpKey())
-      {
-        robotId++;
-        ivm->setDeviceId(robotId);
-        updateBattVoltageSenseFactor();
-      }
-      if (lcdKeypad.isDownKey())
-      {
-        robotId--;
-        ivm->setDeviceId(robotId);
-        updateBattVoltageSenseFactor();
-      }
-    }
-  }
-}
-
-void speedControl()
-{
-  if (0 != ultrasonicSensorFront)
-  {
-    dist = ultrasonicSensorFront->getDistanceCM();
-  }
-  isObstacleDetected = isLeftMotorFwd && (dist > 0) && (dist < 15);
-
-  if (lcdKeypad.isRightKey() || isObstacleDetected || (battVoltage < BATT_WARN_THRSHD))
-  {
-//    isRunning = false;
-    cmdSeq->stop();
-  }
-  else if (!cmdSeq->isRunning() && lcdKeypad.isLeftKey() && !isIvmAccessMode)
-  {
-//    isRunning = true;
-    lDistCount->reset();
-    rDistCount->reset();
-    cmdSeq->start();
-  }
-}
-
-void lcdBackLightControl()
-{
-  if (!isIvmAccessMode)
-  {
-    if (lcdKeypad.isUpKey() && (!isLcdBackLightOn))
-    {
-      isLcdBackLightOn = true;
-    }
-    else if (lcdKeypad.isDownKey() && (isLcdBackLightOn))
-    {
-      isLcdBackLightOn = false;
-    }
-  }
-  lcdKeypad.setBackLightOn(isLcdBackLightOn);
-}
+//-----------------------------------------------------------------------------
 
 void updateDisplay()
 {
@@ -641,11 +834,10 @@ void updateDisplay()
     //-------------------------------------------
     // LCD Display Line 2
     //-------------------------------------------
-    if (lcdKeypad.isUpKey())
+    if (lcdKeypad.isUpKey() || (4 != ivm->getDeviceId()))
     {
-      // IP Address presentation
+      // IP Address presentation: either on up key pressed or always on robots not having ID = 4
       lcdKeypad.setCursor(0, 1);
-      lcdKeypad.print("                 ");
       lcdKeypad.setCursor(0, 1);
       lcdKeypad.print(0xff & (currentIpAddress >> 24));
       lcdKeypad.print(".");
@@ -654,10 +846,11 @@ void updateDisplay()
       lcdKeypad.print(0xff & (currentIpAddress >>  8));
       lcdKeypad.print(".");
       lcdKeypad.print(0xff & (currentIpAddress));
+      lcdKeypad.print("                 ");
     }
     else
     {
-      // Speed value presentation
+      // Speed value presentation (only usefull on robot havin ID = 4)
       int lWSpd = static_cast<int>(leftWheelSpeed);
       int rWspd = static_cast<int>(rightWheelSpeed);
 
@@ -673,49 +866,7 @@ void updateDisplay()
   }
 }
 
-void updateActors()
-{
-  int speedAndDirectionLeft  = speed_value_motor_left  * (isLeftMotorFwd  ? 1 : -1);
-  int speedAndDirectionRight = speed_value_motor_right * (isRightMotorFwd ? 1 : -1);
-
-  motorL->setSpeed(speedAndDirectionLeft);
-  motorR->setSpeed(speedAndDirectionRight);
-}
-
-void moveStraight(bool forward)
-{
-  isLeftMotorFwd  = forward;
-  isRightMotorFwd = forward;
-  speed_value_motor_left  = cSpeed;
-  speed_value_motor_right = cSpeed;
-  updateActors();
-}
-
-void spinOnPlace(bool right)
-{
-  isLeftMotorFwd = right;
-  isRightMotorFwd = !right;
-  speed_value_motor_left  = cSpinSpeed;
-  speed_value_motor_right = cSpinSpeed;
-  updateActors();
-}
-
-void moveForward()
-{
-  moveStraight(true);
-}
-
-void moveBackward()
-{
-  moveStraight(false);
-}
-
-void motorStop()
-{
-  speed_value_motor_left  = 0;
-  speed_value_motor_right = 0;
-  updateActors();
-}
+//-----------------------------------------------------------------------------
 
 /* Process message like: {"straight":{"distance": 10,"topspeed": 100},"turn":{"angle": 45},"emergencyStop":{"stop":false}}*/
 //void processLintillaMessageReceived(aJsonObject *msg)
@@ -798,76 +949,3 @@ void motorStop()
 //    }
 //  }
 //}
-
-/**************************************************************************/
-/*!
-    @brief  Tries to read the IP address and other connection details
-*/
-/**************************************************************************/
-bool displayConnectionDetails(void)
-{
-  uint32_t ipAddress, netmask, gateway, dhcpserv, dnsserv;
-
-  if(!cc3000.getIPAddress(&ipAddress, &netmask, &gateway, &dhcpserv, &dnsserv))
-  {
-    Serial.println(F("Unable to retrieve the IP Address!\r\n"));
-    return false;
-  }
-  else
-  {
-    Serial.print(F("\nIP Addr: ")); cc3000.printIPdotsRev(ipAddress);
-    Serial.print(F("\nNetmask: ")); cc3000.printIPdotsRev(netmask);
-    Serial.print(F("\nGateway: ")); cc3000.printIPdotsRev(gateway);
-    Serial.print(F("\nDHCPsrv: ")); cc3000.printIPdotsRev(dhcpserv);
-    Serial.print(F("\nDNSserv: ")); cc3000.printIPdotsRev(dnsserv);
-    Serial.println();
-    currentIpAddress = ipAddress;
-    return true;
-  }
-}
-
-void processEchoServer()
-{
-  if (cc3000.checkConnected())
-  {
-    //  if (jsonStream->available()) {
-    //    /* First, skip any accidental whitespace like newlines. */
-    //    jsonStream->skip();
-    //  }
-
-    //  if (jsonStream->available()) {
-    //    /* Something real on input, let's take a look. */
-    //    aJsonObject* msg = aJson.parse(jsonStream);
-    //    processLintillaMessageReceived(msg);
-    //    aJson.deleteItem(msg);
-    //  }
-
-    // Try to get a client which is connected.
-    Adafruit_CC3000_ClientRef client = echoServer.available();
-
-    if (client) {
-       // Check if there is data available to read.
-       if (client.available() > 0)
-       {
-         // Read a byte and write it to all clients.
-         uint8_t ch = client.read();
-         if (!cmdSeq->isRunning() && ('g' == ch))
-         {
-           cmdSeq->start();
-         }
-         else if ('h' == ch)
-         {
-           cmdSeq->stop();
-         }
-         client.write(ch);
-       }
-    }
-  }
-}
-
-// The loop function is called in an endless loop
-void loop()
-{
-  TimerContext::instance()->handleTick();
-  processEchoServer();
-}
