@@ -1,4 +1,7 @@
 eclipse.preferences.version=1
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.ARCHITECTURE/delimiter=;
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.ARCHITECTURE/operation=replace
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.ARCHITECTURE/value=avr
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.ARCHIVE_FILE/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.ARCHIVE_FILE/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.ARCHIVE_FILE/value=arduino.ar
@@ -23,6 +26,9 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BOOTLO
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BOOTLOADER.UNLOCK_BITS/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BOOTLOADER.UNLOCK_BITS/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BOOTLOADER.UNLOCK_BITS/value=0x3F
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.ARCH/delimiter=;
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.ARCH/operation=replace
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.ARCH/value=AVR
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.CORE/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.CORE/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.CORE/value=arduino
@@ -179,6 +185,9 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RECIPE
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RECIPE.SIZE.REGEX/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RECIPE.SIZE.REGEX/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RECIPE.SIZE.REGEX/value=Total\\s+([0-9]+).*
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIME.HARDWARE.PATH/delimiter=;
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIME.HARDWARE.PATH/operation=replace
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIME.HARDWARE.PATH/value=C\:/HackSessions/Tools/arduino-1.5.2/hardware
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIME.IDE.PATH/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIME.IDE.PATH/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIME.IDE.PATH/value=C\:/HackSessions/Tools/arduino-1.5.2
@@ -256,7 +265,7 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.B
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.BOARD_NAME/value=Arduino Mega 2560 or Mega ADK
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.COM_PORT/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.COM_PORT/operation=replace
-environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.COM_PORT/value=COM16
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.COM_PORT/value=COM15
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.CPU\ SPEED/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.CPU\ SPEED/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.CPU\ SPEED/value=

@@ -20,3 +20,6 @@
 /workspace/.metadata/.plugins/org.eclipse.ui.views.log
 /workspace/.metadata/.plugins/org.eclipse.ui.workbench.texteditor
 /workspace/.metadata/.plugins/org.eclipse.xtext.builder
+/workspace/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.ui.workbench.prefs
+/workspace/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.cdt.ui.prefs
+/workspace/.metadata/.plugins/org.eclipse.cdt.core/lintilla_embedded.language.settings.xml
