@@ -210,10 +210,8 @@ void processEchoServer();
 Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ, ADAFRUIT_CC3000_VBAT,
                                          SPI_CLOCK_DIV2); // you can change this clock speed but DI
 
-#define WLAN_SSID       "DNNet"        // cannot be longer than 32 characters!
-#define WLAN_PASS       "jtv8a9r3"
-//#define WLAN_SSID       "LintillaNet"        // cannot be longer than 32 characters!
-//#define WLAN_PASS       "AnswerIs42"
+#define WLAN_SSID       "LintillaNet"        // cannot be longer than 32 characters!
+#define WLAN_PASS       "AnswerIs42"
 // Security can be WLAN_SEC_UNSEC, WLAN_SEC_WEP, WLAN_SEC_WPA or WLAN_SEC_WPA2
 #define WLAN_SECURITY   WLAN_SEC_WPA2
 
@@ -232,6 +230,7 @@ class WifiReconnectTimerAdapter : public TimerAdapter
     if (!cc3000.checkConnected())
     {
       Serial.print("Lintilla lost WiFi connection, rebooting!!\n");
+      delay(2000);
       resetFunc();
 //      connectWiFi();
 //      startEchoServer();
@@ -240,6 +239,7 @@ class WifiReconnectTimerAdapter : public TimerAdapter
 };
 
 bool displayConnectionDetails(void);
+bool isSSIDPresent(const char* searchSSID);
 
 //---------------------------------------------------------------------------
 // Distance Counters
@@ -333,18 +333,25 @@ void connectWiFi()
     return; // bail out
   }
 
+  Serial.print(F("Scanning for SSID ")); Serial.println(WLAN_SSID);
+  if (!isSSIDPresent(WLAN_SSID))
+  {
+    Serial.println(F("Failed!"));
+    return;  // bail out
+  }
+  Serial.println(F("Succeeded."));
+
   if (!cc3000.connectToAP(WLAN_SSID, WLAN_PASS, WLAN_SECURITY))
   {
     // time out after 10 s
     Serial.println(F("Failed!"));
     return;  // bail out
   }
-
   Serial.println(F("Connected!"));
 
   Serial.println(F("Request DHCP"));
   const unsigned int dhcpConnectRetryInterval = 1000; // [s]
-  unsigned int dhcpTimoutCounter = 10;                // 10 s
+  unsigned int dhcpTimoutCounter = 20;                // 10 s
   while ((dhcpTimoutCounter > 0) && !cc3000.checkDHCP())
   {
     dhcpTimoutCounter--;
@@ -407,6 +414,30 @@ bool displayConnectionDetails(void)
     currentIpAddress = ipAddress;
     return true;
   }
+}
+
+//-----------------------------------------------------------------------------
+
+bool isSSIDPresent(const char* searchSSID)
+{
+  bool found = false;
+  uint8_t valid, rssi, sec, index;
+  char ssidname[33];
+
+  index = cc3000.startSSIDscan();
+
+  while (index && !found)
+  {
+    index--;
+    cc3000.getNextSSID(&rssi, &sec, ssidname);
+
+    if (0 == strncmp(ssidname, searchSSID, sizeof(ssidname)))
+    {
+      found = true;
+    }
+  }
+  cc3000.stopSSIDscan();
+  return found;
 }
 
 //-----------------------------------------------------------------------------
@@ -834,7 +865,11 @@ void updateDisplay()
     //-------------------------------------------
     // LCD Display Line 2
     //-------------------------------------------
-    if (lcdKeypad.isUpKey() || (4 != ivm->getDeviceId()))
+    if (!cc3000.checkConnected())
+    {
+      lcdKeypad.print("Connect to WiFi ");
+    }
+    else if (lcdKeypad.isUpKey() || (4 != ivm->getDeviceId()))
     {
       // IP Address presentation: either on up key pressed or always on robots not having ID = 4
       lcdKeypad.setCursor(0, 1);
@@ -850,7 +885,7 @@ void updateDisplay()
     }
     else
     {
-      // Speed value presentation (only usefull on robot havin ID = 4)
+      // Speed value presentation (only useful on robot having ID = 4, since only this one has wheel speed sensors)
       int lWSpd = static_cast<int>(leftWheelSpeed);
       int rWspd = static_cast<int>(rightWheelSpeed);
 

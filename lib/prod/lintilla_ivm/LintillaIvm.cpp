@@ -10,11 +10,11 @@
 #include "LintillaIvm.h"
 
 const float LintillaIvm::s_battSensFactorDefault = 2.000;
-const float LintillaIvm::s_battSensFactor1       = s_battSensFactorDefault;
+const float LintillaIvm::s_battSensFactor1       = 2.430;
 const float LintillaIvm::s_battSensFactor2       = 2.450;
 const float LintillaIvm::s_battSensFactor3       = 2.530;
 const float LintillaIvm::s_battSensFactor4       = 2.000;
-const float LintillaIvm::s_battSensFactor5       = 2.456;
+const float LintillaIvm::s_battSensFactor5       = 2.285;
 
 
 const unsigned char LintillaIvm::s_currentVersion = 2;

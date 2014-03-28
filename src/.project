@@ -42,6 +42,11 @@
 			<locationURI>lintilla_embeddedDebounce/Debounce</locationURI>
 		</link>
 		<link>
+			<name>FreeSixIMU</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedFreeSixIMU/FreeSixIMU</locationURI>
+		</link>
+		<link>
 			<name>IVM</name>
 			<type>2</type>
 			<locationURI>lintilla_embeddedIVM/IVM</locationURI>
