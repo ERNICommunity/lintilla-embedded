@@ -27,64 +27,19 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>Adafruit_CC3000</name>
+			<name>comp</name>
 			<type>2</type>
-			<locationURI>lintilla_embeddedAdafruit_CC3000/Adafruit_CC3000</locationURI>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>Blanking</name>
+			<name>plat</name>
 			<type>2</type>
-			<locationURI>lintilla_embeddedBlanking/Blanking</locationURI>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>Debounce</name>
+			<name>prod</name>
 			<type>2</type>
-			<locationURI>lintilla_embeddedDebounce/Debounce</locationURI>
-		</link>
-		<link>
-			<name>FreeSixIMU</name>
-			<type>2</type>
-			<locationURI>lintilla_embeddedFreeSixIMU/FreeSixIMU</locationURI>
-		</link>
-		<link>
-			<name>IVM</name>
-			<type>2</type>
-			<locationURI>lintilla_embeddedIVM/IVM</locationURI>
-		</link>
-		<link>
-			<name>LcdKeypad</name>
-			<type>2</type>
-			<locationURI>lintilla_embeddedLcdKeypad/LcdKeypad</locationURI>
-		</link>
-		<link>
-			<name>MotorPWM</name>
-			<type>2</type>
-			<locationURI>lintilla_embeddedMotorPWM/MotorPWM</locationURI>
-		</link>
-		<link>
-			<name>NewPing</name>
-			<type>2</type>
-			<locationURI>lintilla_embeddedNewPing/NewPing</locationURI>
-		</link>
-		<link>
-			<name>Timer</name>
-			<type>2</type>
-			<locationURI>lintilla_embeddedTimer/Timer</locationURI>
-		</link>
-		<link>
-			<name>UltrasonicRanging</name>
-			<type>2</type>
-			<locationURI>lintilla_embeddedUltrasonicRanging/UltrasonicRanging</locationURI>
-		</link>
-		<link>
-			<name>lintilla_cmdhandler</name>
-			<type>2</type>
-			<locationURI>lintilla_embeddedlintilla_cmdhandler/lintilla_cmdhandler</locationURI>
-		</link>
-		<link>
-			<name>lintilla_ivm</name>
-			<type>2</type>
-			<locationURI>lintilla_embeddedlintilla_ivm/lintilla_ivm</locationURI>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>Libraries/EEPROM</name>
@@ -115,6 +70,66 @@
 			<name>arduino/variant</name>
 			<type>2</type>
 			<locationURI>ArduinoPinPath/mega</locationURI>
+		</link>
+		<link>
+			<name>comp/Adafruit_CC3000</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedAdafruit_CC3000/Adafruit_CC3000</locationURI>
+		</link>
+		<link>
+			<name>comp/FreeSixIMU</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedFreeSixIMU/FreeSixIMU</locationURI>
+		</link>
+		<link>
+			<name>comp/IVM</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedIVM/IVM</locationURI>
+		</link>
+		<link>
+			<name>comp/LcdKeypad</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedLcdKeypad/LcdKeypad</locationURI>
+		</link>
+		<link>
+			<name>comp/MotorPWM</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedMotorPWM/MotorPWM</locationURI>
+		</link>
+		<link>
+			<name>comp/UltrasonicRanging</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedUltrasonicRanging/UltrasonicRanging</locationURI>
+		</link>
+		<link>
+			<name>plat/Blanking</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedBlanking/Blanking</locationURI>
+		</link>
+		<link>
+			<name>plat/Debounce</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedDebounce/Debounce</locationURI>
+		</link>
+		<link>
+			<name>plat/NewPing</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedNewPing/NewPing</locationURI>
+		</link>
+		<link>
+			<name>plat/Timer</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedTimer/Timer</locationURI>
+		</link>
+		<link>
+			<name>prod/lintilla_cmdhandler</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedlintilla_cmdhandler/lintilla_cmdhandler</locationURI>
+		</link>
+		<link>
+			<name>prod/lintilla_ivm</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedlintilla_ivm/lintilla_ivm</locationURI>
 		</link>
 	</linkedResources>
 	<variableList>
