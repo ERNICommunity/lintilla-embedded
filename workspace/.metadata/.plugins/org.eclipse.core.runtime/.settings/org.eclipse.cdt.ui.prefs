@@ -1,5 +1,5 @@
 Refactor.lightweight=false
-content_assist_disabled_computers=org.eclipse.cdt.ui.parserProposalCategory\u0000org.eclipse.cdt.ui.textProposalCategory\u0000
+content_assist_disabled_computers=org.eclipse.cdt.ui.textProposalCategory\u0000org.eclipse.cdt.ui.parserProposalCategory\u0000
 do_not_ask_to_install_user_dictionary=true
 eclipse.preferences.version=1
 formatter_profile=_BSD/Allman [built-in] (Didi)
