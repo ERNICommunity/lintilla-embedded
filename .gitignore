@@ -55,4 +55,5 @@
 /workspace/.metadata/.plugins/org.eclipse.ui.editors/dialog_settings.xml
 /workspace/.metadata/.plugins/org.eclipse.ui.workbench.texteditor/dialog_settings.xml
 /workspace/.metadata/.plugins/org.eclipse.xtext.builder/builder.state
-/src/.project
+/workspace/.metadata/.plugins/org.eclipse.core.resources/.projects/lintilla_embedded/.location
+/workspace/.metadata/.plugins/org.eclipse.ui.ide/dialog_settings.xml
