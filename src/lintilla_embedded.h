@@ -25,5 +25,5 @@ void setup();
 
 
 
-//Do not add code below this line
+// Do not add code below this line
 #endif /* lintilla_embedded_H_ */
