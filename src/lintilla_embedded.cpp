@@ -221,7 +221,7 @@ uint32_t currentIpAddress = 0;
 Adafruit_CC3000_Server echoServer(LISTEN_PORT);
 
 Timer* wifiReconnectTimer;
-const unsigned int cWifiReconnectInterval = 1000; // WiFi re-connect interval [ms]
+const unsigned int cWifiReconnectInterval = 5000; // WiFi re-connect interval [ms]
 void connectWiFi();
 class WifiReconnectTimerAdapter : public TimerAdapter
 {
@@ -230,6 +230,7 @@ class WifiReconnectTimerAdapter : public TimerAdapter
     if (!cc3000.checkConnected())
     {
       Serial.print("Lintilla lost WiFi connection, rebooting!!\n");
+//        Serial.print("Lintilla lost WiFi connection, reconnecting!!\n");
       delay(2000);
       resetFunc();
 //      connectWiFi();
@@ -426,16 +427,34 @@ bool isSSIDPresent(const char* searchSSID)
 
   index = cc3000.startSSIDscan();
 
-  while (index && !found)
+  Serial.print(F("Networks found: ")); Serial.println(index);
+  Serial.println(F("================================================"));
+
+  while ((index > 0) && !found)
   {
     index--;
-    cc3000.getNextSSID(&rssi, &sec, ssidname);
+    valid = cc3000.getNextSSID(&rssi, &sec, ssidname);
 
     if (0 == strncmp(ssidname, searchSSID, sizeof(ssidname)))
     {
       found = true;
     }
+
+    Serial.print(F("SSID Name    : ")); Serial.print(ssidname);
+    if (found)
+    {
+      Serial.print(" <found>");
+    }
+    Serial.println();
+    Serial.print(F("RSSI         : "));
+    Serial.println(rssi);
+    Serial.print(F("Security Mode: "));
+    Serial.println(sec);
+    Serial.println();
   }
+
+  Serial.println(F("================================================"));
+
   cc3000.stopSSIDscan();
   return found;
 }
