@@ -587,6 +587,7 @@ void readSpeedSensors()
 {
   noInterrupts();
 
+  // read the speed sensor counters and reset them
   leftWheelSpeed  = speedSensorCountLeft;  speedSensorCountLeft  = 0;
   rightWheelSpeed = speedSensorCountRight; speedSensorCountRight = 0;
 
