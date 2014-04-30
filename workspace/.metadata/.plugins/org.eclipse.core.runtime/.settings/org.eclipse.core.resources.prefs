@@ -3,6 +3,7 @@ pathvariable.ArduinoLibPath=C\:/HackSessions/Tools/arduino-1.5.2/libraries
 pathvariable.ArduinoPath=C\:/HackSessions/Tools/arduino-1.5.2
 pathvariable.ArduinoPivateLibPath=C\:/HackSessions/Tools/arduino-1.5.2/libraries
 pathvariable.lintilla_embeddedAdafruit_CC3000=C\:/git/erni/lintilla-embedded/lib/comp
+pathvariable.lintilla_embeddedBattery=C\:/git/erni/lintilla-embedded/lib/comp
 pathvariable.lintilla_embeddedBlanking=C\:/git/erni/lintilla-embedded/lib/plat/blanking
 pathvariable.lintilla_embeddedDebounce=C\:/git/erni/lintilla-embedded/lib/plat/debounce
 pathvariable.lintilla_embeddedFreeSixIMU=C\:/git/erni/lintilla-embedded/lib/comp
