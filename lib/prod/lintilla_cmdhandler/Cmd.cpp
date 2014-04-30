@@ -27,7 +27,12 @@ Cmd::Cmd(CmdSequence* cmdSeq, unsigned int timeMillis, const char* name)
 }
 
 Cmd::~Cmd()
-{ }
+{
+  if (0 != m_cmdSeq)
+  {
+    m_cmdSeq->detach(this);
+  }
+}
 
 void Cmd::setTime(unsigned int timeMillis)
 {

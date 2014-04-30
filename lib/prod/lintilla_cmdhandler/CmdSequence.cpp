@@ -90,7 +90,10 @@ void CmdSequence::execCmd()
   else
   {
     m_isRunning = false;
-    m_timer->cancelTimer();
+    if (0 != m_timer)
+    {
+      m_timer->cancelTimer();
+    }
     m_currentCmd = m_firstCmd;
   }
 }
