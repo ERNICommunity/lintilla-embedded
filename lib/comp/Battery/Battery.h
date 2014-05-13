@@ -8,11 +8,21 @@
 #ifndef BATTERY_H_
 #define BATTERY_H_
 
+class BatteryAdapter;
+class BatteryImpl;
+
 class Battery
 {
 public:
-  Battery();
+  Battery(BatteryAdapter* adapter = 0);
   virtual ~Battery();
+
+  void attachAdapter(BatteryAdapter* adapter);
+
+  BatteryAdapter* adapter();
+
+private:
+  BatteryImpl* m_impl;
 
 private: // forbidden default functions
   Battery& operator = (const Battery& src); // assignment operator

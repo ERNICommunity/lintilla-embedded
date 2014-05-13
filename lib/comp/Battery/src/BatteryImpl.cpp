@@ -6,15 +6,22 @@
  */
 
 #include "BatteryImpl.h"
+#include "../BatteryAdapter.h"
 
-BatteryImpl::BatteryImpl()
-{
-  // TODO Auto-generated constructor stub
-
-}
+BatteryImpl::BatteryImpl(BatteryAdapter* adapter)
+: m_adapter(adapter)
+{ }
 
 BatteryImpl::~BatteryImpl()
+{ }
+
+
+void BatteryImpl::attachAdapter(BatteryAdapter* adapter)
 {
-  // TODO Auto-generated destructor stub
+  m_adapter = adapter;
 }
 
+BatteryAdapter* BatteryImpl::adapter()
+{
+  return m_adapter;
+}
