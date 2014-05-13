@@ -12,9 +12,7 @@
 
 #include "LcdKeypad.h"
 #include "Blanking.h"
-#include "TimerContext.h"
 #include "Timer.h"
-#include "TimerAdapter.h"
 #include "SN754410Driver.h"
 #include "MotorPWM.h"
 #include "UltrasonicSensor.h"
@@ -482,7 +480,7 @@ void lcdBackLightControl()
 // The loop function is called in an endless loop
 void loop()
 {
-  TimerContext::instance()->handleTick();
+  scheduleTimers();
   processEchoServer();
 }
 
