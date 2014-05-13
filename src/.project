@@ -140,15 +140,15 @@
 	<variableList>
 		<variable>
 			<name>ArduinoHardwareLibPath</name>
-			<value>file:/C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/libraries</value>
+			<value>$%7BArduinoPath%7D/hardware/arduino/avr/libraries</value>
 		</variable>
 		<variable>
 			<name>ArduinoPinPath</name>
-			<value>file:/C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/variants</value>
+			<value>$%7BArduinoPath%7D/hardware/arduino/avr/variants</value>
 		</variable>
 		<variable>
 			<name>ArduinoPlatformPath</name>
-			<value>file:/C:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr</value>
+			<value>$%7BArduinoPath%7D/hardware/arduino/avr</value>
 		</variable>
 	</variableList>
 </projectDescription>
