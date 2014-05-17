@@ -13,6 +13,7 @@ BatteryVoltageEvalFsm::BatteryVoltageEvalFsm(BatteryImpl* battImpl)
 : m_battImpl(battImpl)
 , m_adapter(battImpl->adapter())
 , m_state(BatteryVoltageEvalFsmState_BattOk::Instance())
+, m_previousState(BatteryVoltageEvalFsmState_BattOk::Instance())
 { }
 
 BatteryVoltageEvalFsm::~BatteryVoltageEvalFsm()
@@ -27,6 +28,11 @@ BatteryVoltageEvalFsmState* BatteryVoltageEvalFsm::state()
   return m_state;
 }
 
+BatteryVoltageEvalFsmState* BatteryVoltageEvalFsm::previousState()
+{
+  return m_previousState;
+}
+
 BatteryAdapter* BatteryVoltageEvalFsm::adapter()
 {
   return m_adapter;
@@ -34,6 +40,7 @@ BatteryAdapter* BatteryVoltageEvalFsm::adapter()
 
 void BatteryVoltageEvalFsm::changeState(BatteryVoltageEvalFsmState* state)
 {
+  m_previousState = m_state;
   m_state = state;
   if (0 != state)
   {

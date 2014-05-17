@@ -36,6 +36,24 @@ BatteryAdapter* Battery::adapter()
   return adapter;
 }
 
+const char* Battery::getCurrentStateName()
+{
+  if (0 != m_impl)
+  {
+    return "Battery::m_impl, null pointer exception";
+  }
+  return m_impl->getCurrentStateName();
+}
+
+const char* Battery::getPreviousStateName()
+{
+  if (0 != m_impl)
+  {
+    return "Battery::m_impl, null pointer exception";
+  }
+  return m_impl->getPreviousStateName();
+}
+
 void Battery::battVoltageSensFactorChanged()
 {
   if (0 != m_impl)

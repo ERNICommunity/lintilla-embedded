@@ -62,6 +62,10 @@ public:
    */
   BatteryAdapter* adapter();
 
+  const char* getCurrentStateName();
+  const char* getPreviousStateName();
+
+
   /**
    * Notify Battery Voltage Sense Factor has changed in the Inventory Management Data.
    * The Battery component shall read the new value and adjust the signal conversion accordingly.

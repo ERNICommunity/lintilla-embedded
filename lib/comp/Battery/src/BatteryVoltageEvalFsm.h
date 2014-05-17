@@ -26,6 +26,11 @@ public:
   /**
    *
    */
+  BatteryVoltageEvalFsmState* previousState();
+
+  /**
+   *
+   */
   BatteryAdapter* adapter();
 
   /**
@@ -60,6 +65,7 @@ private:
   BatteryImpl* m_battImpl;
   BatteryAdapter* m_adapter;
   BatteryVoltageEvalFsmState* m_state;
+  BatteryVoltageEvalFsmState* m_previousState;
 
 private: // forbidden default functions
   BatteryVoltageEvalFsm& operator = (const BatteryVoltageEvalFsm& src); // assignment operator

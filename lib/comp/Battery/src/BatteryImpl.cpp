@@ -185,3 +185,21 @@ bool BatteryImpl::isBattVoltageBelowShutdownThreshold()
   }
   return isVoltageBelowShutdownThreshold;
 }
+
+const char* BatteryImpl::getCurrentStateName()
+{
+  if (0 == m_evalFsm)
+  {
+    return "BatteryImpl::m_evalFsm, null pointer exception";
+  }
+  return m_evalFsm->state()->toString();
+}
+
+const char* BatteryImpl::getPreviousStateName()
+{
+  if (0 == m_evalFsm)
+  {
+    return "BatteryImpl::m_evalFsm, null pointer exception";
+  }
+  return m_evalFsm->state()->toString();
+}

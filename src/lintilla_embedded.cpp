@@ -56,14 +56,39 @@ LintillaIvm* ivm;
 //-----------------------------------------------------------------------------
 // Battery Voltage Surveillance
 //-----------------------------------------------------------------------------
-const int   BATT_SENSE_PIN     = A9;
+const int BATT_SENSE_PIN = A9;
 void sleepNow();
 Battery* battery;
 class LintillaBatteryAdapter : public BatteryAdapter
 {
+private:
+  void debugPrintStateChange()
+  {
+    Serial.print("Battery: state chg: ");
+    Serial.print(battery->getPreviousStateName());
+    Serial.print(" -> ");
+    Serial.println(battery->getCurrentStateName());
+  }
+
 public:
+  void notifyBattVoltageOk()
+  {
+    debugPrintStateChange();
+  }
+
+  void notifyBattVoltageBelowWarnThreshold()
+  {
+    debugPrintStateChange();
+  }
+
+  void notifyBattVoltageBelowStopThreshold()
+  {
+    debugPrintStateChange();
+  }
+
   void notifyBattVoltageBelowShutdownThreshold()
   {
+    debugPrintStateChange();
     sleepNow();
   }
 

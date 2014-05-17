@@ -84,6 +84,9 @@ public:
    */
   bool isBattVoltageBelowShutdownThreshold();
 
+  const char* getCurrentStateName();
+  const char* getPreviousStateName();
+
 private:
   BatteryAdapter* m_adapter;  /// Pointer to the currently attached specific BatteryAdapter object
   BatteryVoltageEvalFsm* m_evalFsm;
