@@ -14,6 +14,7 @@ Battery::Battery(BatteryAdapter* adapter)
 
 Battery::~Battery()
 {
+  delete adapter();
   delete m_impl; m_impl = 0;
 }
 
@@ -33,4 +34,62 @@ BatteryAdapter* Battery::adapter()
     adapter = m_impl->adapter();
   }
   return adapter;
+}
+
+void Battery::battVoltageSensFactorChanged()
+{
+  if (0 != m_impl)
+  {
+    m_impl->battVoltageSensFactorChanged();
+  }
+}
+
+float Battery::getBatteryVoltage()
+{
+  float batteryVoltage = 0.0;
+  if (0 != m_impl)
+  {
+    batteryVoltage = m_impl->getBatteryVoltage();
+  }
+  return batteryVoltage;
+}
+
+bool Battery::isBattVoltageOk()
+{
+  bool isVoltageOk = true;
+  if (0 != m_impl)
+  {
+    isVoltageOk = m_impl->isBattVoltageOk();
+  }
+  return isVoltageOk;
+}
+
+bool Battery::isBattVoltageBelowWarnThreshold()
+{
+  bool isVoltageBelowWarnThreshold = false;
+  if (0 != m_impl)
+  {
+    isVoltageBelowWarnThreshold = m_impl->isBattVoltageBelowWarnThreshold();
+  }
+  return isVoltageBelowWarnThreshold;
+}
+
+bool Battery::isBattVoltageBelowStopThreshold()
+{
+  bool isVoltageBelowStopThreshold = false;
+  if (0 != m_impl)
+  {
+    isVoltageBelowStopThreshold = m_impl->isBattVoltageBelowStopThreshold();
+  }
+  return isVoltageBelowStopThreshold;
+}
+
+bool Battery::isBattVoltageBelowShutdownThreshold()
+{
+  bool isVoltageBelowShutdownThreshold = false;
+  if (0 != m_impl)
+  {
+    isVoltageBelowShutdownThreshold = m_impl->isBattVoltageBelowShutdownThreshold();
+  }
+  return isVoltageBelowShutdownThreshold;
 }

@@ -5,5 +5,5 @@
  *      Author: niklausd
  */
 
-#include "../BatteryAdapter.h"
+#include "../Battery.h"
 

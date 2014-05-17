@@ -25,6 +25,7 @@
 #include "CmdAdapter.h"
 #include "CmdSequence.h"
 #include "Cmd.h"
+#include "Battery.h"
 //#include "LanClient.h"
 //#include <aJSON.h>
 
@@ -37,7 +38,7 @@ void(* resetFunc) (void) = 0; //declare reset function at address 0
 //-----------------------------------------------------------------------------
 // Debugging
 //-----------------------------------------------------------------------------
-Timer* ramDebugTimer;
+//Timer* ramDebugTimer;
 const unsigned int c_ramDbgInterval = 20000;
 class RamDebugTimerAdapter : public TimerAdapter
 {
@@ -55,13 +56,32 @@ LintillaIvm* ivm;
 //-----------------------------------------------------------------------------
 // Battery Voltage Surveillance
 //-----------------------------------------------------------------------------
-float       battVoltage        = 0;   // [V]
 const int   BATT_SENSE_PIN     = A9;
-const float BATT_WARN_THRSHD   = 6.20;
-const float BATT_SHUT_THRSHD   = 6.00;
-
-void readBattVoltage();
 void sleepNow();
+Battery* battery;
+class LintillaBatteryAdapter : public BatteryAdapter
+{
+public:
+  void notifyBattVoltageBelowShutdownThreshold()
+  {
+    sleepNow();
+  }
+
+  float readBattVoltageSenseFactor()
+  {
+    float battVoltageSenseFactor = 2.0;
+    if (0 != ivm)
+    {
+      battVoltageSenseFactor = ivm->getBattVoltageSenseFactor();
+    }
+    return battVoltageSenseFactor;
+  }
+
+  unsigned int readRawBattSenseValue()
+  {
+    return analogRead(BATT_SENSE_PIN);
+  }
+};
 
 //---------------------------------------------------------------------------
 // Ultrasonic Ranging
@@ -76,7 +96,7 @@ unsigned long dist = UltrasonicSensor::DISTANCE_LIMIT_EXCEEDED;   // [cm]
 // Wheel Speed Sensors
 //---------------------------------------------------------------------------
 const unsigned int SPEED_SENSORS_READ_TIMER_INTVL_MILLIS = 100;
-Timer* speedSensorReadTimer;
+//Timer* speedSensorReadTimer;
 void readSpeedSensors();
 class SpeedSensorReadTimerAdapter : public TimerAdapter
 {
@@ -163,7 +183,7 @@ class SpeedCtrlTimerAdapter : public TimerAdapter
 LcdKeypad lcdKeypad;
 Blanking* displayBlanking;
 
-Timer* displayTimer;
+//Timer* displayTimer;
 const unsigned int cUpdateDisplayInterval = 200; // Display update interval [ms]
 void selectMode();
 void updateDisplay();
@@ -171,7 +191,6 @@ class DisplayTimerAdapter : public TimerAdapter
 {
   void timeExpired()
   {
-    readBattVoltage();
     selectMode();
     updateDisplay();
   }
@@ -218,7 +237,7 @@ Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ
 uint32_t currentIpAddress = 0;
 Adafruit_CC3000_Server echoServer(LISTEN_PORT);
 
-Timer* wifiReconnectTimer;
+//Timer* wifiReconnectTimer;
 const unsigned int cWifiReconnectInterval = 5000; // WiFi re-connect interval [ms]
 void connectWiFi();
 class WifiReconnectTimerAdapter : public TimerAdapter
@@ -463,11 +482,11 @@ void lcdBackLightControl()
 {
   if (!isIvmAccessMode)
   {
-    if (lcdKeypad.isUpKey() && (!isLcdBackLightOn))
+    if (lcdKeypad.isUpKey() && (!isLcdBackLightOn) && battery->isBattVoltageOk())
     {
       isLcdBackLightOn = true;
     }
-    else if (lcdKeypad.isDownKey() && (isLcdBackLightOn))
+    else if ((lcdKeypad.isDownKey() && (isLcdBackLightOn)) || (!battery->isBattVoltageOk()))
     {
       isLcdBackLightOn = false;
     }
@@ -561,26 +580,6 @@ void processEchoServer()
 
 //-----------------------------------------------------------------------------
 
-void readBattVoltage()
-{
-  unsigned int rawBattVoltage = analogRead(BATT_SENSE_PIN);
-  battVoltage = rawBattVoltage * ivm->getBattVoltageSenseFactor() * 5 / 1023;
-
-  if (BATT_WARN_THRSHD >= battVoltage)
-  {
-    isLcdBackLightOn = false;
-    lcdBackLightControl();
-  }
-
-  // emergency shutdown on battery low alarm
-  if (BATT_SHUT_THRSHD >= battVoltage)
-  {
-    sleepNow();
-  }
-}
-
-//-----------------------------------------------------------------------------
-
 void readSpeedSensors()
 {
   noInterrupts();
@@ -651,7 +650,7 @@ void setup()
   Serial.begin(115200);
   Serial.println(F("Hello from Lintilla!\n"));
   Serial.print("Free RAM: "); Serial.println(getFreeRam(), DEC);
-  ramDebugTimer = new Timer(new RamDebugTimerAdapter(), Timer::IS_RECURRING, c_ramDbgInterval);
+  /*ramDebugTimer =*/ new Timer(new RamDebugTimerAdapter(), Timer::IS_RECURRING, c_ramDbgInterval);
 
   //---------------------------------------------------------------------------
   // Inventory Management
@@ -663,8 +662,7 @@ void setup()
   //---------------------------------------------------------------------------
   pinMode(BATT_SENSE_PIN, INPUT);         //ensure Battery Sense pin is an input
   digitalWrite(BATT_SENSE_PIN, LOW);      //ensure pullup is off on Battery Sense pin
-  readBattVoltage();
-  updateDisplay();
+  battery = new Battery(new LintillaBatteryAdapter());
 
   //---------------------------------------------------------------------------
   // Ultrasonic Ranging
@@ -674,7 +672,7 @@ void setup()
   //---------------------------------------------------------------------------
   // Speed Sensors
   //---------------------------------------------------------------------------
-  speedSensorReadTimer  = new Timer(new SpeedSensorReadTimerAdapter(), Timer::IS_RECURRING, SPEED_SENSORS_READ_TIMER_INTVL_MILLIS);
+  /*speedSensorReadTimer  =*/ new Timer(new SpeedSensorReadTimerAdapter(), Timer::IS_RECURRING, SPEED_SENSORS_READ_TIMER_INTVL_MILLIS);
   attachInterrupt(L_SPEED_SENS_IRQ, countLeftSpeedSensor,  RISING);
   attachInterrupt(R_SPEED_SENS_IRQ, countRightSpeedSensor, RISING);
 
@@ -694,7 +692,7 @@ void setup()
   //---------------------------------------------------------------------------
   // Lcd Display
   //---------------------------------------------------------------------------
-  displayTimer = new Timer(new DisplayTimerAdapter(), Timer::IS_RECURRING, cUpdateDisplayInterval);
+  /*displayTimer =*/ new Timer(new DisplayTimerAdapter(), Timer::IS_RECURRING, cUpdateDisplayInterval);
   displayBlanking = new Blanking();
   lcdBackLightControl();
   updateDisplay();
@@ -721,7 +719,7 @@ void setup()
   //---------------------------------------------------------------------------
   connectWiFi();
   startEchoServer();
-  wifiReconnectTimer = new Timer(new WifiReconnectTimerAdapter(), Timer::IS_RECURRING, cWifiReconnectInterval);
+  /*wifiReconnectTimer =*/ new Timer(new WifiReconnectTimerAdapter(), Timer::IS_RECURRING, cWifiReconnectInterval);
 }
 
 //-----------------------------------------------------------------------------
@@ -776,7 +774,7 @@ void speedControl()
   }
   isObstacleDetected = isLeftMotorFwd && (dist > 0) && (dist < 15);
 
-  if (lcdKeypad.isRightKey() || isObstacleDetected || (battVoltage < BATT_WARN_THRSHD))
+  if (lcdKeypad.isRightKey() || isObstacleDetected || (battery->isBattVoltageBelowStopThreshold()))
   {
     cmdSeq->stop();
   }
@@ -869,14 +867,14 @@ void updateDisplay()
       lcdKeypad.print("cm ");
     }
 
-    if (displayBlanking->isSignalBlanked() && (battVoltage < BATT_WARN_THRSHD))
+    if (displayBlanking->isSignalBlanked() && (!battery->isBattVoltageOk()))
     {
       lcdKeypad.print("      ");
     }
     else
     {
       lcdKeypad.print("B:");
-      lcdKeypad.print(battVoltage);
+      lcdKeypad.print(battery->getBatteryVoltage());
       lcdKeypad.print("[V]");
     }
 
