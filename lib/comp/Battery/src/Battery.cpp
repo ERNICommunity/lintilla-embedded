@@ -38,7 +38,7 @@ BatteryAdapter* Battery::adapter()
 
 const char* Battery::getCurrentStateName()
 {
-  if (0 != m_impl)
+  if (0 == m_impl)
   {
     return "Battery::m_impl, null pointer exception";
   }
@@ -47,7 +47,7 @@ const char* Battery::getCurrentStateName()
 
 const char* Battery::getPreviousStateName()
 {
-  if (0 != m_impl)
+  if (0 == m_impl)
   {
     return "Battery::m_impl, null pointer exception";
   }

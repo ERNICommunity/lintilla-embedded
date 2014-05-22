@@ -5,6 +5,8 @@
  *      Author: niklausd
  */
 
+// #include "Arduino.h"
+
 #include "Timer.h"
 #include "../Battery.h"
 #include "BatteryVoltageEvalFsm.h"
@@ -47,6 +49,7 @@ public:
   {
     if (0 != m_battImpl)
     {
+      // Serial.println("BattPollTimerAdapter::timeExpired()");
       m_battImpl->evaluateStatus();
     }
   }
@@ -54,8 +57,8 @@ public:
 
 //-----------------------------------------------------------------------------
 
-const unsigned int BatteryImpl::s_DEFAULT_STARTUP_TIME = 500;
-const unsigned int BatteryImpl::s_DEFAULT_POLL_TIME = 1000;
+const unsigned int BatteryImpl::s_DEFAULT_STARTUP_TIME = 1000;
+const unsigned int BatteryImpl::s_DEFAULT_POLL_TIME = 2000;
 
 const float BatteryImpl::s_BATT_WARN_THRSHD = 6.5;
 const float BatteryImpl::s_BATT_STOP_THRSHD = 6.3;
@@ -128,6 +131,9 @@ void BatteryImpl::evaluateStatus()
     if (isVoltageFalling || isVoltageRising)
     {
       m_batteryVoltage = batteryVoltage;
+      // Serial.print("BatteryImpl::evaluateStatus(), m_batteryVoltage = ");
+      // Serial.print(m_batteryVoltage);
+      // Serial.println(" V");
       m_evalFsm->voltageChanged();
     }
   }
@@ -148,40 +154,40 @@ float BatteryImpl::getBatteryVoltage()
 
 bool BatteryImpl::isBattVoltageOk()
 {
-  bool isVoltageOk = true;
+  bool isVoltageOk = false;
   if (0 != m_evalFsm)
   {
-    m_evalFsm->isBattVoltageOk();
+    isVoltageOk = m_evalFsm->isBattVoltageOk();
   }
   return isVoltageOk;
 }
 
 bool BatteryImpl::isBattVoltageBelowWarnThreshold()
 {
-  bool isVoltageBelowWarnThreshold = false;
+  bool isVoltageBelowWarnThreshold = true;
   if (0 != m_evalFsm)
   {
-    m_evalFsm->isBattVoltageBelowWarnThreshold();
+    isVoltageBelowWarnThreshold = m_evalFsm->isBattVoltageBelowWarnThreshold();
   }
   return isVoltageBelowWarnThreshold;
 }
 
 bool BatteryImpl::isBattVoltageBelowStopThreshold()
 {
-  bool isVoltageBelowStopThreshold = false;
+  bool isVoltageBelowStopThreshold = true;
   if (0 != m_evalFsm)
   {
-    m_evalFsm->isBattVoltageBelowStopThreshold();
+    isVoltageBelowStopThreshold = m_evalFsm->isBattVoltageBelowStopThreshold();
   }
   return isVoltageBelowStopThreshold;
 }
 
 bool BatteryImpl::isBattVoltageBelowShutdownThreshold()
 {
-  bool isVoltageBelowShutdownThreshold = false;
+  bool isVoltageBelowShutdownThreshold = true;
   if (0 != m_evalFsm)
   {
-    m_evalFsm->isBattVoltageBelowShutdownThreshold();
+    isVoltageBelowShutdownThreshold = m_evalFsm->isBattVoltageBelowShutdownThreshold();
   }
   return isVoltageBelowShutdownThreshold;
 }
@@ -201,5 +207,5 @@ const char* BatteryImpl::getPreviousStateName()
   {
     return "BatteryImpl::m_evalFsm, null pointer exception";
   }
-  return m_evalFsm->state()->toString();
+  return m_evalFsm->previousState()->toString();
 }
