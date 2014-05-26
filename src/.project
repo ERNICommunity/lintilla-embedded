@@ -127,6 +127,11 @@
 			<locationURI>lintilla_embeddedTimer/Timer</locationURI>
 		</link>
 		<link>
+			<name>prod/lintilla_adapters</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedlintilla_adapters/lintilla_adapters</locationURI>
+		</link>
+		<link>
 			<name>prod/lintilla_cmdhandler</name>
 			<type>2</type>
 			<locationURI>lintilla_embeddedlintilla_cmdhandler/lintilla_cmdhandler</locationURI>

@@ -1,9 +1,6 @@
 // Do not remove the include below
 #include "lintilla_embedded.h"
 
-#include <avr/power.h>
-#include <avr/sleep.h>
-
 #include <Adafruit_CC3000.h>
 #include <ccspi.h>
 #include <SPI.h>
@@ -29,6 +26,8 @@
 //#include "LanClient.h"
 //#include <aJSON.h>
 
+#include "LintillaBatteryAdapter.h"
+
 //LanClient* lanClient;
 
 //-----------------------------------------------------------------------------
@@ -51,62 +50,57 @@ class RamDebugTimerAdapter : public TimerAdapter
 //---------------------------------------------------------------------------
 // Inventory Management
 //---------------------------------------------------------------------------
-LintillaIvm* ivm;
+LintillaIvm* lintillaIvm;
+
+//---------------------------------------------------------------------------
+// Lcd Display
+//---------------------------------------------------------------------------
+LcdKeypad* lcdKeypad;
+Blanking* displayBlanking;
+void selectMode();
+void updateDisplay();
+void speedControl();
+class LintillaLcdKeypadAdapter : public LcdKeypadAdapter
+{
+public:
+  void handleKeyChanged(LcdKeypad::Key newKey)
+  {
+    Serial.print("LintillaLcdKeypadAdapter::handleKeyChanged(), newKey: ");
+    Serial.println((LcdKeypad::NO_KEY == newKey)     ? "----NO_KEY" :
+                   (LcdKeypad::SELECT_KEY == newKey) ? "SELECT_KEY" :
+                   (LcdKeypad::LEFT_KEY == newKey)   ? "  LEFT_KEY" :
+                   (LcdKeypad::UP_KEY == newKey)     ? "    UP_KEY" :
+                   (LcdKeypad::DOWN_KEY == newKey)   ? "  DOWN_KEY" :
+                   (LcdKeypad::RIGHT_KEY == newKey)  ? " RIGHT_KEY" : "OOPS!! Invalid value!!");
+
+    speedControl();
+    selectMode();
+    updateDisplay();
+  }
+};
+const unsigned int cUpdateDisplayInterval = 200; // Display update interval [ms]
+
+class DisplayTimerAdapter : public TimerAdapter
+{
+  void timeExpired()
+  {
+    updateDisplay();
+  }
+};
+void lcdBackLightControl();
+
+// LCD Backlight Intensity
+bool isLcdBackLightOn = true;
+
+// Display Menu states
+bool isIvmAccessMode = false;
+bool isIvmRobotIdEditMode = false;
 
 //-----------------------------------------------------------------------------
 // Battery Voltage Surveillance
 //-----------------------------------------------------------------------------
-const int BATT_SENSE_PIN = A9;
-void sleepNow();
 Battery* battery;
-class LintillaBatteryAdapter : public BatteryAdapter
-{
-private:
-  void debugPrintStateChange()
-  {
-    Serial.print("Battery: state chg: ");
-    Serial.print(battery->getPreviousStateName());
-    Serial.print(" -> ");
-    Serial.println(battery->getCurrentStateName());
-  }
-
-public:
-  void notifyBattVoltageOk()
-  {
-    debugPrintStateChange();
-  }
-
-  void notifyBattVoltageBelowWarnThreshold()
-  {
-    debugPrintStateChange();
-  }
-
-  void notifyBattVoltageBelowStopThreshold()
-  {
-    debugPrintStateChange();
-  }
-
-  void notifyBattVoltageBelowShutdownThreshold()
-  {
-    debugPrintStateChange();
-    sleepNow();
-  }
-
-  float readBattVoltageSenseFactor()
-  {
-    float battVoltageSenseFactor = 2.0;
-    if (0 != ivm)
-    {
-      battVoltageSenseFactor = ivm->getBattVoltageSenseFactor();
-    }
-    return battVoltageSenseFactor;
-  }
-
-  unsigned int readRawBattSenseValue()
-  {
-    return analogRead(BATT_SENSE_PIN);
-  }
-};
+LintillaBatteryAdapter* batteryAdapter;
 
 //---------------------------------------------------------------------------
 // Ultrasonic Ranging
@@ -191,43 +185,24 @@ void spinOnPlace(bool right);
 
 Timer* speedCtrlTimer;
 const unsigned int cSpeedCtrlInterval = 200;
-void speedControl();
 void updateActors();
 class SpeedCtrlTimerAdapter : public TimerAdapter
 {
   void timeExpired()
   {
-    speedControl();
+    if (0 != ultrasonicSensorFront)
+    {
+      dist = ultrasonicSensorFront->getDistanceCM();
+    }
+    isObstacleDetected = isLeftMotorFwd && (dist > 0) && (dist < 15);
+
+    if (isObstacleDetected)
+    {
+      speedControl();
+    }
     updateActors();
   }
 };
-
-//---------------------------------------------------------------------------
-// Lcd Display
-//---------------------------------------------------------------------------
-LcdKeypad lcdKeypad;
-Blanking* displayBlanking;
-
-//Timer* displayTimer;
-const unsigned int cUpdateDisplayInterval = 200; // Display update interval [ms]
-void selectMode();
-void updateDisplay();
-class DisplayTimerAdapter : public TimerAdapter
-{
-  void timeExpired()
-  {
-    selectMode();
-    updateDisplay();
-  }
-};
-void lcdBackLightControl();
-
-// LCD Backlight Intensity
-bool isLcdBackLightOn = true;
-
-// Display Menu states
-bool isIvmAccessMode = false;
-bool isIvmRobotIdEditMode = false;
 
 //---------------------------------------------------------------------------
 // Command Sequence
@@ -505,18 +480,22 @@ bool isSSIDPresent(const char* searchSSID)
 
 void lcdBackLightControl()
 {
-  if (!isIvmAccessMode)
+  if (battery->isBattVoltageBelowStopThreshold() || battery->isBattVoltageBelowStopThreshold())
   {
-    if (lcdKeypad.isUpKey() && (!isLcdBackLightOn) && battery->isBattVoltageOk())
+    isLcdBackLightOn = false;
+  }
+  else if (!isIvmAccessMode)
+  {
+    if (lcdKeypad->isUpKey() && (!isLcdBackLightOn) && battery->isBattVoltageOk())
     {
       isLcdBackLightOn = true;
     }
-    else if ((lcdKeypad.isDownKey() && (isLcdBackLightOn)) || (!battery->isBattVoltageOk()))
+    else if (lcdKeypad->isDownKey() && (isLcdBackLightOn))
     {
       isLcdBackLightOn = false;
     }
   }
-  lcdKeypad.setBackLightOn(isLcdBackLightOn);
+  lcdKeypad->setBackLightOn(isLcdBackLightOn);
 }
 
 //-----------------------------------------------------------------------------
@@ -525,7 +504,7 @@ void lcdBackLightControl()
 void loop()
 {
   scheduleTimers();
-  processEchoServer();
+//  processEchoServer();
 }
 
 //-----------------------------------------------------------------------------
@@ -589,7 +568,8 @@ void processEchoServer()
        {
          // Read a byte and write it to all clients.
          uint8_t ch = client.read();
-         if (!cmdSeq->isRunning() && ('g' == ch))
+         if (('g' == ch) && !cmdSeq->isRunning() && !lcdKeypad->isRightKey() && !isObstacleDetected &&
+             !battery->isBattVoltageBelowStopThreshold() && !battery->isBattVoltageBelowShutdownThreshold())
          {
            cmdSeq->start();
          }
@@ -625,18 +605,18 @@ void selectMode()
 {
   if (!cmdSeq->isRunning())
   {
-    if (lcdKeypad.isSelectKey())
+    if (lcdKeypad->isSelectKey())
     {
       isIvmAccessMode = true;
     }
-    else if (!isIvmRobotIdEditMode && lcdKeypad.isRightKey())
+    else if (!isIvmRobotIdEditMode && lcdKeypad->isRightKey())
     {
       isIvmAccessMode = false;
     }
 
     if (isIvmAccessMode)
     {
-      if (lcdKeypad.isLeftKey())
+      if (lcdKeypad->isLeftKey())
       {
         isIvmRobotIdEditMode = true;
       }
@@ -644,21 +624,21 @@ void selectMode()
 
     if (isIvmRobotIdEditMode)
     {
-      unsigned char robotId = ivm->getDeviceId();
+      unsigned char robotId = lintillaIvm->getDeviceId();
 
-      if (lcdKeypad.isSelectKey())
+      if (lcdKeypad->isSelectKey())
       {
         isIvmRobotIdEditMode = false;
       }
-      if (lcdKeypad.isUpKey())
+      if (lcdKeypad->isUpKey())
       {
         robotId++;
-        ivm->setDeviceId(robotId);
+        lintillaIvm->setDeviceId(robotId);
       }
-      if (lcdKeypad.isDownKey())
+      if (lcdKeypad->isDownKey())
       {
         robotId--;
-        ivm->setDeviceId(robotId);
+        lintillaIvm->setDeviceId(robotId);
       }
     }
   }
@@ -673,21 +653,49 @@ void setup()
   // Debugging
   //---------------------------------------------------------------------------
   Serial.begin(115200);
-  Serial.println(F("Hello from Lintilla!\n"));
+  Serial.println(F("\nHello from Lintilla!"));
   Serial.print("Free RAM: "); Serial.println(getFreeRam(), DEC);
   /*ramDebugTimer =*/ new Timer(new RamDebugTimerAdapter(), Timer::IS_RECURRING, c_ramDbgInterval);
 
   //---------------------------------------------------------------------------
   // Inventory Management
   //---------------------------------------------------------------------------
-  ivm = new LintillaIvm();
+  lintillaIvm = new LintillaIvm();
+
+  //---------------------------------------------------------------------------
+  // Lcd Display
+  //---------------------------------------------------------------------------
+  /*displayTimer =*/ new Timer(new DisplayTimerAdapter(), Timer::IS_RECURRING, cUpdateDisplayInterval);
+  displayBlanking = new Blanking();
+  lcdKeypad = new LcdKeypad();
+  lcdKeypad->attachAdapter(new LintillaLcdKeypadAdapter());
+
+  //---------------------------------------------------------------------------
+  // Command Sequence
+  //---------------------------------------------------------------------------
+  cmdSeq = new CmdSequence(new LintillaCmdAdapter());
+  Cmd* cmd;
+  const int cSpinTime     =  300;
+  const int cFwdTime      =  300;
+  const int cInterDelay   =  500;
+  for (int i = 0; i <= 3; i++)
+  {
+    new CmdMoveForward(cmdSeq, cFwdTime);
+    new CmdStop(cmdSeq, cInterDelay);
+    new CmdSpinOnPlaceRight(cmdSeq, cSpinTime);
+    new CmdStop(cmdSeq, cInterDelay);
+  }
+  cmdSeq->printCmdNameList();
 
   //---------------------------------------------------------------------------
   // Battery Voltage Surveillance
   //---------------------------------------------------------------------------
-  pinMode(BATT_SENSE_PIN, INPUT);         //ensure Battery Sense pin is an input
-  digitalWrite(BATT_SENSE_PIN, LOW);      //ensure pullup is off on Battery Sense pin
-  battery = new Battery(new LintillaBatteryAdapter());
+  batteryAdapter = new LintillaBatteryAdapter();
+  battery = new Battery(batteryAdapter);
+  batteryAdapter->attachBattery(battery);
+  batteryAdapter->attachLcdKeypad(lcdKeypad);
+  batteryAdapter->attachLintillaIvm(lintillaIvm);
+  batteryAdapter->attachCmdSequence(cmdSeq);
 
   //---------------------------------------------------------------------------
   // Ultrasonic Ranging
@@ -715,95 +723,22 @@ void setup()
   speedCtrlTimer = new Timer(new SpeedCtrlTimerAdapter(), Timer::IS_RECURRING, cSpeedCtrlInterval);
 
   //---------------------------------------------------------------------------
-  // Lcd Display
-  //---------------------------------------------------------------------------
-  /*displayTimer =*/ new Timer(new DisplayTimerAdapter(), Timer::IS_RECURRING, cUpdateDisplayInterval);
-  displayBlanking = new Blanking();
-  lcdBackLightControl();
-  updateDisplay();
-
-  //---------------------------------------------------------------------------
-  // Command Sequence
-  //---------------------------------------------------------------------------
-  cmdSeq = new CmdSequence(new LintillaCmdAdapter());
-  Cmd* cmd;
-  const int cSpinTime     =  300;
-  const int cFwdTime      =  300;
-  const int cInterDelay   =  500;
-  for (int i = 0; i <= 3; i++)
-  {
-    new CmdMoveForward(cmdSeq, cFwdTime);
-    new CmdStop(cmdSeq, cInterDelay);
-    new CmdSpinOnPlaceRight(cmdSeq, cSpinTime);
-    new CmdStop(cmdSeq, cInterDelay);
-  }
-  cmdSeq->printCmdNameList();
-
-  //---------------------------------------------------------------------------
   // WiFi and Socket Server
   //---------------------------------------------------------------------------
-  connectWiFi();
-  startEchoServer();
-  /*wifiReconnectTimer =*/ new Timer(new WifiReconnectTimerAdapter(), Timer::IS_RECURRING, cWifiReconnectInterval);
-}
-
-//-----------------------------------------------------------------------------
-
-void sleepNow()
-{
-  /* Now is the time to set the sleep mode. In the Atmega8 datasheet
-   * http://www.atmel.com/dyn/resources/prod_documents/doc2486.pdf on page 35
-   * there is a list of sleep modes which explains which clocks and
-   * wake up sources are available in which sleep modus.
-   *
-   * In the avr/sleep.h file, the call names of these sleep modus are to be found:
-   *
-   * The 5 different modes are:
-   * SLEEP_MODE_IDLE -the least power savings
-   * SLEEP_MODE_ADC
-   * SLEEP_MODE_PWR_SAVE
-   * SLEEP_MODE_STANDBY
-   * SLEEP_MODE_PWR_DOWN -the most power savings
-   *
-   * the power reduction management <avr/power.h> is described in
-   * http://www.nongnu.org/avr-libc/user-manual/group__avr__power.html
-   */
-
-  set_sleep_mode(SLEEP_MODE_PWR_DOWN); // sleep mode is set here
-
-  sleep_enable(); // enables the sleep bit in the mcucr register
-                  // so sleep is possible. just a safety pin
-  power_adc_disable();
-  power_spi_disable();
-  power_timer0_disable();
-  power_timer1_disable();
-  power_timer2_disable();
-  power_twi_disable();
-  sleep_mode(); // here the device is actually put to sleep!!
-
-  // THE PROGRAM CONTINUES FROM HERE AFTER WAKING UP
-
-  sleep_disable();  // first thing after waking from sleep:
-                    // disable sleep...
-
-  power_all_enable();
+//  connectWiFi();
+//  startEchoServer();
+//  new Timer(new WifiReconnectTimerAdapter(), Timer::IS_RECURRING, cWifiReconnectInterval);
 }
 
 //-----------------------------------------------------------------------------
 
 void speedControl()
 {
-  if (0 != ultrasonicSensorFront)
-  {
-    dist = ultrasonicSensorFront->getDistanceCM();
-  }
-  isObstacleDetected = isLeftMotorFwd && (dist > 0) && (dist < 15);
-
-  if (lcdKeypad.isRightKey() || isObstacleDetected || (battery->isBattVoltageBelowStopThreshold()))
+  if (lcdKeypad->isRightKey() || isObstacleDetected || battery->isBattVoltageBelowStopThreshold() || battery->isBattVoltageBelowShutdownThreshold())
   {
     cmdSeq->stop();
   }
-  else if (!cmdSeq->isRunning() && lcdKeypad.isLeftKey() && !isIvmAccessMode)
+  else if (!cmdSeq->isRunning() && lcdKeypad->isLeftKey() && !isIvmAccessMode)
   {
     lDistCount->reset();
     rDistCount->reset();
@@ -853,76 +788,88 @@ void updateDisplay()
 {
   lcdBackLightControl();
 
-  lcdKeypad.setCursor(0, 0);
+  lcdKeypad->setCursor(0, 0);
 
   if (isIvmAccessMode)
   {
-    lcdKeypad.print("IVM Data (V.");
-    lcdKeypad.print(ivm->getIvmVersion());
-    lcdKeypad.print(")     ");
+    lcdKeypad->print("IVM Data (V.");
+    lcdKeypad->print(lintillaIvm->getIvmVersion());
+    lcdKeypad->print(")     ");
 
-    lcdKeypad.setCursor(0, 1);
+    lcdKeypad->setCursor(0, 1);
 
-    lcdKeypad.print("Robot ID: ");
+    lcdKeypad->print("Robot ID: ");
 
     if (isIvmRobotIdEditMode && displayBlanking->isSignalBlanked())
     {
-      lcdKeypad.print("      ");
+      lcdKeypad->print("      ");
     }
     else
     {
-      lcdKeypad.print(ivm->getDeviceId());
+      lcdKeypad->print(lintillaIvm->getDeviceId());
     }
-    lcdKeypad.print("     ");
+    lcdKeypad->print("     ");
   }
   else
   {
     //-------------------------------------------
     // LCD Display Line 1
     //-------------------------------------------
-    lcdKeypad.print("Dst:");
+    lcdKeypad->print("Dst:");
     if (dist == UltrasonicSensor::DISTANCE_LIMIT_EXCEEDED)
     {
-      lcdKeypad.print("infin ");
+      lcdKeypad->print("infin ");
     }
     else
     {
-      lcdKeypad.print(dist > 99 ? "" : dist > 9 ? " " : "  ");
-      lcdKeypad.print(dist);
-      lcdKeypad.print("cm ");
+      lcdKeypad->print(dist > 99 ? "" : dist > 9 ? " " : "  ");
+      lcdKeypad->print(dist);
+      lcdKeypad->print("cm ");
     }
 
     if (displayBlanking->isSignalBlanked() && (!battery->isBattVoltageOk()))
     {
-      lcdKeypad.print("      ");
+      lcdKeypad->print("      ");
     }
     else
     {
-      lcdKeypad.print("B:");
-      lcdKeypad.print(battery->getBatteryVoltage());
-      lcdKeypad.print("[V]");
+      lcdKeypad->print("B:");
+      lcdKeypad->print(battery->getBatteryVoltage());
+      lcdKeypad->print("[V]");
     }
 
     //-------------------------------------------
     // LCD Display Line 2
     //-------------------------------------------
-    if (!cc3000.checkConnected())
+//    if (!cc3000.checkConnected())
+//    {
+//      lcdKeypad->print("Connect to WiFi ");
+//    }
+//    else
+    if (4 != lintillaIvm->getDeviceId())
     {
-      lcdKeypad.print("Connect to WiFi ");
-    }
-    else if (lcdKeypad.isUpKey() || (4 != ivm->getDeviceId()))
-    {
-      // IP Address presentation: either on up key pressed or always on robots not having ID = 4
-      lcdKeypad.setCursor(0, 1);
-      lcdKeypad.setCursor(0, 1);
-      lcdKeypad.print(0xff & (currentIpAddress >> 24));
-      lcdKeypad.print(".");
-      lcdKeypad.print(0xff & (currentIpAddress >> 16));
-      lcdKeypad.print(".");
-      lcdKeypad.print(0xff & (currentIpAddress >>  8));
-      lcdKeypad.print(".");
-      lcdKeypad.print(0xff & (currentIpAddress));
-      lcdKeypad.print("                 ");
+      lcdKeypad->setCursor(0, 1);
+      if (lcdKeypad->isUpKey())
+      {
+        // IP Address presentation: either on up key pressed or always on robots not having ID = 4
+        lcdKeypad->print(0xff & (currentIpAddress >> 24));
+        lcdKeypad->print(".");
+        lcdKeypad->print(0xff & (currentIpAddress >> 16));
+        lcdKeypad->print(".");
+        lcdKeypad->print(0xff & (currentIpAddress >>  8));
+        lcdKeypad->print(".");
+        lcdKeypad->print(0xff & (currentIpAddress));
+        lcdKeypad->print("                 ");
+      }
+      else if (cmdSeq->isRunning())
+      {
+        lcdKeypad->print(cmdSeq->currentCmd()->toString());
+        lcdKeypad->print("                 ");
+      }
+      else
+      {
+        lcdKeypad->print("                 ");
+      }
     }
     else
     {
@@ -930,14 +877,14 @@ void updateDisplay()
       int lWSpd = static_cast<int>(leftWheelSpeed);
       int rWspd = static_cast<int>(rightWheelSpeed);
 
-      lcdKeypad.setCursor(0, 1);
-      lcdKeypad.print("v ");
-      lcdKeypad.print("l:");
-      lcdKeypad.print(lWSpd > 99 ? "" : lWSpd > 9 ? " " : "  ");
-      lcdKeypad.print(lWSpd);
-      lcdKeypad.print(" r:");
-      lcdKeypad.print(rWspd > 99 ? "" : rWspd > 9 ? " " : "  ");
-      lcdKeypad.print(rWspd);
+      lcdKeypad->setCursor(0, 1);
+      lcdKeypad->print("v ");
+      lcdKeypad->print("l:");
+      lcdKeypad->print(lWSpd > 99 ? "" : lWSpd > 9 ? " " : "  ");
+      lcdKeypad->print(lWSpd);
+      lcdKeypad->print(" r:");
+      lcdKeypad->print(rWspd > 99 ? "" : rWspd > 9 ? " " : "  ");
+      lcdKeypad->print(rWspd);
     }
   }
 }
@@ -1025,3 +972,26 @@ void updateDisplay()
 //    }
 //  }
 //}
+
+/*
+ SerialEvent occurs whenever a new data comes in the
+ hardware serial RX.  This routine is run between each
+ time loop() runs, so using delay inside loop can delay
+ response.  Multiple bytes of data may be available.
+ */
+void serialEvent()
+{
+  while (Serial.available())
+  {
+    // get the new byte:
+    char inChar = (char)Serial.read();
+    if ('i' == inChar)
+    {
+      batteryAdapter->incrRawBattSenseValue();
+    }
+    else if ('d' == inChar)
+    {
+      batteryAdapter->decrRawBattSenseValue();
+    }
+  }
+}
