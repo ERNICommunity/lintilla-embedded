@@ -112,6 +112,11 @@
 			<locationURI>lintilla_embeddedBlanking/Blanking</locationURI>
 		</link>
 		<link>
+			<name>plat/Dbg</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedDbg/Dbg</locationURI>
+		</link>
+		<link>
 			<name>plat/Debounce</name>
 			<type>2</type>
 			<locationURI>lintilla_embeddedDebounce/Debounce</locationURI>

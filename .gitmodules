@@ -22,3 +22,6 @@
 [submodule "lib/comp/ivm"]
 	path = lib/comp/ivm
 	url = https://code.google.com/p/arduino-utils-ivm/
+[submodule "lib/plat/dbg"]
+	path = lib/plat/dbg
+	url = https://code.google.com/p/debug-print-log/
