@@ -61,6 +61,11 @@ bool CmdSequence::isRunning()
   return m_isRunning;
 }
 
+Cmd* CmdSequence::currentCmd()
+{
+  return m_currentCmd;
+}
+
 
 void CmdSequence::printCmdNameList()
 {

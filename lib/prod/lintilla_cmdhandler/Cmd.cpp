@@ -63,6 +63,12 @@ void Cmd::printName()
 #endif
 }
 
+const char* Cmd::toString()
+{
+  return m_name;
+}
+
+
 CmdSequence* Cmd::cmdSequence()
 {
   return m_cmdSeq;
