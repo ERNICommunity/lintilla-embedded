@@ -57,8 +57,8 @@ public:
 
 //-----------------------------------------------------------------------------
 
-const unsigned int BatteryImpl::s_DEFAULT_STARTUP_TIME = 1000;
-const unsigned int BatteryImpl::s_DEFAULT_POLL_TIME = 2000;
+const unsigned int BatteryImpl::s_DEFAULT_STARTUP_TIME = 500;
+const unsigned int BatteryImpl::s_DEFAULT_POLL_TIME = 1000;
 
 const float BatteryImpl::s_BATT_WARN_THRSHD = 6.5;
 const float BatteryImpl::s_BATT_STOP_THRSHD = 6.3;
@@ -115,27 +115,11 @@ void BatteryImpl::evaluateStatus()
   if ((0 != m_adapter) && (0 != m_evalFsm))
   {
     float batteryVoltage = m_adapter->readRawBattSenseValue() * m_battVoltageSenseFactor * s_V_ADC_FULLRANGE / s_N_ADC_FULLRANGE;
-
-    bool isVoltageFalling = false;
-    bool isVoltageRising = false;
-
-    if (batteryVoltage < m_batteryVoltage)
-    {
-      isVoltageFalling = true;
-    }
-    else if (batteryVoltage > m_batteryVoltage)
-    {
-      isVoltageRising = true;
-    }
-
-    if (isVoltageFalling || isVoltageRising)
-    {
-      m_batteryVoltage = batteryVoltage;
-      // Serial.print("BatteryImpl::evaluateStatus(), m_batteryVoltage = ");
-      // Serial.print(m_batteryVoltage);
-      // Serial.println(" V");
-      m_evalFsm->voltageChanged();
-    }
+    m_batteryVoltage = batteryVoltage;
+    // Serial.print("BatteryImpl::evaluateStatus(), m_batteryVoltage = ");
+    // Serial.print(m_batteryVoltage);
+    // Serial.println(" V");
+    m_evalFsm->evaluateStatus();
   }
 }
 

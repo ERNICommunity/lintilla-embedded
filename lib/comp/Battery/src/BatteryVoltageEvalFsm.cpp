@@ -48,11 +48,11 @@ void BatteryVoltageEvalFsm::changeState(BatteryVoltageEvalFsmState* state)
   }
 }
 
-void BatteryVoltageEvalFsm::voltageChanged()
+void BatteryVoltageEvalFsm::evaluateStatus()
 {
   if ((0 != m_state) && (0 != m_adapter))
   {
-    m_state->voltageChanged(this);
+    m_state->evaluateState(this);
   }
 }
 
@@ -154,7 +154,7 @@ const char* BatteryVoltageEvalFsmState_BattOk::toString()
   return "BattOk";
 }
 
-void BatteryVoltageEvalFsmState_BattOk::voltageChanged(BatteryVoltageEvalFsm* fsm)
+void BatteryVoltageEvalFsmState_BattOk::evaluateState(BatteryVoltageEvalFsm* fsm)
 {
   if (fsm->isGuardWarn())
   {
@@ -185,7 +185,7 @@ const char* BatteryVoltageEvalFsmState_BattVoltageBelowWarn::toString()
   return "BattVoltageBelowWarn";
 }
 
-void BatteryVoltageEvalFsmState_BattVoltageBelowWarn::voltageChanged(BatteryVoltageEvalFsm* fsm)
+void BatteryVoltageEvalFsmState_BattVoltageBelowWarn::evaluateState(BatteryVoltageEvalFsm* fsm)
 {
   if (fsm->isGuardStop())
   {
@@ -220,7 +220,7 @@ const char* BatteryVoltageEvalFsmState_BattVoltageBelowStop::toString()
   return "BattVoltageBelowStop";
 }
 
-void BatteryVoltageEvalFsmState_BattVoltageBelowStop::voltageChanged(BatteryVoltageEvalFsm* fsm)
+void BatteryVoltageEvalFsmState_BattVoltageBelowStop::evaluateState(BatteryVoltageEvalFsm* fsm)
 {
   if (fsm->isGuardShut())
   {
@@ -255,7 +255,7 @@ const char* BatteryVoltageEvalFsmState_BattVoltageBelowShutdown::toString()
   return "BattVoltageBelowShutdown";
 }
 
-void BatteryVoltageEvalFsmState_BattVoltageBelowShutdown::voltageChanged(BatteryVoltageEvalFsm* fsm)
+void BatteryVoltageEvalFsmState_BattVoltageBelowShutdown::evaluateState(BatteryVoltageEvalFsm* fsm)
 {
   if (fsm->isGuardShutPlusHyst())
   {

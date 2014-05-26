@@ -41,7 +41,7 @@ public:
   /**
    *
    */
-  void voltageChanged();
+  void evaluateStatus();
 
   bool isBattVoltageOk();
   bool isBattVoltageBelowWarnThreshold();
@@ -82,7 +82,7 @@ protected:
 public:
   virtual ~BatteryVoltageEvalFsmState() { }
 
-  virtual void voltageChanged(BatteryVoltageEvalFsm* fsm) { }
+  virtual void evaluateState(BatteryVoltageEvalFsm* fsm) { }
 
   virtual void entry(BatteryVoltageEvalFsm* fsm) { }
 
@@ -107,7 +107,7 @@ public:
 
   virtual ~BatteryVoltageEvalFsmState_BattOk() { }
 
-  virtual void voltageChanged(BatteryVoltageEvalFsm* fsm);
+  virtual void evaluateState(BatteryVoltageEvalFsm* fsm);
 
   virtual void entry(BatteryVoltageEvalFsm* fsm);
 
@@ -133,7 +133,7 @@ public:
 
   virtual ~BatteryVoltageEvalFsmState_BattVoltageBelowWarn() { }
 
-  virtual void voltageChanged(BatteryVoltageEvalFsm* fsm);
+  virtual void evaluateState(BatteryVoltageEvalFsm* fsm);
 
   virtual void entry(BatteryVoltageEvalFsm* fsm);
 
@@ -159,7 +159,7 @@ public:
 
   virtual ~BatteryVoltageEvalFsmState_BattVoltageBelowStop() { }
 
-  virtual void voltageChanged(BatteryVoltageEvalFsm* fsm);
+  virtual void evaluateState(BatteryVoltageEvalFsm* fsm);
 
   virtual void entry(BatteryVoltageEvalFsm* fsm);
 
@@ -185,7 +185,7 @@ public:
 
   virtual ~BatteryVoltageEvalFsmState_BattVoltageBelowShutdown() { }
 
-  virtual void voltageChanged(BatteryVoltageEvalFsm* fsm);
+  virtual void evaluateState(BatteryVoltageEvalFsm* fsm);
 
   virtual void entry(BatteryVoltageEvalFsm* fsm);
 
