@@ -52,7 +52,7 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.USE_ARCHIVER/value=true
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.VARIANT.PATH/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.VARIANT.PATH/operation=replace
-environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.VARIANT.PATH/value=/C\:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/variants/${A.BUILD.VARIANT}
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.VARIANT.PATH/value=${ArduinoPath}/hardware/arduino/avr/variants/${A.BUILD.VARIANT}
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.VARIANT/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.VARIANT/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.VARIANT/value=mega
@@ -176,6 +176,9 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RECIPE
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RECIPE.OBJCOPY.HEX.PATTERN/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RECIPE.OBJCOPY.HEX.PATTERN/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RECIPE.OBJCOPY.HEX.PATTERN/value="${A.COMPILER.PATH}${A.COMPILER.ELF2HEX.CMD}" ${A.COMPILER.ELF2HEX.FLAGS} "${A.BUILD.PATH}/${A.BUILD.PROJECT_NAME}.elf" "${A.BUILD.PATH}/${A.BUILD.PROJECT_NAME}.hex"
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RECIPE.S.O.PATTERN.1/delimiter=;
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RECIPE.S.O.PATTERN.1/operation=replace
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RECIPE.S.O.PATTERN.1/value=
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RECIPE.SIZE.PATTERN.1/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RECIPE.SIZE.PATTERN.1/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RECIPE.SIZE.PATTERN.1/value="${A.COMPILER.PATH}${A.COMPILER.SIZE.CMD}" -A "${A.BUILD.PATH}/${A.BUILD.PROJECT_NAME}.hex"
@@ -265,7 +268,7 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.B
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.BOARD_NAME/value=Arduino Mega 2560 or Mega ADK
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.COM_PORT/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.COM_PORT/operation=replace
-environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.COM_PORT/value=COM10
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.COM_PORT/value=COM5
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.CPU\ SPEED/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.CPU\ SPEED/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.CPU\ SPEED/value=
@@ -296,6 +299,9 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.S
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.USB\ TYPE/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.USB\ TYPE/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.USB\ TYPE/value=
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.WARNING_LEVEL/delimiter=;
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.WARNING_LEVEL/operation=replace
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.WARNING_LEVEL/value=\ -w 
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/PATH/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/PATH/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/PATH/value=${A.COMPILER.PATH}${PathDelimiter}${A.BUILD.GENERIC.PATH}${PathDelimiter}${A.RUNTIME.IDE.PATH}/hardware/tools/avr/utils/bin${PathDelimiter}${PATH}

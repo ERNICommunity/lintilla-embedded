@@ -57,3 +57,6 @@
 /workspace/.metadata/.plugins/org.eclipse.xtext.builder/builder.state
 /workspace/.metadata/.plugins/org.eclipse.core.resources/.projects/lintilla_embedded/.location
 /workspace/.metadata/.plugins/org.eclipse.ui.ide/dialog_settings.xml
+/tools/arduino
+/workspace/.metadata
+/tools/eclipseArduino

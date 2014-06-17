@@ -14,7 +14,6 @@
 #include "Blanking.h"
 #include "TimerContext.h"
 #include "Timer.h"
-#include "TimerAdapter.h"
 #include "SN754410Driver.h"
 #include "MotorPWM.h"
 #include "UltrasonicSensor.h"
