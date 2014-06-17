@@ -4,9 +4,6 @@
 [submodule "lib/plat/blanking"]
 	path = lib/plat/blanking
 	url = https://code.google.com/p/arduino-utils-blanking/
-[submodule "lib/plat/debounce"]
-	path = lib/plat/debounce
-	url = https://code.google.com/p/arduino-utils-debounce/
 [submodule "lib/comp/Adafruit_CC3000"]
 	path = lib/comp/Adafruit_CC3000
 	url = https://github.com/adafruit/Adafruit_CC3000_Library
