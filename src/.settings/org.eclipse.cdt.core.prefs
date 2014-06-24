@@ -190,10 +190,10 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RECIPE
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RECIPE.SIZE.REGEX/value=Total\\s+([0-9]+).*
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIME.HARDWARE.PATH/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIME.HARDWARE.PATH/operation=replace
-environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIME.HARDWARE.PATH/value=C\:/HackSessions/Tools/arduino-1.5.2/hardware
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIME.HARDWARE.PATH/value=C\:/git/arduino-projects/lintilla-embedded/tools/arduino/hardware
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIME.IDE.PATH/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIME.IDE.PATH/operation=replace
-environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIME.IDE.PATH/value=C\:/HackSessions/Tools/arduino-1.5.2
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIME.IDE.PATH/value=C\:/git/arduino-projects/lintilla-embedded/tools/arduino
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIME.IDE.VERSION/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIME.IDE.VERSION/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIME.IDE.VERSION/value=152
@@ -262,7 +262,7 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.UPLOAD
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.UPLOAD.TOOL/value=avrdude
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.BOARDS_FILE/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.BOARDS_FILE/operation=replace
-environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.BOARDS_FILE/value=C\:\\HackSessions\\Tools\\arduino-1.5.2\\hardware\\arduino\\avr\\boards.txt
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.BOARDS_FILE/value=C\:\\git\\arduino-projects\\lintilla-embedded\\tools\\arduino\\hardware\\arduino\\avr\\boards.txt
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.BOARD_NAME/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.BOARD_NAME/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.BOARD_NAME/value=Arduino Mega 2560 or Mega ADK
@@ -286,7 +286,7 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.K
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.KEYBOARD\ LAYOUT/value=
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.PLATFORM_FILE/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.PLATFORM_FILE/operation=replace
-environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.PLATFORM_FILE/value=C\:/HackSessions/Tools/arduino-1.5.2/hardware/arduino/avr/platform.txt
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.PLATFORM_FILE/value=C\:/git/arduino-projects/lintilla-embedded/tools/arduino/hardware/arduino/avr/platform.txt
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.PROCESSOR/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.PROCESSOR/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.PROCESSOR/value=
