@@ -5,15 +5,15 @@ Arduino Robot SW.
 
 Clone this repository recursively into:
 
-`C:\git\arduino-projects\lintilla-embedded`
+    C:\git\arduino-projects\lintilla-embedded
 
 using this command:
 
-`git clone --recursive git@github.com:ERNICommunity/lintilla-embedded.git C:\git\arduino-projects\lintilla-embedded`
+    git clone --recursive git@github.com:ERNICommunity/lintilla-embedded.git C:\git\arduino-projects\lintilla-embedded
 
 After cloning, run the following batch:
 
-`C:\git\arduino-projects\lintilla-embedded\prepare-workspace.bat`
+    C:\git\arduino-projects\lintilla-embedded\prepare-workspace.bat
 
 This downloads and installs all needed tools to build this and work on this project using Eclipse CDT together with the Eclipse Arduino Plugin, unless the tools are already installed at the following locations:
 
@@ -29,4 +29,4 @@ Don’t get discouraged by an error message popping up potentially, just click O
 
 Run the Eclipse Arduino Workbench with this batch:
 
-`C:\git\arduino-projects\lintilla-embedded\eclipseArduino.bat`
+    C:\git\arduino-projects\lintilla-embedded\eclipseArduino.bat
