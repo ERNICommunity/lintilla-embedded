@@ -5,11 +5,11 @@ Arduino Robot SW.
 
 Clone this repository recursively into:
 
-C:\git\arduino-projects\lintilla-embedded
+`C:\git\arduino-projects\lintilla-embedded`
 
 using this command:
 
-git clone --recursive git@github.com:ERNICommunity/lintilla-embedded.git C:\git\arduino-projects\lintilla-embedded
+`git clone --recursive git@github.com:ERNICommunity/lintilla-embedded.git C:\git\arduino-projects\lintilla-embedded`
 
 After cloning, run the following batch:
 
