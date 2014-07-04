@@ -13,7 +13,7 @@ git clone --recursive git@github.com:ERNICommunity/lintilla-embedded.git C:\git\
 
 After cloning, run the following batch:
 
- C:\git\arduino-projects\arduino-cc3000-test\prepare-workspace.bat
+ C:\git\arduino-projects\lintilla-embedded\prepare-workspace.bat
 
 This downloads and installs all needed tools to build this and work on this project using Eclipse CDT together with the Eclipse Arduino Plugin, unless the tools are already installed at the following locations:
 
