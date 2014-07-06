@@ -6,7 +6,6 @@
  */
 
 #include "Timer.h"
-#include "TimerAdapter.h"
 #include "Cmd.h"
 #include "CmdAdapter.h"
 #include "CmdSequence.h"
