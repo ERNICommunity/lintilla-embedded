@@ -26,18 +26,18 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/SPI}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/Wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/Wire/utility}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/NewPing}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/Blanking}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/NewPing}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/Timer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/Adafruit_CC3000}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/Adafruit_CC3000/utility}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/FreeSixIMU}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/IVM}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/LcdKeypad}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/MotorPWM}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/UltrasonicRanging}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/IVM}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/FreeSixIMU}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Timer}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/lintilla_cmdhandler}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/lintilla_ivm}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/prod/lintilla_cmdhandler}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/prod/lintilla_ivm}&quot;"/>
 								</option>
 								<inputType id="it.baeyens.arduino.compiler.cpp.sketch.input.1529140506" name="CPP source files" superClass="it.baeyens.arduino.compiler.cpp.sketch.input"/>
 							</tool>
@@ -50,18 +50,18 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/SPI}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/Wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/Wire/utility}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/NewPing}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/Blanking}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/NewPing}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/Timer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/Adafruit_CC3000}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/Adafruit_CC3000/utility}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/FreeSixIMU}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/IVM}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/LcdKeypad}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/MotorPWM}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/UltrasonicRanging}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/IVM}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/FreeSixIMU}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Timer}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/lintilla_cmdhandler}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/lintilla_ivm}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/prod/lintilla_cmdhandler}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/prod/lintilla_ivm}&quot;"/>
 								</option>
 								<inputType id="it.baeyens.arduino.compiler.c.sketch.input.1692972044" name="C Source Files" superClass="it.baeyens.arduino.compiler.c.sketch.input"/>
 							</tool>
