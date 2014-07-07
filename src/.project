@@ -27,9 +27,24 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>Timer</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedTimer/Timer</locationURI>
+		</link>
+		<link>
 			<name>comp</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>lintilla_cmdhandler</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedlintilla_cmdhandler/lintilla_cmdhandler</locationURI>
+		</link>
+		<link>
+			<name>lintilla_ivm</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedlintilla_ivm/lintilla_ivm</locationURI>
 		</link>
 		<link>
 			<name>plat</name>
@@ -110,21 +125,6 @@
 			<name>plat/NewPing</name>
 			<type>2</type>
 			<locationURI>lintilla_embeddedNewPing/NewPing</locationURI>
-		</link>
-		<link>
-			<name>plat/Timer</name>
-			<type>2</type>
-			<locationURI>lintilla_embeddedTimer/Timer</locationURI>
-		</link>
-		<link>
-			<name>prod/lintilla_cmdhandler</name>
-			<type>2</type>
-			<locationURI>lintilla_embeddedlintilla_cmdhandler/lintilla_cmdhandler</locationURI>
-		</link>
-		<link>
-			<name>prod/lintilla_ivm</name>
-			<type>2</type>
-			<locationURI>lintilla_embeddedlintilla_ivm/lintilla_ivm</locationURI>
 		</link>
 	</linkedResources>
 	<variableList>

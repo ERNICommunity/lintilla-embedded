@@ -52,7 +52,7 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.USE_ARCHIVER/value=true
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.VARIANT.PATH/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.VARIANT.PATH/operation=replace
-environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.VARIANT.PATH/value=${ArduinoPath}/hardware/arduino/avr/variants/${A.BUILD.VARIANT}
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.VARIANT.PATH/value=/C\:/git/arduino-projects/lintilla-embedded/tools/arduino/hardware/arduino/avr/variants/${A.BUILD.VARIANT}
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.VARIANT/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.VARIANT/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.VARIANT/value=mega
