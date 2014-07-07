@@ -18,7 +18,7 @@
 	url = http://code.google.com/p/arduino-display-lcdkeypad/
 [submodule "lib/comp/PID"]
 	path = lib/comp/PID
-	url = https://github.com/br3ttb/Arduino-PID-Library
+	url = https://github.com/ERNICommunity/Arduino-PID-Library.git
 [submodule "lib/comp/ivm"]
 	path = lib/comp/ivm
 	url = https://code.google.com/p/arduino-utils-ivm/
