@@ -33,6 +33,7 @@ CmdSequence::CmdSequence(CmdAdapter* adapter)
 : m_isRunning(false)
 , m_firstCmd(0)
 , m_currentCmd(0)
+, m_cmdListIter(0)
 , m_adapter(adapter)
 , m_timer(new Timer(new CmdSeqTimerAdapter(this), Timer::IS_NON_RECURRING))
 { }
@@ -59,17 +60,6 @@ void CmdSequence::stop()
 bool CmdSequence::isRunning()
 {
   return m_isRunning;
-}
-
-
-void CmdSequence::printCmdNameList()
-{
-  Cmd* next = m_firstCmd;
-  while (0 != next)
-  {
-    next->printName();
-    next = next->next();
-  }
 }
 
 void CmdSequence::execNextCmd()
@@ -132,4 +122,16 @@ void CmdSequence::detach(Cmd* cmd)
       next->setNext(cmd->next());
     }
   }
+}
+
+Cmd* CmdSequence::getFirstCmd()
+{
+  m_cmdListIter = m_firstCmd;
+  return m_cmdListIter;
+}
+
+Cmd* CmdSequence::getNextCmd()
+{
+  m_cmdListIter = m_cmdListIter->next();
+  return m_cmdListIter;
 }

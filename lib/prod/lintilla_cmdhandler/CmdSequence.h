@@ -28,11 +28,11 @@ public:
   void attach(Cmd* cmd);
   void detach(Cmd* cmd);
 
-  void printCmdNameList();
-
   void attachAdapter(CmdAdapter* adapter);
-
   CmdAdapter* adapter() { return m_adapter; }
+
+  Cmd* getFirstCmd();
+  Cmd* getNextCmd();
 
 private:
   void execCmd();
@@ -41,6 +41,7 @@ private:
   bool        m_isRunning;
   Cmd*        m_firstCmd;
   Cmd*        m_currentCmd;
+  Cmd*        m_cmdListIter;
   CmdAdapter* m_adapter;
   Timer*      m_timer;
 

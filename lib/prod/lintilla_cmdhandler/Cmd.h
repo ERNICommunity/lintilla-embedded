@@ -24,7 +24,7 @@ public:
   Cmd* next();
   void setNext(Cmd* next);
 
-  void printName();
+  const char* getName();
 
   CmdSequence* cmdSequence();
 

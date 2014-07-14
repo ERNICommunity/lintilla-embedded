@@ -126,6 +126,11 @@
 			<type>2</type>
 			<locationURI>lintilla_embeddedlintilla_ivm/lintilla_ivm</locationURI>
 		</link>
+		<link>
+			<name>prod/lintilla_mmi</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedlintilla_mmi/lintilla_mmi</locationURI>
+		</link>
 	</linkedResources>
 	<variableList>
 		<variable>

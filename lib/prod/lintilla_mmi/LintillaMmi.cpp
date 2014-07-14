@@ -5,9 +5,36 @@
  *      Author: niklausd
  */
 
-#include "LcdKeypad.h"
+#include "Arduino.h"
 
+#include "LcdKeypad.h"
+#include "Blanking.h"
+#include "Timer.h"
 #include "LintillaMmi.h"
+
+//-----------------------------------------------------------------------------
+
+const unsigned int cUpdateDisplayInterval = 200; // Display update interval [ms]
+class DisplayTimerAdapter : public TimerAdapter
+{
+private:
+  LintillaMmi* m_mmi;
+
+public:
+  DisplayTimerAdapter(LintillaMmi* mmi)
+  : m_mmi(mmi)
+  { }
+
+  void timeExpired()
+  {
+    if (0 != m_mmi)
+    {
+      m_mmi->updateDisplay();
+    }
+  }
+};
+
+//-----------------------------------------------------------------------------
 
 class MyLcdKeypadAdapter : public LcdKeypadAdapter
 {
@@ -17,62 +44,86 @@ public:
   { }
 
 private:
+  LintillaMmi* m_mmi;
+
+public:
   void handleKeyChanged(LcdKeypad::Key newKey)
   {
-    if (0 != m_mmi)
+    Serial.print("MyLcdKeypadAdapter::handleKeyChanged(), newKey: ");
+    Serial.println((LcdKeypad::NO_KEY == newKey)     ? "NO_KEY"     :
+                   (LcdKeypad::SELECT_KEY == newKey) ? "SELECT_KEY" :
+                   (LcdKeypad::LEFT_KEY == newKey)   ? "LEFT_KEY"   :
+                   (LcdKeypad::UP_KEY == newKey)     ? "UP_KEY"     :
+                   (LcdKeypad::DOWN_KEY == newKey)   ? "DOWN_KEY"   :
+                   (LcdKeypad::RIGHT_KEY == newKey)  ? "RIGHT_KEY"  : "OOPS!! Invalid value!!");
+
+    if ((0 != m_mmi) && (0 != m_mmi->adapter()) && (0 != m_mmi->lcdKeypad()))
     {
-      LcdKeypad* lcdKeypad = m_mmi->lcdKeypad();
-      if (0 != lcdKeypad)
+      if (!m_mmi->adapter()->isSeqRunning())
       {
-        if (LcdKeypad::UP_KEY == newKey)
+        if (!m_mmi->isIvmAccessMode())
         {
-          if (!m_mmi->isIvmAccessMode())
+          if (LcdKeypad::SELECT_KEY == newKey)
           {
-            lcdKeypad->setBackLightOn(true);
+            m_mmi->setIvmAccessMode(true);
+          }
+          else if (LcdKeypad::LEFT_KEY == newKey)
+          {
+            m_mmi->adapter()->startSequence();
           }
         }
-        if (LcdKeypad::DOWN_KEY == newKey)
+        else
         {
-          if (!m_mmi->isIvmAccessMode())
+          if (!m_mmi->isIvmRobotIdEditMode())
           {
-            lcdKeypad->setBackLightOn(false);
+            if (LcdKeypad::RIGHT_KEY == newKey)
+            {
+              m_mmi->setIvmAccessMode(false);
+            }
+            else if (LcdKeypad::LEFT_KEY == newKey)
+            {
+              m_mmi->setIvmRobotIdEditMode(true);
+            }
+          }
+          else
+          {
+            unsigned char robotId = m_mmi->adapter()->getDeviceId();
+
+            if (LcdKeypad::SELECT_KEY == newKey)
+            {
+              m_mmi->setIvmRobotIdEditMode(false);
+            }
+            if (LcdKeypad::UP_KEY == newKey)
+            {
+              robotId++;
+              m_mmi->adapter()->setDeviceId(robotId);
+            }
+            if (LcdKeypad::DOWN_KEY == newKey)
+            {
+              robotId--;
+              m_mmi->adapter()->setDeviceId(robotId);
+            }
           }
         }
       }
-      if (LcdKeypad::SELECT_KEY == newKey)
+      else
       {
-        if (m_mmi->isIvmRobotIdEditMode())
+        if (LcdKeypad::RIGHT_KEY == newKey)
         {
-          m_mmi->setIvmRobotIdEditMode(false);
-        }
-        else if (!m_mmi->isIvmAccessMode())
-        {
-          m_mmi->setIvmAccessMode(true);
-        }
-      }
-      if (LcdKeypad::LEFT_KEY == newKey)
-      {
-        if (m_mmi->isIvmAccessMode())
-        {
-          m_mmi->setIvmRobotIdEditMode(true);
-        }
-      }
-      if (LcdKeypad::RIGHT_KEY == newKey)
-      {
-        if (m_mmi->isIvmAccessMode())
-        {
-          m_mmi->setIvmAccessMode(false);
+          m_mmi->adapter()->stopSequence();
         }
       }
     }
   }
-
-private:
-  LintillaMmi* m_mmi;
 };
 
-LintillaMmi::LintillaMmi()
+//-----------------------------------------------------------------------------
+
+LintillaMmi::LintillaMmi(LintillaMmiAdapter* adapter)
 : m_lcdKeypad(new LcdKeypad())
+, m_displayBlanking(new Blanking())
+, m_adapter(adapter)
+, m_displayTimer(new Timer(new DisplayTimerAdapter(this), Timer::IS_RECURRING, cUpdateDisplayInterval))
 , m_isIvmAccessMode(false)
 , m_isIvmRobotIdEditMode(false)
 {
@@ -80,11 +131,30 @@ LintillaMmi::LintillaMmi()
 }
 
 LintillaMmi::~LintillaMmi()
-{ }
+{
+  delete m_displayBlanking;
+  m_displayBlanking = 0;
+
+  delete m_lcdKeypad->adapter();
+  m_lcdKeypad->attachAdapter(0);
+
+  delete m_lcdKeypad;
+  m_lcdKeypad = 0;
+}
 
 LcdKeypad* LintillaMmi::lcdKeypad()
 {
   return m_lcdKeypad;
+}
+
+void LintillaMmi::attachAdapter(LintillaMmiAdapter* adapter)
+{
+  m_adapter = adapter;
+}
+
+LintillaMmiAdapter* LintillaMmi::adapter()
+{
+  return m_adapter;
 }
 
 bool LintillaMmi::isIvmAccessMode()
@@ -106,3 +176,98 @@ void LintillaMmi::setIvmRobotIdEditMode(bool isIvmRobotIdEditMode)
 {
   m_isIvmRobotIdEditMode = isIvmRobotIdEditMode;
 }
+
+void LintillaMmi::updateDisplay()
+{
+  m_lcdKeypad->setCursor(0, 0);
+
+  if (isIvmAccessMode())
+  {
+    m_lcdKeypad->print("IVM Data (V.");
+    m_lcdKeypad->print(adapter()->getIvmVersion());
+    m_lcdKeypad->print(")     ");
+
+    m_lcdKeypad->setCursor(0, 1);
+
+    m_lcdKeypad->print("Robot ID: ");
+
+    if (isIvmRobotIdEditMode() && m_displayBlanking->isSignalBlanked())
+    {
+      m_lcdKeypad->print("      ");
+    }
+    else
+    {
+      m_lcdKeypad->print(adapter()->getDeviceId());
+    }
+    m_lcdKeypad->print("     ");
+  }
+  else
+  {
+    //-------------------------------------------
+    // LCD Display Line 1
+    //-------------------------------------------
+    m_lcdKeypad->print("Dst:");
+    if (m_adapter->isFrontDistSensLimitExceeded())
+    {
+      m_lcdKeypad->print("infin ");
+    }
+    else
+    {
+      unsigned long frontDistanceCM = m_adapter->getFrontDistanceCM();
+      m_lcdKeypad->print(frontDistanceCM > 99 ? "" : frontDistanceCM > 9 ? " " : "  ");
+      m_lcdKeypad->print(frontDistanceCM);
+      m_lcdKeypad->print("cm ");
+    }
+
+    if (m_displayBlanking->isSignalBlanked() && (m_adapter->isBattVoltageBelowWarnThreshold()))
+    {
+      m_lcdKeypad->print("      ");
+    }
+    else
+    {
+      m_lcdKeypad->print("B:");
+      m_lcdKeypad->print(m_adapter->getBatteryVoltage());
+      m_lcdKeypad->print("[V]");
+    }
+
+    //-------------------------------------------
+    // LCD Display Line 2
+    //-------------------------------------------
+    if (!m_adapter->isWlanConnected())
+    {
+      m_lcdKeypad->print("Connect to WiFi ");
+    }
+    else if (m_lcdKeypad->isUpKey() || (4 != m_adapter->getDeviceId()))
+    {
+      uint32_t currentIpAddress = m_adapter->getCurrentIpAddress();
+      // IP Address presentation: either on up key pressed or always on robots not having ID = 4
+      m_lcdKeypad->setCursor(0, 1);
+      m_lcdKeypad->setCursor(0, 1);
+      m_lcdKeypad->print(0xff & (currentIpAddress >> 24));
+      m_lcdKeypad->print(".");
+      m_lcdKeypad->print(0xff & (currentIpAddress >> 16));
+      m_lcdKeypad->print(".");
+      m_lcdKeypad->print(0xff & (currentIpAddress >>  8));
+      m_lcdKeypad->print(".");
+      m_lcdKeypad->print(0xff & (currentIpAddress));
+      m_lcdKeypad->print("                 ");
+    }
+    else
+    {
+      // Speed value presentation (only useful on robot having ID = 4, since only this one has wheel speed sensors)
+      int lWSpd = m_adapter->getLeftWheelSpeed();
+      int rWspd = m_adapter->getRightWheelSpeed();
+
+      m_lcdKeypad->setCursor(0, 1);
+      m_lcdKeypad->print("v ");
+      m_lcdKeypad->print("l:");
+      m_lcdKeypad->print(lWSpd > 99 ? "" : lWSpd > 9 ? " " : "  ");
+      m_lcdKeypad->print(lWSpd);
+      m_lcdKeypad->print(" r:");
+      m_lcdKeypad->print(rWspd > 99 ? "" : rWspd > 9 ? " " : "  ");
+      m_lcdKeypad->print(rWspd);
+    }
+  }
+}
+
+//-----------------------------------------------------------------------------

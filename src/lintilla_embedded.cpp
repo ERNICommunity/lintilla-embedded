@@ -10,8 +10,7 @@
 #include <string.h>
 #include "utility/debug.h"
 
-#include "LcdKeypad.h"
-#include "Blanking.h"
+#include "LintillaMmi.h"
 #include "Timer.h"
 #include "SN754410Driver.h"
 #include "MotorPWM.h"
@@ -50,7 +49,7 @@ class RamDebugTimerAdapter : public TimerAdapter
 //---------------------------------------------------------------------------
 // Inventory Management
 //---------------------------------------------------------------------------
-LintillaIvm* ivm;
+LintillaIvm* ivm = 0;
 
 //-----------------------------------------------------------------------------
 // Battery Voltage Surveillance
@@ -66,7 +65,7 @@ void sleepNow();
 //---------------------------------------------------------------------------
 // Ultrasonic Ranging
 //---------------------------------------------------------------------------
-UltrasonicSensor* ultrasonicSensorFront;
+UltrasonicSensor* ultrasonicSensorFront = 0;
 
 const unsigned int triggerPin = 34;
 const unsigned int echoPin    = 36;
@@ -158,37 +157,9 @@ class SpeedCtrlTimerAdapter : public TimerAdapter
 };
 
 //---------------------------------------------------------------------------
-// Lcd Display
-//---------------------------------------------------------------------------
-LcdKeypad lcdKeypad;
-Blanking* displayBlanking;
-
-Timer* displayTimer;
-const unsigned int cUpdateDisplayInterval = 200; // Display update interval [ms]
-void selectMode();
-void updateDisplay();
-class DisplayTimerAdapter : public TimerAdapter
-{
-  void timeExpired()
-  {
-    readBattVoltage();
-    selectMode();
-    updateDisplay();
-  }
-};
-void lcdBackLightControl();
-
-// LCD Backlight Intensity
-bool isLcdBackLightOn = true;
-
-// Display Menu states
-bool isIvmAccessMode = false;
-bool isIvmRobotIdEditMode = false;
-
-//---------------------------------------------------------------------------
 // Command Sequence
 //---------------------------------------------------------------------------
-CmdSequence* cmdSeq;
+CmdSequence* cmdSeq = 0;
 class LintillaCmdAdapter;
 
 //---------------------------------------------------------------------------
@@ -267,6 +238,129 @@ public:
 
 private:
   unsigned long int m_cumulativeDistanceCount;
+};
+
+//---------------------------------------------------------------------------
+// Lintilla MMI
+//---------------------------------------------------------------------------
+LintillaMmi* mmi = 0;
+
+class ALintillaMmiAdapter : public LintillaMmiAdapter
+{
+public:
+  bool isSeqRunning()
+  {
+    bool isRunning = false;
+    if (0 != cmdSeq)
+    {
+      isRunning = cmdSeq->isRunning();
+    }
+    return isRunning;
+  }
+
+  void startSequence()
+  {
+    if ((0 != cmdSeq) && (!isObstacleDetected) && (!isBattVoltageBelowWarnThreshold()))
+    {
+      if ((0 != lDistCount) && (0 != rDistCount))
+      {
+        lDistCount->reset();
+        rDistCount->reset();
+      }
+      cmdSeq->start();
+    }
+  }
+
+  void stopSequence()
+  {
+    if (0 != cmdSeq)
+    {
+      cmdSeq->stop();
+    }
+  }
+
+  unsigned char getDeviceId()
+  {
+    unsigned char deviceId = 0;
+    if (0 != ivm)
+    {
+      deviceId = ivm->getDeviceId();
+    }
+    return deviceId;
+  }
+
+  void setDeviceId(unsigned char deviceId)
+  {
+    if (0 != ivm)
+    {
+      ivm->setDeviceId(deviceId);
+    }
+  }
+
+  unsigned char getIvmVersion()
+  {
+    unsigned char ivmVersion = 0;
+    if (0 != ivm)
+    {
+      ivmVersion = ivm->getIvmVersion();
+    }
+   return ivmVersion;
+  }
+
+  bool isFrontDistSensLimitExceeded()
+  {
+    bool isLimitExceeded = (UltrasonicSensor::DISTANCE_LIMIT_EXCEEDED == getFrontDistanceCM());
+    return isLimitExceeded;
+  }
+
+  unsigned long getFrontDistanceCM()
+  {
+    unsigned long dist = UltrasonicSensor::DISTANCE_LIMIT_EXCEEDED;   // [cm]
+    if (0 != ultrasonicSensorFront)
+    {
+      dist = ultrasonicSensorFront->getDistanceCM();
+    }
+    return dist;
+  }
+
+  bool isBattVoltageBelowWarnThreshold()
+  {
+    bool isBelowWarnThreshold = (BATT_WARN_THRSHD >= getBatteryVoltage());
+    return isBelowWarnThreshold;
+  }
+
+  float getBatteryVoltage()
+  {
+    return battVoltage;
+  }
+
+  bool isWlanConnected()
+  {
+    return cc3000.checkConnected();
+  }
+
+  uint32_t getCurrentIpAddress()
+  {
+    return currentIpAddress;
+  }
+
+  long int getLeftWheelSpeed()
+  {
+    long int speed = 0;
+    noInterrupts();
+    speed = leftWheelSpeed;
+    interrupts();
+    return speed;
+  }
+
+  long int getRightWheelSpeed()
+  {
+    long int speed = 0;
+    noInterrupts();
+    speed = rightWheelSpeed;
+    interrupts();
+    return speed;
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -459,29 +553,11 @@ bool isSSIDPresent(const char* searchSSID)
 
 //-----------------------------------------------------------------------------
 
-void lcdBackLightControl()
-{
-  if (!isIvmAccessMode)
-  {
-    if (lcdKeypad.isUpKey() && (!isLcdBackLightOn))
-    {
-      isLcdBackLightOn = true;
-    }
-    else if (lcdKeypad.isDownKey() && (isLcdBackLightOn))
-    {
-      isLcdBackLightOn = false;
-    }
-  }
-  lcdKeypad.setBackLightOn(isLcdBackLightOn);
-}
-
-//-----------------------------------------------------------------------------
-
 // The loop function is called in an endless loop
 void loop()
 {
   yield();
-  processEchoServer();
+//  processEchoServer();
 }
 
 //-----------------------------------------------------------------------------
@@ -566,12 +642,6 @@ void readBattVoltage()
   unsigned int rawBattVoltage = analogRead(BATT_SENSE_PIN);
   battVoltage = rawBattVoltage * ivm->getBattVoltageSenseFactor() * 5 / 1023;
 
-  if (BATT_WARN_THRSHD >= battVoltage)
-  {
-    isLcdBackLightOn = false;
-    lcdBackLightControl();
-  }
-
   // emergency shutdown on battery low alarm
   if (BATT_SHUT_THRSHD >= battVoltage)
   {
@@ -597,51 +667,6 @@ void readSpeedSensors()
 
 //-----------------------------------------------------------------------------
 
-void selectMode()
-{
-  if (!cmdSeq->isRunning())
-  {
-    if (lcdKeypad.isSelectKey())
-    {
-      isIvmAccessMode = true;
-    }
-    else if (!isIvmRobotIdEditMode && lcdKeypad.isRightKey())
-    {
-      isIvmAccessMode = false;
-    }
-
-    if (isIvmAccessMode)
-    {
-      if (lcdKeypad.isLeftKey())
-      {
-        isIvmRobotIdEditMode = true;
-      }
-    }
-
-    if (isIvmRobotIdEditMode)
-    {
-      unsigned char robotId = ivm->getDeviceId();
-
-      if (lcdKeypad.isSelectKey())
-      {
-        isIvmRobotIdEditMode = false;
-      }
-      if (lcdKeypad.isUpKey())
-      {
-        robotId++;
-        ivm->setDeviceId(robotId);
-      }
-      if (lcdKeypad.isDownKey())
-      {
-        robotId--;
-        ivm->setDeviceId(robotId);
-      }
-    }
-  }
-}
-
-//-----------------------------------------------------------------------------
-
 //The setup function is called once at startup of the sketch
 void setup()
 {
@@ -656,6 +681,8 @@ void setup()
   //---------------------------------------------------------------------------
   // Inventory Management
   //---------------------------------------------------------------------------
+//  #include "EEPROM.h"
+//  EEPROM.write(1, 1);
   ivm = new LintillaIvm();
 
   //---------------------------------------------------------------------------
@@ -663,8 +690,11 @@ void setup()
   //---------------------------------------------------------------------------
   pinMode(BATT_SENSE_PIN, INPUT);         //ensure Battery Sense pin is an input
   digitalWrite(BATT_SENSE_PIN, LOW);      //ensure pullup is off on Battery Sense pin
-  readBattVoltage();
-  updateDisplay();
+//  Serial.println("IVM:");
+//  Serial.println("---------------------------------------------------");
+//  Serial.print("ID: "); Serial.println(ivm->getDeviceId());
+//  Serial.print("IVM V."); Serial.println(ivm->getIvmVersion());
+//  Serial.print("BattVoltSenseFactor = "); Serial.println(ivm->getBattVoltageSenseFactor());
 
   //---------------------------------------------------------------------------
   // Ultrasonic Ranging
@@ -674,9 +704,9 @@ void setup()
   //---------------------------------------------------------------------------
   // Speed Sensors
   //---------------------------------------------------------------------------
-  speedSensorReadTimer  = new Timer(new SpeedSensorReadTimerAdapter(), Timer::IS_RECURRING, SPEED_SENSORS_READ_TIMER_INTVL_MILLIS);
-  attachInterrupt(L_SPEED_SENS_IRQ, countLeftSpeedSensor,  RISING);
-  attachInterrupt(R_SPEED_SENS_IRQ, countRightSpeedSensor, RISING);
+//  speedSensorReadTimer  = new Timer(new SpeedSensorReadTimerAdapter(), Timer::IS_RECURRING, SPEED_SENSORS_READ_TIMER_INTVL_MILLIS);
+//  attachInterrupt(L_SPEED_SENS_IRQ, countLeftSpeedSensor,  RISING);
+//  attachInterrupt(R_SPEED_SENS_IRQ, countRightSpeedSensor, RISING);
 
   //---------------------------------------------------------------------------
   // Distance Counters
@@ -687,26 +717,19 @@ void setup()
   //---------------------------------------------------------------------------
   // Motor Drivers and Speed Control
   //---------------------------------------------------------------------------
-  motorL = new SN754410_Driver(speedPin1, motor1APin, motor2APin);
-  motorR = new SN754410_Driver(speedPin2, motor3APin, motor4APin);
-  speedCtrlTimer = new Timer(new SpeedCtrlTimerAdapter(), Timer::IS_RECURRING, cSpeedCtrlInterval);
-
-  //---------------------------------------------------------------------------
-  // Lcd Display
-  //---------------------------------------------------------------------------
-  displayTimer = new Timer(new DisplayTimerAdapter(), Timer::IS_RECURRING, cUpdateDisplayInterval);
-  displayBlanking = new Blanking();
-  lcdBackLightControl();
-  updateDisplay();
+//  motorL = new SN754410_Driver(speedPin1, motor1APin, motor2APin);
+//  motorR = new SN754410_Driver(speedPin2, motor3APin, motor4APin);
+//  speedCtrlTimer = new Timer(new SpeedCtrlTimerAdapter(), Timer::IS_RECURRING, cSpeedCtrlInterval);
 
   //---------------------------------------------------------------------------
   // Command Sequence
   //---------------------------------------------------------------------------
   cmdSeq = new CmdSequence(new LintillaCmdAdapter());
-  Cmd* cmd;
+
   const int cSpinTime     =  300;
   const int cFwdTime      =  300;
   const int cInterDelay   =  500;
+
   for (int i = 0; i <= 3; i++)
   {
     new CmdMoveForward(cmdSeq, cFwdTime);
@@ -714,14 +737,29 @@ void setup()
     new CmdSpinOnPlaceRight(cmdSeq, cSpinTime);
     new CmdStop(cmdSeq, cInterDelay);
   }
-  cmdSeq->printCmdNameList();
+
+  Cmd* cmd = cmdSeq->getFirstCmd();
+  while (0 != cmd)
+  {
+    Serial.print("cmdSeq: ");
+    Serial.print(cmd->getName());
+    Serial.print("; t=");
+    Serial.print(cmd->getTime());
+    Serial.println("[ms]");
+    cmd = cmdSeq->getNextCmd();
+  }
 
   //---------------------------------------------------------------------------
   // WiFi and Socket Server
   //---------------------------------------------------------------------------
-  connectWiFi();
-  startEchoServer();
-  wifiReconnectTimer = new Timer(new WifiReconnectTimerAdapter(), Timer::IS_RECURRING, cWifiReconnectInterval);
+//  connectWiFi();
+//  startEchoServer();
+//  wifiReconnectTimer = new Timer(new WifiReconnectTimerAdapter(), Timer::IS_RECURRING, cWifiReconnectInterval);
+
+  //---------------------------------------------------------------------------
+  // MMI
+  //---------------------------------------------------------------------------
+  mmi = new LintillaMmi(new ALintillaMmiAdapter());
 }
 
 //-----------------------------------------------------------------------------
@@ -776,15 +814,9 @@ void speedControl()
   }
   isObstacleDetected = isLeftMotorFwd && (dist > 0) && (dist < 15);
 
-  if (lcdKeypad.isRightKey() || isObstacleDetected || (battVoltage < BATT_WARN_THRSHD))
+  if (/*lcdKeypad.isRightKey() ||*/ isObstacleDetected || (battVoltage < BATT_WARN_THRSHD))
   {
     cmdSeq->stop();
-  }
-  else if (!cmdSeq->isRunning() && lcdKeypad.isLeftKey() && !isIvmAccessMode)
-  {
-    lDistCount->reset();
-    rDistCount->reset();
-    cmdSeq->start();
   }
 }
 
@@ -822,101 +854,6 @@ void updateActors()
 
   motorL->setSpeed(speedAndDirectionLeft);
   motorR->setSpeed(speedAndDirectionRight);
-}
-
-//-----------------------------------------------------------------------------
-
-void updateDisplay()
-{
-  lcdBackLightControl();
-
-  lcdKeypad.setCursor(0, 0);
-
-  if (isIvmAccessMode)
-  {
-    lcdKeypad.print("IVM Data (V.");
-    lcdKeypad.print(ivm->getIvmVersion());
-    lcdKeypad.print(")     ");
-
-    lcdKeypad.setCursor(0, 1);
-
-    lcdKeypad.print("Robot ID: ");
-
-    if (isIvmRobotIdEditMode && displayBlanking->isSignalBlanked())
-    {
-      lcdKeypad.print("      ");
-    }
-    else
-    {
-      lcdKeypad.print(ivm->getDeviceId());
-    }
-    lcdKeypad.print("     ");
-  }
-  else
-  {
-    //-------------------------------------------
-    // LCD Display Line 1
-    //-------------------------------------------
-    lcdKeypad.print("Dst:");
-    if (dist == UltrasonicSensor::DISTANCE_LIMIT_EXCEEDED)
-    {
-      lcdKeypad.print("infin ");
-    }
-    else
-    {
-      lcdKeypad.print(dist > 99 ? "" : dist > 9 ? " " : "  ");
-      lcdKeypad.print(dist);
-      lcdKeypad.print("cm ");
-    }
-
-    if (displayBlanking->isSignalBlanked() && (battVoltage < BATT_WARN_THRSHD))
-    {
-      lcdKeypad.print("      ");
-    }
-    else
-    {
-      lcdKeypad.print("B:");
-      lcdKeypad.print(battVoltage);
-      lcdKeypad.print("[V]");
-    }
-
-    //-------------------------------------------
-    // LCD Display Line 2
-    //-------------------------------------------
-    if (!cc3000.checkConnected())
-    {
-      lcdKeypad.print("Connect to WiFi ");
-    }
-    else if (lcdKeypad.isUpKey() || (4 != ivm->getDeviceId()))
-    {
-      // IP Address presentation: either on up key pressed or always on robots not having ID = 4
-      lcdKeypad.setCursor(0, 1);
-      lcdKeypad.setCursor(0, 1);
-      lcdKeypad.print(0xff & (currentIpAddress >> 24));
-      lcdKeypad.print(".");
-      lcdKeypad.print(0xff & (currentIpAddress >> 16));
-      lcdKeypad.print(".");
-      lcdKeypad.print(0xff & (currentIpAddress >>  8));
-      lcdKeypad.print(".");
-      lcdKeypad.print(0xff & (currentIpAddress));
-      lcdKeypad.print("                 ");
-    }
-    else
-    {
-      // Speed value presentation (only useful on robot having ID = 4, since only this one has wheel speed sensors)
-      int lWSpd = static_cast<int>(leftWheelSpeed);
-      int rWspd = static_cast<int>(rightWheelSpeed);
-
-      lcdKeypad.setCursor(0, 1);
-      lcdKeypad.print("v ");
-      lcdKeypad.print("l:");
-      lcdKeypad.print(lWSpd > 99 ? "" : lWSpd > 9 ? " " : "  ");
-      lcdKeypad.print(lWSpd);
-      lcdKeypad.print(" r:");
-      lcdKeypad.print(rWspd > 99 ? "" : rWspd > 9 ? " " : "  ");
-      lcdKeypad.print(rWspd);
-    }
-  }
 }
 
 //-----------------------------------------------------------------------------
