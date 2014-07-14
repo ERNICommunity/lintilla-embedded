@@ -717,9 +717,9 @@ void setup()
   //---------------------------------------------------------------------------
   // Motor Drivers and Speed Control
   //---------------------------------------------------------------------------
-//  motorL = new SN754410_Driver(speedPin1, motor1APin, motor2APin);
-//  motorR = new SN754410_Driver(speedPin2, motor3APin, motor4APin);
-//  speedCtrlTimer = new Timer(new SpeedCtrlTimerAdapter(), Timer::IS_RECURRING, cSpeedCtrlInterval);
+  motorL = new SN754410_Driver(speedPin1, motor1APin, motor2APin);
+  motorR = new SN754410_Driver(speedPin2, motor3APin, motor4APin);
+  speedCtrlTimer = new Timer(new SpeedCtrlTimerAdapter(), Timer::IS_RECURRING, cSpeedCtrlInterval);
 
   //---------------------------------------------------------------------------
   // Command Sequence
