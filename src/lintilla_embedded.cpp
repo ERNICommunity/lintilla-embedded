@@ -11,6 +11,7 @@
 #include "utility/debug.h"
 
 #include "LintillaMmi.h"
+#include "ALintillaMmiAdapter.h"
 #include "Timer.h"
 #include "SN754410Driver.h"
 #include "MotorPWM.h"
@@ -24,6 +25,7 @@
 #include "CmdAdapter.h"
 #include "CmdSequence.h"
 #include "Cmd.h"
+#include "DistanceCount.h"
 //#include "LanClient.h"
 //#include <aJSON.h>
 
@@ -105,7 +107,6 @@ void countRightSpeedSensor();
 //---------------------------------------------------------------------------
 // Distance Counters
 //---------------------------------------------------------------------------
-class DistanceCount;
 DistanceCount* lDistCount;
 DistanceCount* rDistCount;
 
@@ -212,156 +213,9 @@ bool displayConnectionDetails(void);
 bool isSSIDPresent(const char* searchSSID);
 
 //---------------------------------------------------------------------------
-// Distance Counters
-//---------------------------------------------------------------------------
-class DistanceCount
-{
-public:
-  DistanceCount()
-  : m_cumulativeDistanceCount(0)
-  { };
-
-  void reset()
-  {
-    m_cumulativeDistanceCount = 0;
-  };
-
-  void add(unsigned long int delta)
-  {
-    m_cumulativeDistanceCount += delta;
-  }
-
-  unsigned long int cumulativeDistanceCount()
-  {
-    return m_cumulativeDistanceCount;
-  }
-
-private:
-  unsigned long int m_cumulativeDistanceCount;
-};
-
-//---------------------------------------------------------------------------
 // Lintilla MMI
 //---------------------------------------------------------------------------
 LintillaMmi* mmi = 0;
-
-class ALintillaMmiAdapter : public LintillaMmiAdapter
-{
-public:
-  bool isSeqRunning()
-  {
-    bool isRunning = false;
-    if (0 != cmdSeq)
-    {
-      isRunning = cmdSeq->isRunning();
-    }
-    return isRunning;
-  }
-
-  void startSequence()
-  {
-    if ((0 != cmdSeq) && (!isObstacleDetected) && (!isBattVoltageBelowWarnThreshold()))
-    {
-      if ((0 != lDistCount) && (0 != rDistCount))
-      {
-        lDistCount->reset();
-        rDistCount->reset();
-      }
-      cmdSeq->start();
-    }
-  }
-
-  void stopSequence()
-  {
-    if (0 != cmdSeq)
-    {
-      cmdSeq->stop();
-    }
-  }
-
-  unsigned char getDeviceId()
-  {
-    unsigned char deviceId = 0;
-    if (0 != ivm)
-    {
-      deviceId = ivm->getDeviceId();
-    }
-    return deviceId;
-  }
-
-  void setDeviceId(unsigned char deviceId)
-  {
-    if (0 != ivm)
-    {
-      ivm->setDeviceId(deviceId);
-    }
-  }
-
-  unsigned char getIvmVersion()
-  {
-    unsigned char ivmVersion = 0;
-    if (0 != ivm)
-    {
-      ivmVersion = ivm->getIvmVersion();
-    }
-   return ivmVersion;
-  }
-
-  bool isFrontDistSensLimitExceeded()
-  {
-    bool isLimitExceeded = (UltrasonicSensor::DISTANCE_LIMIT_EXCEEDED == getFrontDistanceCM());
-    return isLimitExceeded;
-  }
-
-  unsigned long getFrontDistanceCM()
-  {
-    unsigned long dist = UltrasonicSensor::DISTANCE_LIMIT_EXCEEDED;   // [cm]
-    if (0 != ultrasonicSensorFront)
-    {
-      dist = ultrasonicSensorFront->getDistanceCM();
-    }
-    return dist;
-  }
-
-  bool isBattVoltageBelowWarnThreshold()
-  {
-    bool isBelowWarnThreshold = (BATT_WARN_THRSHD >= getBatteryVoltage());
-    return isBelowWarnThreshold;
-  }
-
-  float getBatteryVoltage()
-  {
-    return battVoltage;
-  }
-
-  bool isWlanConnected()
-  {
-    return cc3000.checkConnected();
-  }
-
-  uint32_t getCurrentIpAddress()
-  {
-    return currentIpAddress;
-  }
-
-  long int getLeftWheelSpeed()
-  {
-    long int speed = 0;
-    noInterrupts();
-    speed = leftWheelSpeed;
-    interrupts();
-    return speed;
-  }
-
-  long int getRightWheelSpeed()
-  {
-    long int speed = 0;
-    noInterrupts();
-    speed = rightWheelSpeed;
-    interrupts();
-    return speed;
-  }
-};
 
 //-----------------------------------------------------------------------------
 
@@ -759,7 +613,7 @@ void setup()
   //---------------------------------------------------------------------------
   // MMI
   //---------------------------------------------------------------------------
-  mmi = new LintillaMmi(new ALintillaMmiAdapter());
+  mmi = new LintillaMmi(new ALintillaMmiAdapter(cmdSeq, ivm, ultrasonicSensorFront, &cc3000, lDistCount, rDistCount));
 }
 
 //-----------------------------------------------------------------------------
@@ -814,10 +668,10 @@ void speedControl()
   }
   isObstacleDetected = isLeftMotorFwd && (dist > 0) && (dist < 15);
 
-  if (/*lcdKeypad.isRightKey() ||*/ isObstacleDetected || (battVoltage < BATT_WARN_THRSHD))
-  {
-    cmdSeq->stop();
-  }
+//  if (/*lcdKeypad.isRightKey() ||*/ isObstacleDetected || (battVoltage < BATT_WARN_THRSHD))
+//  {
+//    cmdSeq->stop();
+//  }
 }
 
 //-----------------------------------------------------------------------------

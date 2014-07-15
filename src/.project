@@ -131,6 +131,16 @@
 			<type>2</type>
 			<locationURI>lintilla_embeddedlintilla_mmi/lintilla_mmi</locationURI>
 		</link>
+		<link>
+			<name>prod/lintilla_positiontracking</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedlintilla_positiontracking/lintilla_positiontracking</locationURI>
+		</link>
+		<link>
+			<name>prod/sockets</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedsockets/sockets</locationURI>
+		</link>
 	</linkedResources>
 	<variableList>
 		<variable>

@@ -33,7 +33,7 @@ public:
   virtual float getBatteryVoltage() = 0;
 
   virtual bool isWlanConnected() = 0;
-  virtual uint32_t getCurrentIpAddress() = 0;
+  virtual unsigned int getCurrentIpAddress() = 0;
 
   virtual long int getLeftWheelSpeed() = 0;
   virtual long int getRightWheelSpeed() = 0;
