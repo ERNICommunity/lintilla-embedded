@@ -127,7 +127,10 @@ LintillaMmi::LintillaMmi(LintillaMmiAdapter* adapter)
 , m_isIvmAccessMode(false)
 , m_isIvmRobotIdEditMode(false)
 {
-  m_lcdKeypad->attachAdapter(new MyLcdKeypadAdapter(this));
+  if (0 != m_lcdKeypad)
+  {
+    m_lcdKeypad->attachAdapter(new MyLcdKeypadAdapter(this));
+  }
 }
 
 LintillaMmi::~LintillaMmi()
@@ -177,95 +180,106 @@ void LintillaMmi::setIvmRobotIdEditMode(bool isIvmRobotIdEditMode)
   m_isIvmRobotIdEditMode = isIvmRobotIdEditMode;
 }
 
+void LintillaMmi::setBackLightOn(bool isLcdBackLightOn)
+{
+  if (0 != m_lcdKeypad)
+  {
+    m_lcdKeypad->setBackLightOn(isLcdBackLightOn);
+  }
+}
+
 void LintillaMmi::updateDisplay()
 {
-  m_lcdKeypad->setCursor(0, 0);
-
-  if (isIvmAccessMode())
+  if (0 != m_lcdKeypad)
   {
-    m_lcdKeypad->print("IVM Data (V.");
-    m_lcdKeypad->print(adapter()->getIvmVersion());
-    m_lcdKeypad->print(")     ");
+    m_lcdKeypad->setCursor(0, 0);
 
-    m_lcdKeypad->setCursor(0, 1);
-
-    m_lcdKeypad->print("Robot ID: ");
-
-    if (isIvmRobotIdEditMode() && m_displayBlanking->isSignalBlanked())
+    if (isIvmAccessMode())
     {
-      m_lcdKeypad->print("      ");
-    }
-    else
-    {
-      m_lcdKeypad->print(adapter()->getDeviceId());
-    }
-    m_lcdKeypad->print("     ");
-  }
-  else
-  {
-    //-------------------------------------------
-    // LCD Display Line 1
-    //-------------------------------------------
-    m_lcdKeypad->print("Dst:");
-    if (m_adapter->isFrontDistSensLimitExceeded())
-    {
-      m_lcdKeypad->print("infin ");
-    }
-    else
-    {
-      unsigned long frontDistanceCM = m_adapter->getFrontDistanceCM();
-      m_lcdKeypad->print(frontDistanceCM > 99 ? "" : frontDistanceCM > 9 ? " " : "  ");
-      m_lcdKeypad->print(frontDistanceCM);
-      m_lcdKeypad->print("cm ");
-    }
-
-    if (m_displayBlanking->isSignalBlanked() && (m_adapter->isBattVoltageBelowWarnThreshold()))
-    {
-      m_lcdKeypad->print("      ");
-    }
-    else
-    {
-      m_lcdKeypad->print("B:");
-      m_lcdKeypad->print(m_adapter->getBatteryVoltage());
-      m_lcdKeypad->print("[V]");
-    }
-
-    //-------------------------------------------
-    // LCD Display Line 2
-    //-------------------------------------------
-    if (!m_adapter->isWlanConnected())
-    {
-      m_lcdKeypad->print("Connect to WiFi ");
-    }
-    else if (m_lcdKeypad->isUpKey() || (4 != m_adapter->getDeviceId()))
-    {
-      uint32_t currentIpAddress = m_adapter->getCurrentIpAddress();
-      // IP Address presentation: either on up key pressed or always on robots not having ID = 4
-      m_lcdKeypad->setCursor(0, 1);
-      m_lcdKeypad->setCursor(0, 1);
-      m_lcdKeypad->print(0xff & (currentIpAddress >> 24));
-      m_lcdKeypad->print(".");
-      m_lcdKeypad->print(0xff & (currentIpAddress >> 16));
-      m_lcdKeypad->print(".");
-      m_lcdKeypad->print(0xff & (currentIpAddress >>  8));
-      m_lcdKeypad->print(".");
-      m_lcdKeypad->print(0xff & (currentIpAddress));
-      m_lcdKeypad->print("                 ");
-    }
-    else
-    {
-      // Speed value presentation (only useful on robot having ID = 4, since only this one has wheel speed sensors)
-      int lWSpd = m_adapter->getLeftWheelSpeed();
-      int rWspd = m_adapter->getRightWheelSpeed();
+      m_lcdKeypad->print("IVM Data (V.");
+      m_lcdKeypad->print(adapter()->getIvmVersion());
+      m_lcdKeypad->print(")     ");
 
       m_lcdKeypad->setCursor(0, 1);
-      m_lcdKeypad->print("v ");
-      m_lcdKeypad->print("l:");
-      m_lcdKeypad->print(lWSpd > 99 ? "" : lWSpd > 9 ? " " : "  ");
-      m_lcdKeypad->print(lWSpd);
-      m_lcdKeypad->print(" r:");
-      m_lcdKeypad->print(rWspd > 99 ? "" : rWspd > 9 ? " " : "  ");
-      m_lcdKeypad->print(rWspd);
+
+      m_lcdKeypad->print("Robot ID: ");
+
+      if (isIvmRobotIdEditMode() && m_displayBlanking->isSignalBlanked())
+      {
+        m_lcdKeypad->print("      ");
+      }
+      else
+      {
+        m_lcdKeypad->print(adapter()->getDeviceId());
+      }
+      m_lcdKeypad->print("     ");
+    }
+    else
+    {
+      //-------------------------------------------
+      // LCD Display Line 1
+      //-------------------------------------------
+      m_lcdKeypad->print("Dst:");
+      if (m_adapter->isFrontDistSensLimitExceeded())
+      {
+        m_lcdKeypad->print("infin ");
+      }
+      else
+      {
+        unsigned long frontDistanceCM = m_adapter->getFrontDistanceCM();
+        m_lcdKeypad->print(frontDistanceCM > 99 ? "" : frontDistanceCM > 9 ? " " : "  ");
+        m_lcdKeypad->print(frontDistanceCM);
+        m_lcdKeypad->print("cm ");
+      }
+
+      if (m_displayBlanking->isSignalBlanked() && (m_adapter->isBattVoltageBelowWarnThreshold()))
+      {
+        m_lcdKeypad->print("      ");
+      }
+      else
+      {
+        m_lcdKeypad->print("B:");
+        m_lcdKeypad->print(m_adapter->getBatteryVoltage());
+        m_lcdKeypad->print("[V]");
+      }
+
+      //-------------------------------------------
+      // LCD Display Line 2
+      //-------------------------------------------
+      if (!m_adapter->isWlanConnected())
+      {
+        m_lcdKeypad->print("Connect to WiFi ");
+      }
+      else if (m_lcdKeypad->isUpKey() || (4 != m_adapter->getDeviceId()))
+      {
+        uint32_t currentIpAddress = m_adapter->getCurrentIpAddress();
+        // IP Address presentation: either on up key pressed or always on robots not having ID = 4
+        m_lcdKeypad->setCursor(0, 1);
+        m_lcdKeypad->setCursor(0, 1);
+        m_lcdKeypad->print(0xff & (currentIpAddress >> 24));
+        m_lcdKeypad->print(".");
+        m_lcdKeypad->print(0xff & (currentIpAddress >> 16));
+        m_lcdKeypad->print(".");
+        m_lcdKeypad->print(0xff & (currentIpAddress >>  8));
+        m_lcdKeypad->print(".");
+        m_lcdKeypad->print(0xff & (currentIpAddress));
+        m_lcdKeypad->print("                 ");
+      }
+      else
+      {
+        // Speed value presentation (only useful on robot having ID = 4, since only this one has wheel speed sensors)
+        int lWSpd = m_adapter->getLeftWheelSpeed();
+        int rWspd = m_adapter->getRightWheelSpeed();
+
+        m_lcdKeypad->setCursor(0, 1);
+        m_lcdKeypad->print("v ");
+        m_lcdKeypad->print("l:");
+        m_lcdKeypad->print(lWSpd > 99 ? "" : lWSpd > 9 ? " " : "  ");
+        m_lcdKeypad->print(lWSpd);
+        m_lcdKeypad->print(" r:");
+        m_lcdKeypad->print(rWspd > 99 ? "" : rWspd > 9 ? " " : "  ");
+        m_lcdKeypad->print(rWspd);
+      }
     }
   }
 }

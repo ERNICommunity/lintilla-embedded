@@ -77,6 +77,11 @@
 			<locationURI>lintilla_embeddedAdafruit_CC3000/Adafruit_CC3000</locationURI>
 		</link>
 		<link>
+			<name>comp/Battery</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedBattery/Battery</locationURI>
+		</link>
+		<link>
 			<name>comp/FreeSixIMU</name>
 			<type>2</type>
 			<locationURI>lintilla_embeddedFreeSixIMU/FreeSixIMU</locationURI>

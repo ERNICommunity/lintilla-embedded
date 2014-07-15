@@ -67,6 +67,8 @@ public:
   void setIvmAccessMode(bool isIvmAccessMode);
   void setIvmRobotIdEditMode(bool isIvmRobotIdEditMode);
 
+  void setBackLightOn(bool isLcdBackLightOn);
+
   void updateDisplay();
 
 private:

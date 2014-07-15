@@ -11,7 +11,7 @@
 #include "Arduino.h"
 
 #include "Battery.h"
-#include "LcdKeypad.h"
+#include "LintillaMmi.h"
 #include "LintillaIvm.h"
 #include "CmdSequence.h"
 
@@ -20,8 +20,9 @@
 const int LintillaBatteryAdapter::s_BATT_SENSE_PIN = A9;
 
 LintillaBatteryAdapter::LintillaBatteryAdapter()
-: m_battery(0)
-, m_lcdKeypad(0)
+: BatteryAdapter()
+, m_battery(0)
+, m_lintillaMmi(0)
 , m_lintillaIvm(0)
 , m_cmdSeq(0)
 , m_rawBattSenseValue(600)
@@ -38,9 +39,9 @@ void LintillaBatteryAdapter::attachBattery(Battery* battery)
   m_battery = battery;
 }
 
-void LintillaBatteryAdapter::attachLcdKeypad(LcdKeypad* lcdKeypad)
+void LintillaBatteryAdapter::attachLintillaMmi(LintillaMmi* lintillaMmi)
 {
-  m_lcdKeypad = lcdKeypad;
+  m_lintillaMmi = lintillaMmi;
 }
 
 void LintillaBatteryAdapter::attachLintillaIvm(LintillaIvm* lintillaIvm)
@@ -82,9 +83,9 @@ void LintillaBatteryAdapter::notifyBattVoltageOk()
 {
   Serial.print("notifyBattVoltageOk() - ");
   debugPrintStateChange();
-  if (0 != m_lcdKeypad)
+  if (0 != m_lintillaMmi)
   {
-    m_lcdKeypad->setBackLightOn(true);
+    m_lintillaMmi->setBackLightOn(true);
   }
 }
 
@@ -102,9 +103,9 @@ void LintillaBatteryAdapter::notifyBattVoltageBelowStopThreshold()
   {
     m_cmdSeq->stop();
   }
-  if (0 != m_lcdKeypad)
+  if (0 != m_lintillaMmi)
   {
-    m_lcdKeypad->setBackLightOn(false);
+    m_lintillaMmi->setBackLightOn(false);
   }
 }
 
@@ -117,9 +118,9 @@ void LintillaBatteryAdapter::notifyBattVoltageBelowShutdownThreshold()
   {
     deviceId = m_lintillaIvm->getDeviceId();
   }
-  if (0 != m_lcdKeypad)
+  if (0 != m_lintillaMmi)
   {
-    m_lcdKeypad->setBackLightOn(false);
+    m_lintillaMmi->setBackLightOn(false);
   }
   if (0 != deviceId)
   {
@@ -140,7 +141,7 @@ float LintillaBatteryAdapter::readBattVoltageSenseFactor()
 
 unsigned int LintillaBatteryAdapter::readRawBattSenseValue()
 {
-  // return analogRead(s_BATT_SENSE_PIN);
+  m_rawBattSenseValue = analogRead(s_BATT_SENSE_PIN);
   return m_rawBattSenseValue;
 }
 

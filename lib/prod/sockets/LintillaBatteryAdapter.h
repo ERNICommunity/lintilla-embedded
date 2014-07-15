@@ -11,7 +11,7 @@
 #include <Battery.h>
 
 class Battery;
-class LcdKeypad;
+class LintillaMmi;
 class LintillaIvm;
 
 class LintillaBatteryAdapter: public BatteryAdapter
@@ -21,7 +21,7 @@ public:
   virtual ~LintillaBatteryAdapter();
 
   void attachBattery(Battery* battery);
-  void attachLcdKeypad(LcdKeypad* lcdKeypad);
+  void attachLintillaMmi(LintillaMmi* lintillaMmi);
   void attachLintillaIvm(LintillaIvm* lintillaIvm);
   void attachCmdSequence(CmdSequence* cmdSeq);
 
@@ -45,7 +45,7 @@ private:
 
 private:
   Battery* m_battery;
-  LcdKeypad* m_lcdKeypad;
+  LintillaMmi* m_lintillaMmi;
   LintillaIvm* m_lintillaIvm;
   CmdSequence* m_cmdSeq;
   unsigned int m_rawBattSenseValue;

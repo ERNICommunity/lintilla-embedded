@@ -62,6 +62,11 @@ bool CmdSequence::isRunning()
   return m_isRunning;
 }
 
+Cmd* CmdSequence::currentCmd()
+{
+  return m_currentCmd;
+}
+
 void CmdSequence::execNextCmd()
 {
   m_currentCmd = m_currentCmd->next();

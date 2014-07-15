@@ -23,6 +23,8 @@ public:
 
   bool isRunning();
 
+  Cmd* currentCmd();
+
   void execNextCmd();
 
   void attach(Cmd* cmd);

@@ -1,9 +1,6 @@
 // Do not remove the include below
 #include "lintilla_embedded.h"
 
-#include <avr/power.h>
-#include <avr/sleep.h>
-
 #include <Adafruit_CC3000.h>
 #include <ccspi.h>
 #include <SPI.h>
@@ -26,19 +23,18 @@
 #include "CmdSequence.h"
 #include "Cmd.h"
 #include "DistanceCount.h"
-//#include "LanClient.h"
+#include "Battery.h"
+#include "LintillaBatteryAdapter.h"
 //#include <aJSON.h>
-
-//LanClient* lanClient;
 
 //-----------------------------------------------------------------------------
 
-void(* resetFunc) (void) = 0; //declare reset function at address 0
+void(* resetFunc) (void) = 0; //declare reset function at address 0 => will 'use' NULL pointer exception and then restart.
 
 //-----------------------------------------------------------------------------
 // Debugging
 //-----------------------------------------------------------------------------
-Timer* ramDebugTimer;
+Timer* ramDebugTimer = 0;
 const unsigned int c_ramDbgInterval = 20000;
 class RamDebugTimerAdapter : public TimerAdapter
 {
@@ -56,13 +52,8 @@ LintillaIvm* ivm = 0;
 //-----------------------------------------------------------------------------
 // Battery Voltage Surveillance
 //-----------------------------------------------------------------------------
-float       battVoltage        = 0;   // [V]
-const int   BATT_SENSE_PIN     = A9;
-const float BATT_WARN_THRSHD   = 6.20;
-const float BATT_SHUT_THRSHD   = 6.00;
-
-void readBattVoltage();
-void sleepNow();
+Battery* battery = 0;
+LintillaBatteryAdapter* batteryAdapter = 0;
 
 //---------------------------------------------------------------------------
 // Ultrasonic Ranging
@@ -77,7 +68,7 @@ unsigned long dist = UltrasonicSensor::DISTANCE_LIMIT_EXCEEDED;   // [cm]
 // Wheel Speed Sensors
 //---------------------------------------------------------------------------
 const unsigned int SPEED_SENSORS_READ_TIMER_INTVL_MILLIS = 100;
-Timer* speedSensorReadTimer;
+Timer* speedSensorReadTimer = 0;
 void readSpeedSensors();
 class SpeedSensorReadTimerAdapter : public TimerAdapter
 {
@@ -107,14 +98,14 @@ void countRightSpeedSensor();
 //---------------------------------------------------------------------------
 // Distance Counters
 //---------------------------------------------------------------------------
-DistanceCount* lDistCount;
-DistanceCount* rDistCount;
+DistanceCount* lDistCount = 0;
+DistanceCount* rDistCount = 0;
 
 //---------------------------------------------------------------------------
 // Motor Drivers and Speed Control
 //---------------------------------------------------------------------------
-MotorPWM* motorL;
-MotorPWM* motorR;
+MotorPWM* motorL = 0;
+MotorPWM* motorR = 0;
 
 const int cSpeed     = 200;
 const int cSpinSpeed = 150;
@@ -144,7 +135,7 @@ void moveForward();
 void moveStraight(bool forward);
 void spinOnPlace(bool right);
 
-Timer* speedCtrlTimer;
+Timer* speedCtrlTimer = 0;
 const unsigned int cSpeedCtrlInterval = 200;
 void speedControl();
 void updateActors();
@@ -168,7 +159,7 @@ class LintillaCmdAdapter;
 //---------------------------------------------------------------------------
 void startEchoServer();
 void processEchoServer();
-//aJsonStream* jsonStream;
+//aJsonStream* jsonStream = 0;
 
 // These are the interrupt and control pins
 #define ADAFRUIT_CC3000_IRQ   3  // MUST be an interrupt pin!
@@ -190,7 +181,7 @@ Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ
 uint32_t currentIpAddress = 0;
 Adafruit_CC3000_Server echoServer(LISTEN_PORT);
 
-Timer* wifiReconnectTimer;
+Timer* wifiReconnectTimer = 0;
 const unsigned int cWifiReconnectInterval = 5000; // WiFi re-connect interval [ms]
 void connectWiFi();
 class WifiReconnectTimerAdapter : public TimerAdapter
@@ -256,13 +247,7 @@ class LintillaCmdAdapter : public CmdAdapter
 
 void connectWiFi()
 {
-  //  lanClient = new LanClient();
-  //  if (lanClient->begin())
-  //  {
-  //    lanClient->requestConnect();
-  //  }
-
-  Serial.println(F("Hello, CC3000!\n"));
+  Serial.println(F("\nHello, CC3000!"));
   Serial.print("Free RAM: "); Serial.println(getFreeRam(), DEC);
 
   /* Initialize the module */
@@ -475,7 +460,8 @@ void processEchoServer()
        {
          // Read a byte and write it to all clients.
          uint8_t ch = client.read();
-         if (!cmdSeq->isRunning() && ('g' == ch))
+         if (('g' == ch) && !cmdSeq->isRunning() /*&& !lcdKeypad->isRightKey()*/ && !isObstacleDetected &&
+             !battery->isBattVoltageBelowStopThreshold() && !battery->isBattVoltageBelowShutdownThreshold())
          {
            cmdSeq->start();
          }
@@ -491,19 +477,6 @@ void processEchoServer()
 
 //-----------------------------------------------------------------------------
 
-void readBattVoltage()
-{
-  unsigned int rawBattVoltage = analogRead(BATT_SENSE_PIN);
-  battVoltage = rawBattVoltage * ivm->getBattVoltageSenseFactor() * 5 / 1023;
-
-  // emergency shutdown on battery low alarm
-  if (BATT_SHUT_THRSHD >= battVoltage)
-  {
-    sleepNow();
-  }
-}
-
-//-----------------------------------------------------------------------------
 
 void readSpeedSensors()
 {
@@ -528,7 +501,7 @@ void setup()
   // Debugging
   //---------------------------------------------------------------------------
   Serial.begin(115200);
-  Serial.println(F("Hello from Lintilla!\n"));
+  Serial.println(F("\nHello from Lintilla!"));
   Serial.print("Free RAM: "); Serial.println(getFreeRam(), DEC);
   ramDebugTimer = new Timer(new RamDebugTimerAdapter(), Timer::IS_RECURRING, c_ramDbgInterval);
 
@@ -542,13 +515,17 @@ void setup()
   //---------------------------------------------------------------------------
   // Battery Voltage Surveillance
   //---------------------------------------------------------------------------
-  pinMode(BATT_SENSE_PIN, INPUT);         //ensure Battery Sense pin is an input
-  digitalWrite(BATT_SENSE_PIN, LOW);      //ensure pullup is off on Battery Sense pin
 //  Serial.println("IVM:");
 //  Serial.println("---------------------------------------------------");
 //  Serial.print("ID: "); Serial.println(ivm->getDeviceId());
 //  Serial.print("IVM V."); Serial.println(ivm->getIvmVersion());
 //  Serial.print("BattVoltSenseFactor = "); Serial.println(ivm->getBattVoltageSenseFactor());
+  batteryAdapter = new LintillaBatteryAdapter();
+  battery = new Battery(batteryAdapter);
+  batteryAdapter->attachBattery(battery);
+  batteryAdapter->attachLintillaMmi(mmi);
+  batteryAdapter->attachLintillaIvm(ivm);
+  batteryAdapter->attachCmdSequence(cmdSeq);
 
   //---------------------------------------------------------------------------
   // Ultrasonic Ranging
@@ -618,48 +595,6 @@ void setup()
 
 //-----------------------------------------------------------------------------
 
-void sleepNow()
-{
-  /* Now is the time to set the sleep mode. In the Atmega8 datasheet
-   * http://www.atmel.com/dyn/resources/prod_documents/doc2486.pdf on page 35
-   * there is a list of sleep modes which explains which clocks and
-   * wake up sources are available in which sleep modus.
-   *
-   * In the avr/sleep.h file, the call names of these sleep modus are to be found:
-   *
-   * The 5 different modes are:
-   * SLEEP_MODE_IDLE -the least power savings
-   * SLEEP_MODE_ADC
-   * SLEEP_MODE_PWR_SAVE
-   * SLEEP_MODE_STANDBY
-   * SLEEP_MODE_PWR_DOWN -the most power savings
-   *
-   * the power reduction management <avr/power.h> is described in
-   * http://www.nongnu.org/avr-libc/user-manual/group__avr__power.html
-   */
-
-  set_sleep_mode(SLEEP_MODE_PWR_DOWN); // sleep mode is set here
-
-  sleep_enable(); // enables the sleep bit in the mcucr register
-                  // so sleep is possible. just a safety pin
-  power_adc_disable();
-  power_spi_disable();
-  power_timer0_disable();
-  power_timer1_disable();
-  power_timer2_disable();
-  power_twi_disable();
-  sleep_mode(); // here the device is actually put to sleep!!
-
-  // THE PROGRAM CONTINUES FROM HERE AFTER WAKING UP
-
-  sleep_disable();  // first thing after waking from sleep:
-                    // disable sleep...
-
-  power_all_enable();
-}
-
-//-----------------------------------------------------------------------------
-
 void speedControl()
 {
   if (0 != ultrasonicSensorFront)
@@ -668,7 +603,7 @@ void speedControl()
   }
   isObstacleDetected = isLeftMotorFwd && (dist > 0) && (dist < 15);
 
-//  if (/*lcdKeypad.isRightKey() ||*/ isObstacleDetected || (battVoltage < BATT_WARN_THRSHD))
+//  if (lcdKeypad->isRightKey() || isObstacleDetected || battery->isBattVoltageBelowStopThreshold() || battery->isBattVoltageBelowShutdownThreshold())
 //  {
 //    cmdSeq->stop();
 //  }
@@ -793,3 +728,26 @@ void updateActors()
 //    }
 //  }
 //}
+
+/*
+ SerialEvent occurs whenever a new data comes in the
+ hardware serial RX.  This routine is run between each
+ time loop() runs, so using delay inside loop can delay
+ response.  Multiple bytes of data may be available.
+ */
+void serialEvent()
+{
+  while (Serial.available())
+  {
+    // get the new byte:
+    char inChar = (char)Serial.read();
+    if ('i' == inChar)
+    {
+      batteryAdapter->incrRawBattSenseValue();
+    }
+    else if ('d' == inChar)
+    {
+      batteryAdapter->decrRawBattSenseValue();
+    }
+  }
+}
