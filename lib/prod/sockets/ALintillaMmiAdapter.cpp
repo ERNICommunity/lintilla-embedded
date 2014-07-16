@@ -4,6 +4,8 @@
  *  Created on: 14.07.2014
  *      Author: niklausd
  */
+
+#include "Battery.h"
 #include "CmdSequence.h"
 #include "LintillaIvm.h"
 #include "UltrasonicSensor.h"
@@ -12,10 +14,11 @@
 
 #include <ALintillaMmiAdapter.h>
 
-ALintillaMmiAdapter::ALintillaMmiAdapter(CmdSequence* cmdSeq, LintillaIvm* ivm,
+ALintillaMmiAdapter::ALintillaMmiAdapter(Battery* battery, CmdSequence* cmdSeq, LintillaIvm* ivm,
                                          UltrasonicSensor* ultrasonicSensorFront, Adafruit_CC3000* cc3000,
                                          DistanceCount* lDistCount, DistanceCount* rDistCount)
 : LintillaMmiAdapter()
+, m_battery(battery)
 , m_cmdSeq(cmdSeq)
 , m_ivm(ivm)
 , m_ultrasonicSensorFront(ultrasonicSensorFront)
@@ -105,12 +108,30 @@ unsigned long ALintillaMmiAdapter::getFrontDistanceCM()
 bool ALintillaMmiAdapter::isBattVoltageBelowWarnThreshold()
 {
   bool isBelowWarnThreshold = false;
+  if (0 != m_battery)
+  {
+    m_battery->isBattVoltageBelowWarnThreshold();
+  }
   return isBelowWarnThreshold;
+}
+
+bool ALintillaMmiAdapter::isBattVoltageBelowStopThreshold()
+{
+  bool isBelowStopThreshold = false;
+  if (0 != m_battery)
+  {
+    m_battery->isBattVoltageBelowStopThreshold();
+  }
+  return isBelowStopThreshold;
 }
 
 float ALintillaMmiAdapter::getBatteryVoltage()
 {
   float battVoltage = 0.0;
+  if (0 != m_battery)
+  {
+    battVoltage = m_battery->getBatteryVoltage();
+  }
   return battVoltage;
 }
 
@@ -124,9 +145,18 @@ bool ALintillaMmiAdapter::isWlanConnected()
   return isConnected;
 }
 
-unsigned int ALintillaMmiAdapter::getCurrentIpAddress()
+uint32_t ALintillaMmiAdapter::getCurrentIpAddress()
 {
-  return 0;
+  uint32_t ipAddress = 0;
+  uint32_t netmask   = 0;
+  uint32_t gateway   = 0;
+  uint32_t dhcpserv  = 0;
+  uint32_t dnsserv   = 0;
+  if (0 != m_cc3000)
+  {
+    m_cc3000->getIPAddress(&ipAddress, &netmask, &gateway, &dhcpserv, &dnsserv);
+  }
+  return ipAddress;
 }
 
 long int ALintillaMmiAdapter::getLeftWheelSpeed()

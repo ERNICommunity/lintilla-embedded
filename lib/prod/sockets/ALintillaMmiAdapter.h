@@ -10,6 +10,7 @@
 
 #include <LintillaMmi.h>
 
+class Battery;
 class CmdSequence;
 class LintillaIvm;
 class UltrasonicSensor;
@@ -21,7 +22,7 @@ class DistanceCount;
 class ALintillaMmiAdapter: public LintillaMmiAdapter
 {
 public:
-  ALintillaMmiAdapter(CmdSequence* cmdSeq, LintillaIvm* ivm,
+  ALintillaMmiAdapter(Battery* battery, CmdSequence* cmdSeq, LintillaIvm* ivm,
                       UltrasonicSensor* ultrasonicSensorFront, Adafruit_CC3000* cc3000,
                       DistanceCount* lDistCount, DistanceCount* rDistCount);
   virtual ~ALintillaMmiAdapter();
@@ -39,10 +40,11 @@ public:
   unsigned long getFrontDistanceCM();
 
   bool isBattVoltageBelowWarnThreshold();
+  bool isBattVoltageBelowStopThreshold();
   float getBatteryVoltage();
 
   bool isWlanConnected();
-  unsigned int getCurrentIpAddress();
+  uint32_t getCurrentIpAddress();
 
   long int getLeftWheelSpeed();
   long int getRightWheelSpeed();
@@ -50,6 +52,7 @@ public:
   bool isObstacleDetected();
 
 private:
+  Battery* m_battery;
   CmdSequence* m_cmdSeq;
   LintillaIvm* m_ivm;
   UltrasonicSensor* m_ultrasonicSensorFront;

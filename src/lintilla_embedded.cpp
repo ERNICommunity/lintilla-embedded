@@ -463,10 +463,12 @@ void processEchoServer()
          if (('g' == ch) && !cmdSeq->isRunning() /*&& !lcdKeypad->isRightKey()*/ && !isObstacleDetected &&
              !battery->isBattVoltageBelowStopThreshold() && !battery->isBattVoltageBelowShutdownThreshold())
          {
+           Serial.println("processEchoServer(): g -> start");
            cmdSeq->start();
          }
          else if ('h' == ch)
          {
+           Serial.println("processEchoServer(): h -> stop");
            cmdSeq->stop();
          }
          client.write(ch);
@@ -515,11 +517,12 @@ void setup()
   //---------------------------------------------------------------------------
   // Battery Voltage Surveillance
   //---------------------------------------------------------------------------
-//  Serial.println("IVM:");
-//  Serial.println("---------------------------------------------------");
-//  Serial.print("ID: "); Serial.println(ivm->getDeviceId());
-//  Serial.print("IVM V."); Serial.println(ivm->getIvmVersion());
-//  Serial.print("BattVoltSenseFactor = "); Serial.println(ivm->getBattVoltageSenseFactor());
+  Serial.println("IVM:");
+  Serial.println("---------------------------------------------------");
+  Serial.print("ID: "); Serial.println(ivm->getDeviceId());
+  Serial.print("IVM V."); Serial.println(ivm->getIvmVersion());
+  Serial.print("BattVoltSenseFactor = "); Serial.println(ivm->getBattVoltageSenseFactor());
+  Serial.println("---------------------------------------------------");
   batteryAdapter = new LintillaBatteryAdapter();
   battery = new Battery(batteryAdapter);
   batteryAdapter->attachBattery(battery);
@@ -581,16 +584,17 @@ void setup()
   }
 
   //---------------------------------------------------------------------------
-  // WiFi and Socket Server
-  //---------------------------------------------------------------------------
-//  connectWiFi();
-//  startEchoServer();
-//  wifiReconnectTimer = new Timer(new WifiReconnectTimerAdapter(), Timer::IS_RECURRING, cWifiReconnectInterval);
-
-  //---------------------------------------------------------------------------
   // MMI
   //---------------------------------------------------------------------------
-  mmi = new LintillaMmi(new ALintillaMmiAdapter(cmdSeq, ivm, ultrasonicSensorFront, &cc3000, lDistCount, rDistCount));
+  mmi = new LintillaMmi(new ALintillaMmiAdapter(battery, cmdSeq, ivm, ultrasonicSensorFront, &cc3000, lDistCount, rDistCount));
+
+  //---------------------------------------------------------------------------
+  // WiFi and Socket Server
+  //---------------------------------------------------------------------------
+  connectWiFi();
+  startEchoServer();
+//  wifiReconnectTimer = new Timer(new WifiReconnectTimerAdapter(), Timer::IS_RECURRING, cWifiReconnectInterval);
+
 }
 
 //-----------------------------------------------------------------------------
@@ -603,10 +607,10 @@ void speedControl()
   }
   isObstacleDetected = isLeftMotorFwd && (dist > 0) && (dist < 15);
 
-//  if (lcdKeypad->isRightKey() || isObstacleDetected || battery->isBattVoltageBelowStopThreshold() || battery->isBattVoltageBelowShutdownThreshold())
-//  {
-//    cmdSeq->stop();
-//  }
+  if (isObstacleDetected || battery->isBattVoltageBelowStopThreshold() || battery->isBattVoltageBelowShutdownThreshold())
+  {
+    cmdSeq->stop();
+  }
 }
 
 //-----------------------------------------------------------------------------

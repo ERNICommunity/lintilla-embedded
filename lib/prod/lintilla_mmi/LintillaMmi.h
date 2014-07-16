@@ -8,6 +8,8 @@
 #ifndef LINTILLAMMI_H_
 #define LINTILLAMMI_H_
 
+#include <stdint.h>
+
 class LcdKeypad;
 class Blanking;
 class Timer;
@@ -30,10 +32,11 @@ public:
   virtual unsigned long getFrontDistanceCM() = 0;
 
   virtual bool isBattVoltageBelowWarnThreshold() = 0;
+  virtual bool isBattVoltageBelowStopThreshold() = 0;
   virtual float getBatteryVoltage() = 0;
 
   virtual bool isWlanConnected() = 0;
-  virtual unsigned int getCurrentIpAddress() = 0;
+  virtual uint32_t getCurrentIpAddress() = 0;
 
   virtual long int getLeftWheelSpeed() = 0;
   virtual long int getRightWheelSpeed() = 0;
@@ -67,7 +70,8 @@ public:
   void setIvmAccessMode(bool isIvmAccessMode);
   void setIvmRobotIdEditMode(bool isIvmRobotIdEditMode);
 
-  void setBackLightOn(bool isLcdBackLightOn);
+  void setBackLightOn(bool isBacklightOn);
+  void lcdBackLightControl();
 
   void updateDisplay();
 
@@ -77,10 +81,10 @@ private:
   LintillaMmiAdapter* m_adapter;
   Timer* m_displayTimer;
 
-
   // Display Menu states
   bool m_isIvmAccessMode;
   bool m_isIvmRobotIdEditMode;
+  bool m_isBacklightOn;
 
 private: // forbidden default functions
   LintillaMmi& operator = (const LintillaMmi& src);  // assignment operator

@@ -59,6 +59,18 @@ public:
 
     if ((0 != m_mmi) && (0 != m_mmi->adapter()) && (0 != m_mmi->lcdKeypad()))
     {
+      if (!m_mmi->isIvmRobotIdEditMode())
+      {
+        if ((LcdKeypad::UP_KEY == newKey))
+        {
+          m_mmi->setBackLightOn(true);
+        }
+        else if (LcdKeypad::DOWN_KEY == newKey)
+        {
+          m_mmi->setBackLightOn(false);
+        }
+      }
+
       if (!m_mmi->adapter()->isSeqRunning())
       {
         if (!m_mmi->isIvmAccessMode())
@@ -126,6 +138,7 @@ LintillaMmi::LintillaMmi(LintillaMmiAdapter* adapter)
 , m_displayTimer(new Timer(new DisplayTimerAdapter(this), Timer::IS_RECURRING, cUpdateDisplayInterval))
 , m_isIvmAccessMode(false)
 , m_isIvmRobotIdEditMode(false)
+, m_isBacklightOn(true)
 {
   if (0 != m_lcdKeypad)
   {
@@ -180,25 +193,38 @@ void LintillaMmi::setIvmRobotIdEditMode(bool isIvmRobotIdEditMode)
   m_isIvmRobotIdEditMode = isIvmRobotIdEditMode;
 }
 
-void LintillaMmi::setBackLightOn(bool isLcdBackLightOn)
+void LintillaMmi::setBackLightOn(bool isBacklightOn)
 {
+  m_isBacklightOn = isBacklightOn;
+}
+
+void LintillaMmi::lcdBackLightControl()
+{
+  if (adapter()->isBattVoltageBelowStopThreshold())
+  {
+    m_isBacklightOn = false;
+  }
+
   if (0 != m_lcdKeypad)
   {
-    m_lcdKeypad->setBackLightOn(isLcdBackLightOn);
+    m_lcdKeypad->setBackLightOn(m_isBacklightOn);
   }
 }
 
 void LintillaMmi::updateDisplay()
 {
+  lcdBackLightControl();
+
   if (0 != m_lcdKeypad)
   {
-    m_lcdKeypad->setCursor(0, 0);
-
     if (isIvmAccessMode())
     {
+      m_lcdKeypad->setCursor(0, 0);
+
       m_lcdKeypad->print("IVM Data (V.");
       m_lcdKeypad->print(adapter()->getIvmVersion());
       m_lcdKeypad->print(")     ");
+
 
       m_lcdKeypad->setCursor(0, 1);
 
@@ -219,6 +245,8 @@ void LintillaMmi::updateDisplay()
       //-------------------------------------------
       // LCD Display Line 1
       //-------------------------------------------
+      m_lcdKeypad->setCursor(0, 0);
+
       m_lcdKeypad->print("Dst:");
       if (m_adapter->isFrontDistSensLimitExceeded())
       {
@@ -246,23 +274,23 @@ void LintillaMmi::updateDisplay()
       //-------------------------------------------
       // LCD Display Line 2
       //-------------------------------------------
+      m_lcdKeypad->setCursor(0, 1);
+
       if (!m_adapter->isWlanConnected())
       {
-        m_lcdKeypad->print("Connect to WiFi ");
+        m_lcdKeypad->print("Connecting WiFi ");
       }
       else if (m_lcdKeypad->isUpKey() || (4 != m_adapter->getDeviceId()))
       {
         uint32_t currentIpAddress = m_adapter->getCurrentIpAddress();
         // IP Address presentation: either on up key pressed or always on robots not having ID = 4
-        m_lcdKeypad->setCursor(0, 1);
-        m_lcdKeypad->setCursor(0, 1);
-        m_lcdKeypad->print(0xff & (currentIpAddress >> 24));
-        m_lcdKeypad->print(".");
-        m_lcdKeypad->print(0xff & (currentIpAddress >> 16));
-        m_lcdKeypad->print(".");
-        m_lcdKeypad->print(0xff & (currentIpAddress >>  8));
-        m_lcdKeypad->print(".");
-        m_lcdKeypad->print(0xff & (currentIpAddress));
+        m_lcdKeypad->print((uint8_t)(currentIpAddress >> 24));
+        m_lcdKeypad->print('.');
+        m_lcdKeypad->print((uint8_t)(currentIpAddress >> 16));
+        m_lcdKeypad->print('.');
+        m_lcdKeypad->print((uint8_t)(currentIpAddress >>  8));
+        m_lcdKeypad->print('.');
+        m_lcdKeypad->print((uint8_t)(currentIpAddress));
         m_lcdKeypad->print("                 ");
       }
       else

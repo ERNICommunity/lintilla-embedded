@@ -93,6 +93,10 @@ void LintillaBatteryAdapter::notifyBattVoltageBelowWarnThreshold()
 {
   Serial.print("notifyBattVoltageBelowWarnThreshold() - ");
   debugPrintStateChange();
+  if (0 != m_lintillaMmi)
+  {
+    m_lintillaMmi->setBackLightOn(true);
+  }
 }
 
 void LintillaBatteryAdapter::notifyBattVoltageBelowStopThreshold()
