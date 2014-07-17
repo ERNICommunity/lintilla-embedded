@@ -63,17 +63,26 @@ bool BatteryVoltageEvalFsm::isBattVoltageOk()
 
 bool BatteryVoltageEvalFsm::isBattVoltageBelowWarnThreshold()
 {
-  return (BatteryVoltageEvalFsmState_BattVoltageBelowWarn::Instance() == m_state);
+  bool isBattVoltageBelowWarnThreshold = (
+      (BatteryVoltageEvalFsmState_BattVoltageBelowWarn::Instance()      == m_state) ||
+      (BatteryVoltageEvalFsmState_BattVoltageBelowStop::Instance()      == m_state) ||
+      (BatteryVoltageEvalFsmState_BattVoltageBelowShutdown::Instance()  == m_state));
+  return isBattVoltageBelowWarnThreshold;
 }
 
 bool BatteryVoltageEvalFsm::isBattVoltageBelowStopThreshold()
 {
-  return (BatteryVoltageEvalFsmState_BattVoltageBelowStop::Instance() == m_state);
+  bool isBattVoltageBelowStopThreshold = (
+      (BatteryVoltageEvalFsmState_BattVoltageBelowStop::Instance()      == m_state) ||
+      (BatteryVoltageEvalFsmState_BattVoltageBelowShutdown::Instance()  == m_state));
+  return isBattVoltageBelowStopThreshold;
 }
 
 bool BatteryVoltageEvalFsm::isBattVoltageBelowShutdownThreshold()
 {
-  return (BatteryVoltageEvalFsmState_BattVoltageBelowShutdown::Instance() == m_state);
+  bool isBattVoltageBelowShutdownThreshold = (
+      (BatteryVoltageEvalFsmState_BattVoltageBelowShutdown::Instance()  == m_state));
+  return isBattVoltageBelowShutdownThreshold;
 }
 
 bool BatteryVoltageEvalFsm::isGuardWarn()
