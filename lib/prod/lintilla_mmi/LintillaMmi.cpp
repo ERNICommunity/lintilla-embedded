@@ -151,6 +151,12 @@ LintillaMmi::~LintillaMmi()
   delete m_displayBlanking;
   m_displayBlanking = 0;
 
+  delete m_displayTimer->adapter();
+  m_displayTimer->attachAdapter(0);
+
+  delete m_displayTimer;
+  m_displayTimer = 0;
+
   delete m_lcdKeypad->adapter();
   m_lcdKeypad->attachAdapter(0);
 

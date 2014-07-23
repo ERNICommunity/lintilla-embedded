@@ -396,7 +396,7 @@ bool isSSIDPresent(const char* searchSSID)
 void loop()
 {
   yield();
-//  processEchoServer();
+  processEchoServer();
 }
 
 //-----------------------------------------------------------------------------
