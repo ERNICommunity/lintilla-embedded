@@ -12,6 +12,7 @@
 #include "Timer.h"
 #include "SN754410Driver.h"
 #include "MotorPWM.h"
+#include "SpeedSensors.h"
 #include "UltrasonicSensor.h"
 #include "UltrasonicSensorHCSR04.h"
 #include "EEPROM.h"
@@ -67,39 +68,7 @@ unsigned long dist = UltrasonicSensor::DISTANCE_LIMIT_EXCEEDED;   // [cm]
 //---------------------------------------------------------------------------
 // Wheel Speed Sensors
 //---------------------------------------------------------------------------
-const unsigned int SPEED_SENSORS_READ_TIMER_INTVL_MILLIS = 100;
-Timer* speedSensorReadTimer = 0;
-void readSpeedSensors();
-class SpeedSensorReadTimerAdapter : public TimerAdapter
-{
-  void timeExpired()
-  {
-    readSpeedSensors();
-  }
-};
-
-const int IRQ_PIN_18 = 5;
-const int IRQ_PIN_19 = 4;
-const int IRQ_PIN_20 = 3;
-const int IRQ_PIN_21 = 2;
-
-const int L_SPEED_SENS_IRQ = IRQ_PIN_18;
-const int R_SPEED_SENS_IRQ = IRQ_PIN_19;
-
-volatile unsigned long int speedSensorCountLeft  = 0;
-volatile unsigned long int speedSensorCountRight = 0;
-
-volatile long int leftWheelSpeed  = 0;
-volatile long int rightWheelSpeed = 0;
-
-void countLeftSpeedSensor();
-void countRightSpeedSensor();
-
-//---------------------------------------------------------------------------
-// Distance Counters
-//---------------------------------------------------------------------------
-DistanceCount* lDistCount = 0;
-DistanceCount* rDistCount = 0;
+SpeedSensors* speedSesors = 0;
 
 //---------------------------------------------------------------------------
 // Motor Drivers and Speed Control
@@ -133,7 +102,7 @@ void motorStop();
 void moveBackward();
 void moveForward();
 void moveStraight(bool forward);
-void spinOnPlace(bool right);
+void spinOnPlace(bool right, float angle);
 
 Timer* speedCtrlTimer = 0;
 const unsigned int cSpeedCtrlInterval = 200;
@@ -230,15 +199,15 @@ class LintillaCmdAdapter : public CmdAdapter
     Serial.print("LintillaCmdAdapter::moveBackwardAction()\n");
   }
 
-  virtual void spinOnPlaceLeftAction()
+  virtual void spinOnPlaceLeftAction(float angle)
   {
-    spinOnPlace(false);
+    spinOnPlace(false, angle);
     Serial.print("LintillaCmdAdapter::spinOnPlaceLeftAction()\n");
   }
 
-  virtual void spinOnPlaceRightAction()
+  virtual void spinOnPlaceRightAction(float angle)
   {
-    spinOnPlace(true);
+    spinOnPlace(true, angle);
     Serial.print("LintillaCmdAdapter::spinOnPlaceRightAction()\n");
   }
 };
@@ -299,24 +268,6 @@ void connectWiFi()
   {
     delay(1000);
   }
-}
-
-//-----------------------------------------------------------------------------
-
-void countLeftSpeedSensor()
-{
-  noInterrupts();
-  speedSensorCountLeft++;
-  interrupts();
-}
-
-//-----------------------------------------------------------------------------
-
-void countRightSpeedSensor()
-{
-  noInterrupts();
-  speedSensorCountRight++;
-  interrupts();
 }
 
 //-----------------------------------------------------------------------------
@@ -479,23 +430,6 @@ void processEchoServer()
 
 //-----------------------------------------------------------------------------
 
-
-void readSpeedSensors()
-{
-  noInterrupts();
-
-  // read the speed sensor counters and reset them
-  leftWheelSpeed  = speedSensorCountLeft;  speedSensorCountLeft  = 0;
-  rightWheelSpeed = speedSensorCountRight; speedSensorCountRight = 0;
-
-  lDistCount->add(leftWheelSpeed);
-  rDistCount->add(rightWheelSpeed);
-
-  interrupts();
-}
-
-//-----------------------------------------------------------------------------
-
 //The setup function is called once at startup of the sketch
 void setup()
 {
@@ -538,15 +472,7 @@ void setup()
   //---------------------------------------------------------------------------
   // Speed Sensors
   //---------------------------------------------------------------------------
-//  speedSensorReadTimer  = new Timer(new SpeedSensorReadTimerAdapter(), Timer::IS_RECURRING, SPEED_SENSORS_READ_TIMER_INTVL_MILLIS);
-//  attachInterrupt(L_SPEED_SENS_IRQ, countLeftSpeedSensor,  RISING);
-//  attachInterrupt(R_SPEED_SENS_IRQ, countRightSpeedSensor, RISING);
-
-  //---------------------------------------------------------------------------
-  // Distance Counters
-  //---------------------------------------------------------------------------
-  lDistCount = new DistanceCount();
-  rDistCount = new DistanceCount();
+  speedSesors = new SpeedSensors();
 
   //---------------------------------------------------------------------------
   // Motor Drivers and Speed Control
@@ -586,7 +512,9 @@ void setup()
   //---------------------------------------------------------------------------
   // MMI
   //---------------------------------------------------------------------------
-  mmi = new LintillaMmi(new ALintillaMmiAdapter(battery, cmdSeq, ivm, ultrasonicSensorFront, &cc3000, lDistCount, rDistCount));
+  mmi = new LintillaMmi(new ALintillaMmiAdapter(battery, cmdSeq, ivm, ultrasonicSensorFront, &cc3000,
+                                                speedSesors->lDistCount(),
+                                                speedSesors->rDistCount()));
 
   //---------------------------------------------------------------------------
   // WiFi and Socket Server
@@ -615,8 +543,9 @@ void speedControl()
 
 //-----------------------------------------------------------------------------
 
-void spinOnPlace(bool right)
+void spinOnPlace(bool right, float angle)
 {
+//  setPointAngle = startAngle + angle;
   isLeftMotorFwd = right;
   isRightMotorFwd = !right;
   speed_value_motor_left  = cSpinSpeed;

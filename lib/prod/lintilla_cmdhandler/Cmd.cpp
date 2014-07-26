@@ -104,29 +104,31 @@ void CmdMoveBackward::execute()
 
 //-----------------------------------------------------------------------------
 
-CmdSpinOnPlaceLeft::CmdSpinOnPlaceLeft(CmdSequence* cmdSeq, unsigned int timeMillis)
+CmdSpinOnPlaceLeft::CmdSpinOnPlaceLeft(CmdSequence* cmdSeq, unsigned int timeMillis, float angle)
 : Cmd(cmdSeq, timeMillis, "CmdSpinOnPlaceLeft")
+, m_angle(angle)
 { }
 
 void CmdSpinOnPlaceLeft::execute()
 {
   if ((0 != cmdSequence()) && (0 != cmdSequence()->adapter()))
   {
-    cmdSequence()->adapter()->spinOnPlaceLeftAction();
+    cmdSequence()->adapter()->spinOnPlaceLeftAction(m_angle);
   }
 }
 
 //-----------------------------------------------------------------------------
 
-CmdSpinOnPlaceRight::CmdSpinOnPlaceRight(CmdSequence* cmdSeq, unsigned int timeMillis)
+CmdSpinOnPlaceRight::CmdSpinOnPlaceRight(CmdSequence* cmdSeq, unsigned int timeMillis, float angle)
 : Cmd(cmdSeq, timeMillis, "CmdSpinOnPlaceRight")
+, m_angle(angle)
 { }
 
 void CmdSpinOnPlaceRight::execute()
 {
   if ((0 != cmdSequence()) && (0 != cmdSequence()->adapter()))
   {
-    cmdSequence()->adapter()->spinOnPlaceRightAction();
+    cmdSequence()->adapter()->spinOnPlaceRightAction(m_angle);
   }
 }
 
