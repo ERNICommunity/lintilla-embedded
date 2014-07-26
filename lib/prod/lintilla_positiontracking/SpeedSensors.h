@@ -29,10 +29,19 @@ public:
   DistanceCount* lDistCount();
   DistanceCount* rDistCount();
 
+  void updateLeftWheelSpeed(unsigned long int wheelSpeed);
+  void updateRightWheelSpeed(unsigned long int wheelSpeed);
+
+  unsigned long int leftWheelSpeed();
+  unsigned long int rightWheelSpeed();
+
 private:
   Timer* m_speedSensorReadTimer;
   DistanceCount* m_lDistCount;
   DistanceCount* m_rDistCount;
+
+  unsigned long int m_leftWheelSpeed;
+  unsigned long int m_rightWheelSpeed;
 
 private: // forbidden default functions
   SpeedSensors& operator = (const SpeedSensors& src); // assignment operator

@@ -53,17 +53,14 @@ public:
   void timeExpired()
   {
     noInterrupts();
-
-    // read the speed sensor counters and reset them
-    unsigned long int leftWheelSpeed  = speedSensorCountLeft;  speedSensorCountLeft  = 0;
-    unsigned long int rightWheelSpeed = speedSensorCountRight; speedSensorCountRight = 0;
-
     if (0 != m_speedSensors)
     {
-      m_speedSensors->lDistCount()->add(leftWheelSpeed);
-      m_speedSensors->rDistCount()->add(rightWheelSpeed);
+      // read the speed sensor counters and reset them
+      m_speedSensors->updateLeftWheelSpeed(speedSensorCountLeft);
+      speedSensorCountLeft  = 0;
+      m_speedSensors->updateRightWheelSpeed(speedSensorCountRight);
+      speedSensorCountRight = 0;
     }
-
     interrupts();
   }
 };
@@ -74,6 +71,8 @@ SpeedSensors::SpeedSensors()
 : m_speedSensorReadTimer(new Timer(new SpeedSensorReadTimerAdapter(this), Timer::IS_RECURRING, SPEED_SENSORS_READ_TIMER_INTVL_MILLIS))
 , m_lDistCount(new DistanceCount())
 , m_rDistCount(new DistanceCount())
+, m_leftWheelSpeed(0)
+, m_rightWheelSpeed(0)
 {
   attachInterrupt(L_SPEED_SENS_IRQ, countLeftSpeedSensor,  RISING);
   attachInterrupt(R_SPEED_SENS_IRQ, countRightSpeedSensor, RISING);
@@ -105,4 +104,27 @@ DistanceCount* SpeedSensors::lDistCount()
 DistanceCount* SpeedSensors::rDistCount()
 {
   return m_rDistCount;
+}
+
+void SpeedSensors::updateLeftWheelSpeed(unsigned long int wheelSpeed)
+{
+  m_leftWheelSpeed = wheelSpeed;
+  m_lDistCount->add(wheelSpeed);
+}
+
+void SpeedSensors::updateRightWheelSpeed(unsigned long int wheelSpeed)
+{
+  m_rightWheelSpeed = wheelSpeed;
+  m_rDistCount->add(wheelSpeed);
+}
+
+
+unsigned long int SpeedSensors::leftWheelSpeed()
+{
+  return m_leftWheelSpeed;
+}
+
+unsigned long int SpeedSensors::rightWheelSpeed()
+{
+  return m_rightWheelSpeed;
 }

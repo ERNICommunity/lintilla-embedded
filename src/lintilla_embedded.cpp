@@ -68,7 +68,7 @@ unsigned long dist = UltrasonicSensor::DISTANCE_LIMIT_EXCEEDED;   // [cm]
 //---------------------------------------------------------------------------
 // Wheel Speed Sensors
 //---------------------------------------------------------------------------
-SpeedSensors* speedSesors = 0;
+SpeedSensors* speedSensors = 0;
 
 //---------------------------------------------------------------------------
 // Motor Drivers and Speed Control
@@ -472,7 +472,7 @@ void setup()
   //---------------------------------------------------------------------------
   // Speed Sensors
   //---------------------------------------------------------------------------
-  speedSesors = new SpeedSensors();
+  speedSensors = new SpeedSensors();
 
   //---------------------------------------------------------------------------
   // Motor Drivers and Speed Control
@@ -512,9 +512,8 @@ void setup()
   //---------------------------------------------------------------------------
   // MMI
   //---------------------------------------------------------------------------
-  mmi = new LintillaMmi(new ALintillaMmiAdapter(battery, cmdSeq, ivm, ultrasonicSensorFront, &cc3000,
-                                                speedSesors->lDistCount(),
-                                                speedSesors->rDistCount()));
+  mmi = new LintillaMmi(new ALintillaMmiAdapter(battery, cmdSeq, ivm, ultrasonicSensorFront,
+                                                &cc3000, speedSensors));
 
   //---------------------------------------------------------------------------
   // WiFi and Socket Server
