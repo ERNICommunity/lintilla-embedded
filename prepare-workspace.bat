@@ -61,6 +61,9 @@ set Archiver=%ThisProjTools%\7za920\7za.exe
 :: wget
 set Wget=%ThisProjTools%\wget\wget.exe
 
+:: junction
+set Junction=%ThisProjTools%\junction\junction.exe
+
 :: git
 if "%OsVariant%"=="win32" (
   set Git="%ProgramFiles%\Git\bin\git.exe"
@@ -98,7 +101,7 @@ if not exist "%CurArduino%" (
 )
 :: create softlink (junction) for Arduino IDE in current project tools
 rmdir %ThisProjTools%\arduino
-mklink /J %ThisProjTools%\arduino %CurArduino%
+%Junction% %ThisProjTools%\arduino %CurArduino%
 
 :: Eclipse Arduino Workbench Bundle
 if not exist "%CurEclipseArduino%" (
@@ -117,7 +120,7 @@ if not exist "%CurEclipseArduino%" (
 )
 :: create softlink (junction) for Eclipse Arduino Workbench Bundle in current project tools
 rmdir %ThisProjTools%\eclipseArduino
-mklink /J %ThisProjTools%\eclipseArduino %CurEclipseArduino%
+%Junction% %ThisProjTools%\eclipseArduino %CurEclipseArduino%
 
 :: unpack Eclipse metadata in workspace
 if not exist "%WorkspaceDir%\.metadata" (
