@@ -146,6 +146,11 @@
 			<type>2</type>
 			<locationURI>lintilla_embeddedsockets/sockets</locationURI>
 		</link>
+		<link>
+			<name>prod/traction</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedtraction/traction</locationURI>
+		</link>
 	</linkedResources>
 	<variableList>
 		<variable>

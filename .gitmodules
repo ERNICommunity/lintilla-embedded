@@ -13,7 +13,8 @@
 	url = https://code.google.com/p/arduino-driver-motorpwm/
 [submodule "lib/comp/ultrasonicranging"]
 	path = lib/comp/ultrasonicranging
-	url = https://code.google.com/p/arduino-driver-ultrasonicranging/
+	url = git@github.com:dniklaus/arduino-driver-ultrasonicranging.git
+	branch = Branch_1.1.1
 [submodule "lib/comp/lcdkeypad"]
 	path = lib/comp/lcdkeypad
 	url = http://code.google.com/p/arduino-display-lcdkeypad/

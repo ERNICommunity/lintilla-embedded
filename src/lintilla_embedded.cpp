@@ -10,17 +10,16 @@
 #include "LintillaMmi.h"
 #include "ALintillaMmiAdapter.h"
 #include "Timer.h"
-#include "SN754410Driver.h"
-#include "MotorPWM.h"
+#include "Traction.h"
+#include "ATractionAdapter.h"
 #include "SpeedSensors.h"
 #include "UltrasonicSensor.h"
 #include "UltrasonicSensorHCSR04.h"
+#include "AnUltrasonicSensorAdapter.h"
 #include "EEPROM.h"
 #include "Ivm.h"
-#include "IF_IvmMemory.h"
-#include "IvmSerialEeprom.h"
 #include "LintillaIvm.h"
-#include "CmdAdapter.h"
+#include "ACmdAdapter.h"
 #include "CmdSequence.h"
 #include "Cmd.h"
 #include "DistanceCount.h"
@@ -60,7 +59,6 @@ LintillaBatteryAdapter* batteryAdapter = 0;
 // Ultrasonic Ranging
 //---------------------------------------------------------------------------
 UltrasonicSensor* ultrasonicSensorFront = 0;
-
 const unsigned int triggerPin = 34;
 const unsigned int echoPin    = 36;
 unsigned long dist = UltrasonicSensor::DISTANCE_LIMIT_EXCEEDED;   // [cm]
@@ -73,55 +71,13 @@ SpeedSensors* speedSensors = 0;
 //---------------------------------------------------------------------------
 // Motor Drivers and Speed Control
 //---------------------------------------------------------------------------
-MotorPWM* motorL = 0;
-MotorPWM* motorR = 0;
-
-const int cSpeed     = 200;
-const int cSpinSpeed = 150;
-
-// H-bridge enable pin for speed control
-const int speedPin1 = 44;
-const int speedPin2 = 45;
-
-// H-bridge leg 1
-const int motor1APin = 46;
-const int motor3APin = 47;
-
-// H-bridge leg 2
-int motor2APin = 48;
-int motor4APin = 49;
-
-// value for motor speed
-int speed_value_motor_left  = 0;
-int speed_value_motor_right = 0;
-bool isLeftMotorFwd = true;
-bool isRightMotorFwd = true;
-bool isObstacleDetected = false;
-
-void motorStop();
-void moveBackward();
-void moveForward();
-void moveStraight(bool forward);
-void spinOnPlace(bool right, float angle);
-
-Timer* speedCtrlTimer = 0;
-const unsigned int cSpeedCtrlInterval = 200;
-void speedControl();
-void updateActors();
-class SpeedCtrlTimerAdapter : public TimerAdapter
-{
-  void timeExpired()
-  {
-    speedControl();
-    updateActors();
-  }
-};
+Traction* traction = 0;
+ATractionAdapter* tractionAdapter = 0;
 
 //---------------------------------------------------------------------------
 // Command Sequence
 //---------------------------------------------------------------------------
 CmdSequence* cmdSeq = 0;
-class LintillaCmdAdapter;
 
 //---------------------------------------------------------------------------
 // WiFi and Socket Server
@@ -176,41 +132,6 @@ bool isSSIDPresent(const char* searchSSID);
 // Lintilla MMI
 //---------------------------------------------------------------------------
 LintillaMmi* mmi = 0;
-
-//-----------------------------------------------------------------------------
-
-class LintillaCmdAdapter : public CmdAdapter
-{
-  virtual void stopAction()
-  {
-    motorStop();
-    Serial.print("LintillaCmdAdapter::stopAction()\n");
-  }
-
-  virtual void moveForwardAction()
-  {
-    moveForward();
-    Serial.print("LintillaCmdAdapter::moveForwardAction()\n");
-  }
-
-  virtual void moveBackwardAction()
-  {
-    moveBackward();
-    Serial.print("LintillaCmdAdapter::moveBackwardAction()\n");
-  }
-
-  virtual void spinOnPlaceLeftAction(float angle)
-  {
-    spinOnPlace(false, angle);
-    Serial.print("LintillaCmdAdapter::spinOnPlaceLeftAction()\n");
-  }
-
-  virtual void spinOnPlaceRightAction(float angle)
-  {
-    spinOnPlace(true, angle);
-    Serial.print("LintillaCmdAdapter::spinOnPlaceRightAction()\n");
-  }
-};
 
 //-----------------------------------------------------------------------------
 
@@ -352,40 +273,6 @@ void loop()
 
 //-----------------------------------------------------------------------------
 
-void motorStop()
-{
-  speed_value_motor_left  = 0;
-  speed_value_motor_right = 0;
-  updateActors();
-}
-
-//-----------------------------------------------------------------------------
-
-void moveBackward()
-{
-  moveStraight(false);
-}
-
-//-----------------------------------------------------------------------------
-
-void moveForward()
-{
-  moveStraight(true);
-}
-
-//-----------------------------------------------------------------------------
-
-void moveStraight(bool forward)
-{
-  isLeftMotorFwd  = forward;
-  isRightMotorFwd = forward;
-  speed_value_motor_left  = cSpeed;
-  speed_value_motor_right = cSpeed;
-  updateActors();
-}
-
-//-----------------------------------------------------------------------------
-
 void processEchoServer()
 {
   if (cc3000.checkConnected())
@@ -411,7 +298,7 @@ void processEchoServer()
        {
          // Read a byte and write it to all clients.
          uint8_t ch = client.read();
-         if (('g' == ch) && !cmdSeq->isRunning() /*&& !lcdKeypad->isRightKey()*/ && !isObstacleDetected &&
+         if (('g' == ch) && !cmdSeq->isRunning() /*&& !lcdKeypad->isRightKey()*/ && !ultrasonicSensorFront->isObstacleDetected() &&
              !battery->isBattVoltageBelowStopThreshold() && !battery->isBattVoltageBelowShutdownThreshold())
          {
            Serial.println("processEchoServer(): g -> start");
@@ -465,11 +352,6 @@ void setup()
   batteryAdapter->attachCmdSequence(cmdSeq);
 
   //---------------------------------------------------------------------------
-  // Ultrasonic Ranging
-  //---------------------------------------------------------------------------
-  ultrasonicSensorFront = new UltrasonicSensorHCSR04(triggerPin, echoPin);
-
-  //---------------------------------------------------------------------------
   // Speed Sensors
   //---------------------------------------------------------------------------
   speedSensors = new SpeedSensors();
@@ -477,14 +359,12 @@ void setup()
   //---------------------------------------------------------------------------
   // Motor Drivers and Speed Control
   //---------------------------------------------------------------------------
-  motorL = new SN754410_Driver(speedPin1, motor1APin, motor2APin);
-  motorR = new SN754410_Driver(speedPin2, motor3APin, motor4APin);
-  speedCtrlTimer = new Timer(new SpeedCtrlTimerAdapter(), Timer::IS_RECURRING, cSpeedCtrlInterval);
+  traction = new Traction();
 
   //---------------------------------------------------------------------------
   // Command Sequence
   //---------------------------------------------------------------------------
-  cmdSeq = new CmdSequence(new LintillaCmdAdapter());
+  cmdSeq = new CmdSequence(new ACmdAdapter(traction));
 
   const int cSpinTime     =  300;
   const int cFwdTime      =  300;
@@ -510,6 +390,15 @@ void setup()
   }
 
   //---------------------------------------------------------------------------
+  // Ultrasonic Ranging
+  //---------------------------------------------------------------------------
+  ultrasonicSensorFront = new UltrasonicSensorHCSR04(triggerPin, echoPin);
+  ultrasonicSensorFront->attachAdapter(new AnUltrasonicSensorAdapter(cmdSeq));
+
+  tractionAdapter = new ATractionAdapter(ultrasonicSensorFront);
+  traction->attachAdapter(tractionAdapter);
+
+  //---------------------------------------------------------------------------
   // MMI
   //---------------------------------------------------------------------------
   mmi = new LintillaMmi(new ALintillaMmiAdapter(battery, cmdSeq, ivm, ultrasonicSensorFront,
@@ -526,34 +415,6 @@ void setup()
 
 //-----------------------------------------------------------------------------
 
-void speedControl()
-{
-  if (0 != ultrasonicSensorFront)
-  {
-    dist = ultrasonicSensorFront->getDistanceCM();
-  }
-  isObstacleDetected = isLeftMotorFwd && (dist > 0) && (dist < 15);
-
-  if (isObstacleDetected || battery->isBattVoltageBelowStopThreshold() || battery->isBattVoltageBelowShutdownThreshold())
-  {
-    cmdSeq->stop();
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-void spinOnPlace(bool right, float angle)
-{
-//  setPointAngle = startAngle + angle;
-  isLeftMotorFwd = right;
-  isRightMotorFwd = !right;
-  speed_value_motor_left  = cSpinSpeed;
-  speed_value_motor_right = cSpinSpeed;
-  updateActors();
-}
-
-//-----------------------------------------------------------------------------
-
 void startEchoServer()
 {
   if (cc3000.checkConnected())
@@ -564,17 +425,6 @@ void startEchoServer()
     echoServer.begin();
     Serial.println(F("Listening for connections..."));
   }
-}
-
-//-----------------------------------------------------------------------------
-
-void updateActors()
-{
-  int speedAndDirectionLeft  = speed_value_motor_left  * (isLeftMotorFwd  ? 1 : -1);
-  int speedAndDirectionRight = speed_value_motor_right * (isRightMotorFwd ? 1 : -1);
-
-  motorL->setSpeed(speedAndDirectionLeft);
-  motorR->setSpeed(speedAndDirectionRight);
 }
 
 //-----------------------------------------------------------------------------
@@ -673,13 +523,16 @@ void serialEvent()
   {
     // get the new byte:
     char inChar = (char)Serial.read();
-    if ('i' == inChar)
+    if (0 != batteryAdapter)
     {
-      batteryAdapter->incrRawBattSenseValue();
-    }
-    else if ('d' == inChar)
-    {
-      batteryAdapter->decrRawBattSenseValue();
+      if ('i' == inChar)
+      {
+        batteryAdapter->incrRawBattSenseValue();
+      }
+      else if ('d' == inChar)
+      {
+        batteryAdapter->decrRawBattSenseValue();
+      }
     }
   }
 }
