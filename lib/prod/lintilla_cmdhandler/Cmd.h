@@ -12,8 +12,10 @@ class CmdSequence;
 
 class Cmd
 {
-public:
+protected:
   Cmd(CmdSequence* cmdSeq, unsigned int timeMillis, const char* name);
+
+public:
   virtual ~Cmd();
 
   void setTime(unsigned int millis);
@@ -86,9 +88,12 @@ private: // forbidden default functions
 class CmdSpinOnPlaceLeft : public Cmd
 {
 public:
-  CmdSpinOnPlaceLeft(CmdSequence* cmdSeq, unsigned int timeMillis);
+  CmdSpinOnPlaceLeft(CmdSequence* cmdSeq, unsigned int timeMillis, float angle = 0.0);
   virtual ~CmdSpinOnPlaceLeft() { }
   virtual void execute();
+
+private:
+  float m_angle;
 
 private: // forbidden default functions
   CmdSpinOnPlaceLeft& operator = (const CmdSpinOnPlaceLeft& src); // assignment operator
@@ -100,13 +105,18 @@ private: // forbidden default functions
 class CmdSpinOnPlaceRight : public Cmd
 {
 public:
-  CmdSpinOnPlaceRight(CmdSequence* cmdSeq, unsigned int timeMillis);
+  CmdSpinOnPlaceRight(CmdSequence* cmdSeq, unsigned int timeMillis, float angle = 0.0);
   virtual ~CmdSpinOnPlaceRight() { }
   virtual void execute();
+
+private:
+  float m_angle;
 
 private: // forbidden default functions
   CmdSpinOnPlaceRight& operator = (const CmdSpinOnPlaceRight& src); // assignment operator
   CmdSpinOnPlaceRight(const CmdSpinOnPlaceRight& src);              // copy constructor
 };
+
+//-----------------------------------------------------------------------------
 
 #endif /* CMD_H_ */

@@ -20,9 +20,9 @@ public:
 
   virtual void moveBackwardAction() { }
 
-  virtual void spinOnPlaceLeftAction() { }
+  virtual void spinOnPlaceLeftAction(float angle) { }
 
-  virtual void spinOnPlaceRightAction() { }
+  virtual void spinOnPlaceRightAction(float angle) { }
 
 private: // forbidden default functions
   CmdAdapter& operator= (const CmdAdapter& src);  // assignment operator

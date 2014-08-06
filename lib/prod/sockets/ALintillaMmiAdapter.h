@@ -15,7 +15,7 @@ class CmdSequence;
 class LintillaIvm;
 class UltrasonicSensor;
 class Adafruit_CC3000;
-class DistanceCount;
+class SpeedSensors;
 
 //-----------------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ class ALintillaMmiAdapter: public LintillaMmiAdapter
 public:
   ALintillaMmiAdapter(Battery* battery, CmdSequence* cmdSeq, LintillaIvm* ivm,
                       UltrasonicSensor* ultrasonicSensorFront, Adafruit_CC3000* cc3000,
-                      DistanceCount* lDistCount, DistanceCount* rDistCount);
+                      SpeedSensors* speedSensors);
   virtual ~ALintillaMmiAdapter();
 
   bool isSeqRunning();
@@ -57,8 +57,7 @@ private:
   LintillaIvm* m_ivm;
   UltrasonicSensor* m_ultrasonicSensorFront;
   Adafruit_CC3000* m_cc3000;
-  DistanceCount* m_lDistCount;
-  DistanceCount* m_rDistCount;
+  SpeedSensors* m_speedSensors;
 
 private: // forbidden default functions
   ALintillaMmiAdapter& operator = (const ALintillaMmiAdapter& );  // assignment operator

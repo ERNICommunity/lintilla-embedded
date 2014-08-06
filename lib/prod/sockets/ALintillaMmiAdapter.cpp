@@ -10,21 +10,21 @@
 #include "LintillaIvm.h"
 #include "UltrasonicSensor.h"
 #include "Adafruit_CC3000.h"
+#include "SpeedSensors.h"
 #include "DistanceCount.h"
 
 #include <ALintillaMmiAdapter.h>
 
 ALintillaMmiAdapter::ALintillaMmiAdapter(Battery* battery, CmdSequence* cmdSeq, LintillaIvm* ivm,
                                          UltrasonicSensor* ultrasonicSensorFront, Adafruit_CC3000* cc3000,
-                                         DistanceCount* lDistCount, DistanceCount* rDistCount)
+                                         SpeedSensors* speedSensors)
 : LintillaMmiAdapter()
 , m_battery(battery)
 , m_cmdSeq(cmdSeq)
 , m_ivm(ivm)
 , m_ultrasonicSensorFront(ultrasonicSensorFront)
 , m_cc3000(cc3000)
-, m_lDistCount(lDistCount)
-, m_rDistCount(rDistCount)
+, m_speedSensors(speedSensors)
 { }
 
 ALintillaMmiAdapter::~ALintillaMmiAdapter()
@@ -44,10 +44,10 @@ void ALintillaMmiAdapter::startSequence()
 {
   if ((0 != m_cmdSeq) && (!isObstacleDetected()) && (!isBattVoltageBelowWarnThreshold()))
   {
-    if ((0 != m_lDistCount) && (0 != m_rDistCount))
+    if ((0 != m_speedSensors) && (0 != m_speedSensors->lDistCount()) && (0 != m_speedSensors->rDistCount()))
     {
-      m_lDistCount->reset();
-      m_rDistCount->reset();
+      m_speedSensors->lDistCount()->reset();
+      m_speedSensors->rDistCount()->reset();
     }
     m_cmdSeq->start();
   }
@@ -162,18 +162,18 @@ uint32_t ALintillaMmiAdapter::getCurrentIpAddress()
 long int ALintillaMmiAdapter::getLeftWheelSpeed()
 {
   long int speed = 0;
-//  noInterrupts();
-//  speed = leftWheelSpeed;
-//  interrupts();
+  noInterrupts();
+  speed = m_speedSensors->leftWheelSpeed();
+  interrupts();
   return speed;
 }
 
 long int ALintillaMmiAdapter::getRightWheelSpeed()
 {
   long int speed = 0;
-//  noInterrupts();
-//  speed = rightWheelSpeed;
-//  interrupts();
+  noInterrupts();
+  speed = m_speedSensors->rightWheelSpeed();
+  interrupts();
   return speed;
 }
 

@@ -313,6 +313,7 @@ void LintillaMmi::updateDisplay()
         m_lcdKeypad->print(" r:");
         m_lcdKeypad->print(rWspd > 99 ? "" : rWspd > 9 ? " " : "  ");
         m_lcdKeypad->print(rWspd);
+        m_lcdKeypad->print("   ");
       }
     }
   }
