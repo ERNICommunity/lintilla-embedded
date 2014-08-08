@@ -32,3 +32,5 @@ Run the Eclipse Arduino Workbench with this batch:
     C:\git\arduino-projects\lintilla-embedded\eclipseArduino.bat
 
 In the Eclipse Arduino Workbench select the lintilla_embedded entry in the Project Explorer (on the left-hand side) and press the Verify button, this compiles the project. 
+
+![](https://github.com/ERNICommunity/arduino-blink/wiki/pictures/select_proj_and_press_verify.png)
