@@ -19,8 +19,8 @@ const int Traction::speedPin2 = 45;
 const int Traction::motor1APin = 46;
 const int Traction::motor3APin = 47;
 
-int Traction::motor2APin = 48;
-int Traction::motor4APin = 49;
+const int Traction::motor2APin = 48;
+const int Traction::motor4APin = 49;
 
 //-----------------------------------------------------------------------------
 

@@ -72,8 +72,8 @@ private:
   static const int motor3APin;
 
   // H-bridge leg 2
-  static int motor2APin;
-  static int motor4APin;
+  static const int motor2APin;
+  static const int motor4APin;
 
 private: // forbidden default functions
   Traction& operator= (const Traction& src);  // assignment operator

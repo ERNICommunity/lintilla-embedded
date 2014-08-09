@@ -29,7 +29,7 @@ void ACmdAdapter::moveForwardAction()
 {
   if (0 != m_traction)
   {
-    m_traction->moveBackward();
+    m_traction->moveForward();
     Serial.print("ACmdAdapter::moveForwardAction()\n");
   }
 }

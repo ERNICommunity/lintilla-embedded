@@ -110,7 +110,7 @@ bool ALintillaMmiAdapter::isBattVoltageBelowWarnThreshold()
   bool isBelowWarnThreshold = false;
   if (0 != m_battery)
   {
-    m_battery->isBattVoltageBelowWarnThreshold();
+    isBelowWarnThreshold = m_battery->isBattVoltageBelowWarnThreshold();
   }
   return isBelowWarnThreshold;
 }
@@ -120,7 +120,7 @@ bool ALintillaMmiAdapter::isBattVoltageBelowStopThreshold()
   bool isBelowStopThreshold = false;
   if (0 != m_battery)
   {
-    m_battery->isBattVoltageBelowStopThreshold();
+    isBelowStopThreshold = m_battery->isBattVoltageBelowStopThreshold();
   }
   return isBelowStopThreshold;
 }
