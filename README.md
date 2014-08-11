@@ -3,6 +3,8 @@ lintilla-embedded
 
 Arduino Robot SW.
 
+See also the [wiki](https://github.com/ERNICommunity/lintilla-embedded/wiki) for more information.
+
 Clone this repository recursively into:
 
     C:\git\arduino-projects\lintilla-embedded
