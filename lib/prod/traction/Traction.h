@@ -60,20 +60,20 @@ private:
   bool m_isRightMotorFwd ;
 
   // Constants
-  static const int cSpeed;
-  static const int cSpinSpeed;
+  static const int MOTOR_SPEED_STRAIGHT;
+  static const int MOTOR_SPIN_SPEED;
 
   // H-bridge enable pin for speed control
-  static const int speedPin1;
-  static const int speedPin2;
+  static const int SPEED_PIN1;
+  static const int SPEED_PIN2;
 
   // H-bridge leg 1
-  static const int motor1APin;
-  static const int motor3APin;
+  static const int MOTOR_1A_PIN;
+  static const int MOTOR_3A_PIN;
 
   // H-bridge leg 2
-  static const int motor2APin;
-  static const int motor4APin;
+  static const int MOTOR_2A_PIN;
+  static const int MOTOR_4A_PIN;
 
 private: // forbidden default functions
   Traction& operator= (const Traction& src);  // assignment operator

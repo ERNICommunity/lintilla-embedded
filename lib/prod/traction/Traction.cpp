@@ -10,23 +10,23 @@
 
 //-----------------------------------------------------------------------------
 
-const int Traction::cSpeed     = 200;
-const int Traction::cSpinSpeed = 150;
+const int Traction::MOTOR_SPEED_STRAIGHT  = 200;
+const int Traction::MOTOR_SPIN_SPEED      = 150;
 
-const int Traction::speedPin1 = 44;
-const int Traction::speedPin2 = 45;
+const int Traction::SPEED_PIN1            = 44;
+const int Traction::SPEED_PIN2            = 45;
 
-const int Traction::motor1APin = 46;
-const int Traction::motor3APin = 47;
+const int Traction::MOTOR_1A_PIN          = 46;
+const int Traction::MOTOR_3A_PIN          = 47;
 
-const int Traction::motor2APin = 48;
-const int Traction::motor4APin = 49;
+const int Traction::MOTOR_2A_PIN          = 48;
+const int Traction::MOTOR_4A_PIN          = 49;
 
 //-----------------------------------------------------------------------------
 
 Traction::Traction(TractionAdapter* adapter)
-: m_motorL(new SN754410_Driver(speedPin1, motor1APin, motor2APin))
-, m_motorR(new SN754410_Driver(speedPin2, motor3APin, motor4APin))
+: m_motorL(new SN754410_Driver(SPEED_PIN1, MOTOR_1A_PIN, MOTOR_2A_PIN))
+, m_motorR(new SN754410_Driver(SPEED_PIN2, MOTOR_3A_PIN, MOTOR_4A_PIN))
 , m_adapter(adapter)
 , m_speed_value_motor_left(0)
 , m_speed_value_motor_right(0)
@@ -74,18 +74,19 @@ void Traction::moveStraight(bool forward)
 {
   m_isLeftMotorFwd  = forward;
   m_isRightMotorFwd = forward;
-  m_speed_value_motor_left  = cSpeed;
-  m_speed_value_motor_right = cSpeed;
+  m_speed_value_motor_left  = MOTOR_SPEED_STRAIGHT;
+  m_speed_value_motor_right = MOTOR_SPEED_STRAIGHT;
   updateActors();
 }
 
 void Traction::spinOnPlace(bool right, float angle)
 {
+//  startAngle = free6Imu->getYawAngle();
 //  setPointAngle = startAngle + angle;
   m_isLeftMotorFwd = right;
   m_isRightMotorFwd = !right;
-  m_speed_value_motor_left  = cSpinSpeed;
-  m_speed_value_motor_right = cSpinSpeed;
+  m_speed_value_motor_left  = MOTOR_SPIN_SPEED;
+  m_speed_value_motor_right = MOTOR_SPIN_SPEED;
   updateActors();
 }
 
