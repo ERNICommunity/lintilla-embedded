@@ -107,6 +107,11 @@
 			<locationURI>lintilla_embeddedUltrasonicRanging/UltrasonicRanging</locationURI>
 		</link>
 		<link>
+			<name>comp/aREST</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedaREST/aREST</locationURI>
+		</link>
+		<link>
 			<name>plat/Blanking</name>
 			<type>2</type>
 			<locationURI>lintilla_embeddedBlanking/Blanking</locationURI>

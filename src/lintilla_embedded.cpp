@@ -225,10 +225,15 @@ bool displayConnectionDetails(void)
 bool isSSIDPresent(const char* searchSSID)
 {
   bool found = false;
-  uint8_t valid, rssi, sec, index;
+  uint8_t valid, rssi, sec;
+  uint32_t index;
   char ssidname[33];
 
-  index = cc3000.startSSIDscan();
+  if (!cc3000.startSSIDscan(&index))
+  {
+    Serial.println(F("SSID scan failed!"));
+    return false;
+  }
 
   Serial.print(F("Networks found: ")); Serial.println(index);
   Serial.println(F("================================================"));
