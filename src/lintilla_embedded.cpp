@@ -25,7 +25,6 @@
 #include "DistanceCount.h"
 #include "Battery.h"
 #include "LintillaBatteryAdapter.h"
-//#include <aJSON.h>
 
 //-----------------------------------------------------------------------------
 
@@ -107,24 +106,38 @@ uint32_t currentIpAddress = 0;
 Adafruit_CC3000_Server echoServer(LISTEN_PORT);
 
 Timer* wifiReconnectTimer = 0;
-const unsigned int cWifiReconnectInterval = 5000; // WiFi re-connect interval [ms]
+const unsigned int cWifiReconnectInterval = 30000; // WiFi re-connect interval [ms]
 void connectWiFi();
 class WifiReconnectTimerAdapter : public TimerAdapter
 {
+private:
+  Timer* m_timer;
+
+public:
+  WifiReconnectTimerAdapter(Timer* timer)
+  : m_timer(timer)
+  { }
+
   void timeExpired()
   {
     if (!cc3000.checkConnected())
     {
-      Serial.print("Lintilla lost WiFi connection, rebooting!!\n");
-//        Serial.print("Lintilla lost WiFi connection, reconnecting!!\n");
+      Serial.print("Lintilla lost WiFi connection, reconnecting!!\n");
       delay(2000);
-      resetFunc();
-//      connectWiFi();
-//      startEchoServer();
+      cc3000.reboot();
+      connectWiFi();
+      startEchoServer();
     }
   }
+
+private: // forbidden default functions
+  WifiReconnectTimerAdapter& operator= (const WifiReconnectTimerAdapter& src);  // assignment operator
+  WifiReconnectTimerAdapter(const WifiReconnectTimerAdapter& src);              // copy constructor
 };
 
+void connectWiFi();
+uint16_t checkFirmwareVersion(void);
+void displayMACAddress(void);
 bool displayConnectionDetails(void);
 bool isSSIDPresent(const char* searchSSID);
 
@@ -137,15 +150,33 @@ LintillaMmi* mmi = 0;
 
 void connectWiFi()
 {
-  Serial.println(F("\nHello, CC3000!"));
+  Serial.println(F("\nconnectWifi(): using CC3000 driver!"));
   Serial.print("Free RAM: "); Serial.println(getFreeRam(), DEC);
 
   /* Initialize the module */
   Serial.println(F("\nInitializing..."));
   if (!cc3000.begin())
   {
-    Serial.println(F("Couldn't begin()! Check your wiring?"));
-    while(1);
+    Serial.println(F("Unable to initialise the CC3000! Check your wiring?"));
+    return; // bail out
+  }
+
+  uint16_t firmware = checkFirmwareVersion();
+  if (firmware < 0x113) {
+    Serial.println(F("Wrong CC3000 firmware version!"));
+    return; // bail out
+  }
+
+  displayMACAddress();
+
+  /* Attempt to connect to an access point */
+  char* ssid = WLAN_SSID;             /* Max 32 chars */
+  Serial.print(F("\nAttempting to connect to ")); Serial.println(ssid);
+
+  if (!isSSIDPresent(WLAN_SSID))
+  {
+    Serial.println(F("Failed!"));
+    return;  // bail out
   }
 
   /* Delete any old connection data on the module */
@@ -155,14 +186,7 @@ void connectWiFi()
     return; // bail out
   }
 
-  Serial.print(F("Scanning for SSID ")); Serial.println(WLAN_SSID);
-  if (!isSSIDPresent(WLAN_SSID))
-  {
-    Serial.println(F("Failed!"));
-    return;  // bail out
-  }
-  Serial.println(F("Succeeded."));
-
+  /* Attempt to connect to an access point */
   if (!cc3000.connectToAP(WLAN_SSID, WLAN_PASS, WLAN_SECURITY))
   {
     // time out after 10 s
@@ -171,9 +195,10 @@ void connectWiFi()
   }
   Serial.println(F("Connected!"));
 
+  /* Wait for DHCP to complete */
   Serial.println(F("Request DHCP"));
-  const unsigned int dhcpConnectRetryInterval = 1000; // [s]
-  unsigned int dhcpTimoutCounter = 20;                // 10 s
+  const unsigned int dhcpConnectRetryInterval = 1000; // [ms]
+  unsigned int dhcpTimoutCounter = 20;                // 20 s
   while ((dhcpTimoutCounter > 0) && !cc3000.checkDHCP())
   {
     dhcpTimoutCounter--;
@@ -181,6 +206,7 @@ void connectWiFi()
   }
   if (0 == dhcpTimoutCounter)
   {
+    Serial.println(F("Failed!"));
     return; // bail out
   }
 
@@ -192,6 +218,52 @@ void connectWiFi()
 }
 
 //-----------------------------------------------------------------------------
+
+/**************************************************************************/
+/*!
+    @brief  Tries to read the CC3000's internal firmware patch ID
+*/
+/**************************************************************************/
+uint16_t checkFirmwareVersion(void)
+{
+  uint8_t major, minor;
+  uint16_t version;
+
+#ifndef CC3000_TINY_DRIVER
+  if(!cc3000.getFirmwareVersion(&major, &minor))
+  {
+    Serial.println(F("Unable to retrieve the firmware version!\r\n"));
+    version = 0;
+  }
+  else
+  {
+    Serial.print(F("Firmware V. : "));
+    Serial.print(major); Serial.print(F(".")); Serial.println(minor);
+    version = major; version <<= 8; version |= minor;
+  }
+#endif
+  return version;
+}
+
+/**************************************************************************/
+/*!
+    @brief  Tries to read the 6-byte MAC address of the CC3000 module
+*/
+/**************************************************************************/
+void displayMACAddress(void)
+{
+  uint8_t macAddress[6];
+
+  if(!cc3000.getMacAddress(macAddress))
+  {
+    Serial.println(F("Unable to retrieve MAC Address!\r\n"));
+  }
+  else
+  {
+    Serial.print(F("MAC Address : "));
+    cc3000.printHex((byte*)&macAddress, 6);
+  }
+}
 
 /**************************************************************************/
 /*!
@@ -238,20 +310,22 @@ bool isSSIDPresent(const char* searchSSID)
   Serial.print(F("Networks found: ")); Serial.println(index);
   Serial.println(F("================================================"));
 
-  while ((index > 0) && !found)
+  while (index > 0)
   {
+    bool match = false;
     index--;
     valid = cc3000.getNextSSID(&rssi, &sec, ssidname);
 
     if (0 == strncmp(ssidname, searchSSID, sizeof(ssidname)))
     {
       found = true;
+      match = true;
     }
 
     Serial.print(F("SSID Name    : ")); Serial.print(ssidname);
-    if (found)
+    if (match)
     {
-      Serial.print(" <found>");
+      Serial.print(" <<found>>");
     }
     Serial.println();
     Serial.print(F("RSSI         : "));
@@ -280,42 +354,65 @@ void loop()
 
 void processEchoServer()
 {
-  if (cc3000.checkConnected())
+  // Try to get a client which is connected.
+  Adafruit_CC3000_ClientRef client = echoServer.available();
+
+  if (client)
   {
-    //  if (jsonStream->available()) {
-    //    /* First, skip any accidental whitespace like newlines. */
-    //    jsonStream->skip();
-    //  }
-
-    //  if (jsonStream->available()) {
-    //    /* Something real on input, let's take a look. */
-    //    aJsonObject* msg = aJson.parse(jsonStream);
-    //    processLintillaMessageReceived(msg);
-    //    aJson.deleteItem(msg);
-    //  }
-
-    // Try to get a client which is connected.
-    Adafruit_CC3000_ClientRef client = echoServer.available();
-
-    if (client) {
-       // Check if there is data available to read.
-       if (client.available() > 0)
-       {
-         // Read a byte and write it to all clients.
-         uint8_t ch = client.read();
-         if (('g' == ch) && !cmdSeq->isRunning() /*&& !lcdKeypad->isRightKey()*/ && !ultrasonicSensorFront->isObstacleDetected() &&
-             !battery->isBattVoltageBelowStopThreshold() && !battery->isBattVoltageBelowShutdownThreshold())
-         {
-           Serial.println("processEchoServer(): g -> start");
-           cmdSeq->start();
-         }
-         else if ('h' == ch)
-         {
-           Serial.println("processEchoServer(): h -> stop");
-           cmdSeq->stop();
-         }
-         client.write(ch);
-       }
+    // Check if there is data available to read.
+    if (client.available() > 0)
+    {
+      // Read a byte and write it to all clients.
+      uint8_t ch = client.read();
+      if ('g' == ch)
+      {
+        Serial.println(F("processEchoServer(): g -> start"));
+        if ((0 != cmdSeq) && (0 != ultrasonicSensorFront) && (0 != battery))
+        {
+          if (!cmdSeq->isRunning()
+              && !ultrasonicSensorFront->isObstacleDetected()
+              && !battery->isBattVoltageBelowStopThreshold()
+              && !battery->isBattVoltageBelowShutdownThreshold())
+          {
+            cmdSeq->start();
+          }
+        }
+      }
+      else if ('h' == ch)
+      {
+        Serial.println(F("processEchoServer(): h -> stop"));
+        if (0 != cmdSeq)
+        {
+          cmdSeq->stop();
+        }
+      }
+      else if ('i' == ch)
+      {
+        client.print(F("Lintilla, Robot ID="));
+        if (0 != ivm)
+        {
+          client.print(ivm->getDeviceId());
+        }
+        client.write('\r');
+        client.write('\n');
+      }
+      else if ('l' == ch)
+      {
+        if (0 != mmi)
+        {
+          mmi->setBackLightOn(true);
+        }
+      }
+      else if ('o' == ch)
+      {
+        if (0 != mmi)
+        {
+          mmi->setBackLightOn(false);
+        }
+      }
+      client.write(ch);
+      client.write('\r');
+      client.write('\n');
     }
   }
 }
@@ -397,8 +494,8 @@ void setup()
   //---------------------------------------------------------------------------
   // Ultrasonic Ranging
   //---------------------------------------------------------------------------
-  ultrasonicSensorFront = new UltrasonicSensorHCSR04(triggerPin, echoPin);
-  ultrasonicSensorFront->attachAdapter(new AnUltrasonicSensorAdapter(cmdSeq));
+//  ultrasonicSensorFront = new UltrasonicSensorHCSR04(triggerPin, echoPin);
+//  ultrasonicSensorFront->attachAdapter(new AnUltrasonicSensorAdapter(cmdSeq));
 
   tractionAdapter = new ATractionAdapter(ultrasonicSensorFront);
   traction->attachAdapter(tractionAdapter);
@@ -412,10 +509,9 @@ void setup()
   //---------------------------------------------------------------------------
   // WiFi and Socket Server
   //---------------------------------------------------------------------------
+  wifiReconnectTimer = new Timer(new WifiReconnectTimerAdapter(wifiReconnectTimer), Timer::IS_RECURRING, cWifiReconnectInterval);
   connectWiFi();
   startEchoServer();
-//  wifiReconnectTimer = new Timer(new WifiReconnectTimerAdapter(), Timer::IS_RECURRING, cWifiReconnectInterval);
-
 }
 
 //-----------------------------------------------------------------------------
@@ -424,97 +520,13 @@ void startEchoServer()
 {
   if (cc3000.checkConnected())
   {
-    // jsonStream = new aJsonStream(&(Stream)echoServer.available());
-
     // Start listening for connections
     echoServer.begin();
-    Serial.println(F("Listening for connections..."));
+    Serial.println(F("Echo Server is listening for connections..."));
   }
 }
 
 //-----------------------------------------------------------------------------
-
-/* Process message like: {"straight":{"distance": 10,"topspeed": 100},"turn":{"angle": 45},"emergencyStop":{"stop":false}}*/
-//void processLintillaMessageReceived(aJsonObject *msg)
-//{
-////  bool emergencyStopValue = false;
-////  int topspeed = 0;
-////  int distanceValue = 0;
-////  int angleValue = 0;
-//  double batteryVoltage = 0.0;
-//
-//  /* Lintilla Command List Example
-//  {
-//      "commands": [
-//          {
-//              "straight": {
-//                  "distance": 10,
-//                  "topspeed": 100
-//              }
-//          },
-//          {
-//              "turn": {
-//                  "angle": 45
-//              }
-//          },
-//          {
-//              "straight": {
-//                  "distance": 20,
-//                  "topspeed": 50
-//              }
-//          },
-//          {
-//              "emergencyStop": null
-//          },
-//          {
-//              "readVoltage": null
-//          }
-//      ]
-//  }
-//  */
-//
-//  aJsonObject* commands = aJson.getObjectItem(msg, "commands");
-//  if (0 == commands)
-//  {
-//    Serial.println("NO commands");
-//  }
-//  else
-//  {
-//    Serial.println("commands");
-//
-//    aJsonObject* aCommand = commands->child;
-//    while (0 != aCommand)
-//    {
-//      aJsonObject* readVoltageCmd = aJson.getObjectItem(aCommand, "readVoltage");
-//      if (0 != readVoltageCmd)
-//      {
-//        batteryVoltage = battVoltage;
-//
-//        aJsonObject* readVoltageMsgRoot = aJson.createObject();
-//        aJsonObject* readVoltageMsgElem = aJson.createObject();
-//
-//        aJson.addItemToObject(readVoltageMsgRoot, "readVoltage", readVoltageMsgElem);
-//        aJson.addNumberToObject(readVoltageMsgElem, "voltage", batteryVoltage);
-//
-//        aJson.print(readVoltageMsgRoot, jsonStream);
-//        Serial.println(); /* Add newline. */
-//
-//        aJson.deleteItem(readVoltageMsgElem);
-//        aJson.deleteItem(readVoltageMsgRoot);
-//      }
-//      aJson.deleteItem(readVoltageCmd);
-//
-//      aJsonObject* straightCmd = aJson.getObjectItem(aCommand, "straight");
-//      if (0 != straightCmd)
-//      {
-//        Serial.println("straight");
-//      }
-//      aJson.deleteItem(straightCmd);
-//
-//      aCommand = aCommand->next;
-//    }
-//  }
-//}
 
 /*
  SerialEvent occurs whenever a new data comes in the
@@ -528,16 +540,13 @@ void serialEvent()
   {
     // get the new byte:
     char inChar = (char)Serial.read();
-    if (0 != batteryAdapter)
+    if ('i' == inChar)
     {
-      if ('i' == inChar)
-      {
-        batteryAdapter->incrRawBattSenseValue();
-      }
-      else if ('d' == inChar)
-      {
-        batteryAdapter->decrRawBattSenseValue();
-      }
+      Serial.println("i received");
+    }
+    else if ('d' == inChar)
+    {
+      Serial.println("d received");
     }
   }
 }
