@@ -107,11 +107,11 @@ boolean NewPing::ping_trigger() {
 // Timer interrupt ping methods (won't work with ATmega8 and ATmega128)
 // ---------------------------------------------------------------------------
 
-void NewPing::ping_timer(void (*userFunc)(void)) {
+void NewPing::ping_timer(void (*userFunc)(void*), void* parameter) {
 	if (!ping_trigger()) return;         // Trigger a ping, if it returns false, return without starting the echo timer.
-	timer_us(ECHO_TIMER_FREQ, userFunc); // Set ping echo timer check every ECHO_TIMER_FREQ uS.
-}
 
+	timer_us(ECHO_TIMER_FREQ, userFunc, parameter); // Set ping echo timer check every ECHO_TIMER_FREQ uS.
+}
  
 boolean NewPing::check_timer() {
 	if (micros() > _max_time) { // Outside the timeout limit.
@@ -134,14 +134,16 @@ boolean NewPing::check_timer() {
 // ---------------------------------------------------------------------------
 
 // Variables used for timer functions
-void (*intFunc)();
-void (*intFunc2)();
+void (*intFunc)(void*);
+void* context;
+void (*intFunc2)(void*);
 unsigned long _ms_cnt_reset;
 volatile unsigned long _ms_cnt;
 
 
-void NewPing::timer_us(unsigned int frequency, void (*userFunc)(void)) {
+void NewPing::timer_us(unsigned int frequency, void (*userFunc)(void*), void* parameter) {
 	timer_setup();      // Configure the timer interrupt.
+	context = parameter;
 	intFunc = userFunc; // User's function to call when there's a timer event.
 
 #if defined (__AVR_ATmega32U4__) // Use Timer4 for ATmega32U4 (Teensy/Leonardo).
@@ -154,8 +156,9 @@ void NewPing::timer_us(unsigned int frequency, void (*userFunc)(void)) {
 }
 
 
-void NewPing::timer_ms(unsigned long frequency, void (*userFunc)(void)) {
+void NewPing::timer_ms(unsigned long frequency, void (*userFunc)(void*), void* parameter) {
 	timer_setup();                       // Configure the timer interrupt.
+	context = parameter;
 	intFunc = NewPing::timer_ms_cntdwn;  // Timer events are sent here once every ms till user's frequency is reached.
 	intFunc2 = userFunc;                 // User's function to call when user's frequency is reached.
 	_ms_cnt = _ms_cnt_reset = frequency; // Current ms counter and reset value.
@@ -200,9 +203,9 @@ void NewPing::timer_setup() {
 }
 
 
-void NewPing::timer_ms_cntdwn() {
+void NewPing::timer_ms_cntdwn(void* context) {
 	if (!_ms_cnt--) {            // Count down till we reach zero.
-		intFunc2();              // Scheduled time reached, run the main timer event function.
+		intFunc2(context);              // Scheduled time reached, run the main timer event function.
 		_ms_cnt = _ms_cnt_reset; // Reset the ms timer.
 	}
 }
@@ -213,7 +216,7 @@ ISR(TIMER4_OVF_vect) {
 #else
 ISR(TIMER2_COMPA_vect) {
 #endif
-	if(intFunc) intFunc(); // If wrapped function is set, call it.
+	if(intFunc) intFunc(context); // If wrapped function is set, call it.
 }
 
 

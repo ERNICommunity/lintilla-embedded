@@ -494,8 +494,8 @@ void setup()
   //---------------------------------------------------------------------------
   // Ultrasonic Ranging
   //---------------------------------------------------------------------------
-//  ultrasonicSensorFront = new UltrasonicSensorHCSR04(triggerPin, echoPin);
-//  ultrasonicSensorFront->attachAdapter(new AnUltrasonicSensorAdapter(cmdSeq));
+  ultrasonicSensorFront = new UltrasonicSensorHCSR04(triggerPin, echoPin);
+  ultrasonicSensorFront->attachAdapter(new AnUltrasonicSensorAdapter(cmdSeq));
 
   tractionAdapter = new ATractionAdapter(ultrasonicSensorFront);
   traction->attachAdapter(tractionAdapter);

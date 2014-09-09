@@ -138,11 +138,11 @@ class NewPing {
 		unsigned int ping_median(uint8_t it = 5);
 		unsigned int convert_in(unsigned int echoTime);
 		unsigned int convert_cm(unsigned int echoTime);
-		void ping_timer(void (*userFunc)(void));
+    void ping_timer(void (*userFunc)(void*), void* parameter = NULL);
 		boolean check_timer();
 		unsigned long ping_result;
-		static void timer_us(unsigned int frequency, void (*userFunc)(void));
-		static void timer_ms(unsigned long frequency, void (*userFunc)(void));
+		static void timer_us(unsigned int frequency, void (*userFunc)(void*), void* parameter);
+		static void timer_ms(unsigned long frequency, void (*userFunc)(void*), void* parameter);
 		static void timer_stop();
 	private:
 		boolean ping_trigger();
@@ -155,7 +155,7 @@ class NewPing {
 		unsigned int _maxEchoTime;
 		unsigned long _max_time;
 		static void timer_setup();
-		static void timer_ms_cntdwn();
+		static void timer_ms_cntdwn(void*);
 };
 
 
