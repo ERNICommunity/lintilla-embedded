@@ -31,4 +31,5 @@
 	branch = Branch_1.0.1
 [submodule "lib/comp/aREST"]
 	path = lib/comp/aREST
-	url = git@github.com:marcoschwartz/aREST.git
+	url = git@github.com:dniklaus/aREST.git
+	branch = Branch_1.0.0

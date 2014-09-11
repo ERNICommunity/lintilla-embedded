@@ -25,6 +25,7 @@
 #include "DistanceCount.h"
 #include "Battery.h"
 #include "LintillaBatteryAdapter.h"
+#include "aREST.h"
 
 //-----------------------------------------------------------------------------
 
@@ -81,9 +82,16 @@ CmdSequence* cmdSeq = 0;
 //---------------------------------------------------------------------------
 // WiFi and Socket Server
 //---------------------------------------------------------------------------
-void startEchoServer();
+void startRestServer();
 void processEchoServer();
-//aJsonStream* jsonStream = 0;
+int lcdBacklightControl(String command);
+
+// Variables to be exposed to the REST API
+int temperature;
+int humidity;
+
+// Create aREST instance
+aREST rest = aREST();
 
 // These are the interrupt and control pins
 #define ADAFRUIT_CC3000_IRQ   3  // MUST be an interrupt pin!
@@ -100,10 +108,10 @@ Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ
 // Security can be WLAN_SEC_UNSEC, WLAN_SEC_WEP, WLAN_SEC_WPA or WLAN_SEC_WPA2
 #define WLAN_SECURITY   WLAN_SEC_WPA2
 
-#define LISTEN_PORT     9999    // What TCP port to listen on for connections.  The echo protocol uses port 7.
+#define LISTEN_PORT     80    // What TCP port to listen on for connections.  The echo protocol uses port 7.
 
 uint32_t currentIpAddress = 0;
-Adafruit_CC3000_Server echoServer(LISTEN_PORT);
+Adafruit_CC3000_Server restServer(LISTEN_PORT);
 
 Timer* wifiReconnectTimer = 0;
 const unsigned int cWifiReconnectInterval = 30000; // WiFi re-connect interval [ms]
@@ -126,7 +134,7 @@ public:
       delay(2000);
       cc3000.reboot();
       connectWiFi();
-      startEchoServer();
+      startRestServer();
     }
   }
 
@@ -371,7 +379,11 @@ bool isSSIDPresent(const char* searchSSID)
 void loop()
 {
   yield();
-  processEchoServer();
+//  processEchoServer();
+
+  // Handle REST calls
+  Adafruit_CC3000_ClientRef client = restServer.available();
+  rest.handle(client);
 }
 
 //-----------------------------------------------------------------------------
@@ -531,22 +543,42 @@ void setup()
                                                 &cc3000, speedSensors));
 
   //---------------------------------------------------------------------------
-  // WiFi and Socket Server
+  // WiFi and REST Server
   //---------------------------------------------------------------------------
+
+  // Function to be exposed
+  rest.function("light", lcdBacklightControl);
+
+  // Give name and ID to device
+  rest.set_name("Lintilla");
+  if (0 != ivm)
+  {
+    String restId("00" + ivm->getDeviceId());
+    rest.set_id(const_cast<char*>(restId.c_str()));
+  }
+  else
+  {
+    rest.set_id("000");
+  }
+
   wifiReconnectTimer = new Timer(new WifiReconnectTimerAdapter(wifiReconnectTimer), Timer::IS_RECURRING, cWifiReconnectInterval);
   connectWiFi();
-  startEchoServer();
+  startRestServer();
 }
 
 //-----------------------------------------------------------------------------
 
-void startEchoServer()
+void startRestServer()
 {
   if (cc3000.checkConnected())
   {
-    // Start listening for connections
-    echoServer.begin();
-    Serial.println(F("Echo Server is listening for connections..."));
+    // Start REST server
+    restServer.begin();
+    Serial.println(F("REST server listening for connections..."));
+
+//    // Start listening for connections
+//    restServer.begin();
+//    Serial.println(F("Echo Server is listening for connections..."));
   }
 }
 
@@ -573,4 +605,16 @@ void serialEvent()
       Serial.println("d received");
     }
   }
+}
+
+// Custom function accessible by the API
+int lcdBacklightControl(String command) {
+
+  // Get state from command
+  int state = command.toInt();
+  if (0 != mmi)
+  {
+    mmi->setBackLightOn(state);
+  }
+  return 1;
 }

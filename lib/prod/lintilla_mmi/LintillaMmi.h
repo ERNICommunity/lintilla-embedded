@@ -70,6 +70,7 @@ public:
   void setIvmAccessMode(bool isIvmAccessMode);
   void setIvmRobotIdEditMode(bool isIvmRobotIdEditMode);
 
+  bool isBacklightOn();
   void setBackLightOn(bool isBacklightOn);
   void lcdBackLightControl();
 

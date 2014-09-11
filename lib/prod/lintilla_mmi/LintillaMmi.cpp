@@ -199,6 +199,11 @@ void LintillaMmi::setIvmRobotIdEditMode(bool isIvmRobotIdEditMode)
   m_isIvmRobotIdEditMode = isIvmRobotIdEditMode;
 }
 
+bool LintillaMmi::isBacklightOn()
+{
+  return m_isBacklightOn;
+}
+
 void LintillaMmi::setBackLightOn(bool isBacklightOn)
 {
   m_isBacklightOn = isBacklightOn;
