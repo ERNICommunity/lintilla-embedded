@@ -391,7 +391,7 @@ void loop()
 void processEchoServer()
 {
   // Try to get a client which is connected.
-  Adafruit_CC3000_ClientRef client = echoServer.available();
+  Adafruit_CC3000_ClientRef client = restServer.available();
 
   if (client)
   {
