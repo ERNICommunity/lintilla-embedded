@@ -4,11 +4,11 @@
 ::-----------------------------------------------------------------------------
 :: Arduino IDE (see http://arduino.cc/en/Main/OldSoftwareReleases) 
 set ArduinoDownloadUrl=http://downloads.arduino.cc
-set ArduinoVer=1.5.2
+set ArduinoVer=1.5.6-r2
 
 :: Eclipse Arduino Workbench Bundle (see http://www.baeyens.it/eclipse/download.php)
 set EclipseArduinoDownloadUrl=http://www.baeyens.it/eclipse/download/product
-set EclipseArduinoVer=2014-07-02_17-56-02
+set EclipseArduinoVer=2014-09-06_02-06-03
 
 :: Expected Project Location (Eclipse CDT cannot deal with relative paths)
 set ArduinoProjects=C:\git\arduino-projects
