@@ -150,6 +150,8 @@ LintillaMmi* mmi = 0;
 
 void connectWiFi()
 {
+  bool bailOut = false;
+
   Serial.println(F("\nconnectWifi(): using CC3000 driver!"));
   Serial.print("Free RAM: "); Serial.println(getFreeRam(), DEC);
 
@@ -158,62 +160,84 @@ void connectWiFi()
   if (!cc3000.begin())
   {
     Serial.println(F("Unable to initialise the CC3000! Check your wiring?"));
-    return; // bail out
+    bailOut = true; // bail out
   }
 
-  uint16_t firmware = checkFirmwareVersion();
-  if (firmware < 0x113) {
-    Serial.println(F("Wrong CC3000 firmware version!"));
-    return; // bail out
-  }
-
-  displayMACAddress();
-
-  /* Attempt to connect to an access point */
-  char* ssid = WLAN_SSID;             /* Max 32 chars */
-  Serial.print(F("\nAttempting to connect to ")); Serial.println(ssid);
-
-  if (!isSSIDPresent(WLAN_SSID))
+  if (!bailOut)
   {
-    Serial.println(F("Failed!"));
-    return;  // bail out
+    uint16_t firmware = checkFirmwareVersion();
+    if (firmware < 0x113) {
+      Serial.println(F("Wrong CC3000 firmware version!"));
+      bailOut = true;  // bail out
+    }
   }
 
-  /* Delete any old connection data on the module */
-  Serial.println(F("\nDeleting old connection profiles"));
-  if (!cc3000.deleteProfiles()) {
-    Serial.println(F("Failed!"));
-    return; // bail out
+  if (!bailOut)
+  {
+    displayMACAddress();
+
+    /* Attempt to connect to an access point */
+    char* ssid = WLAN_SSID;             /* Max 32 chars */
+    Serial.print(F("\nAttempting to connect to ")); Serial.println(ssid);
+
+    if (!isSSIDPresent(WLAN_SSID))
+    {
+      Serial.print(F("Failed! SSID "));
+      Serial.print(ssid);
+      Serial.println(F(" not found!"));
+      bailOut = true;  // bail out
+    }
   }
 
-  /* Attempt to connect to an access point */
-  if (!cc3000.connectToAP(WLAN_SSID, WLAN_PASS, WLAN_SECURITY))
+  if (!bailOut)
   {
-    // time out after 10 s
-    Serial.println(F("Failed!"));
-    return;  // bail out
-  }
-  Serial.println(F("Connected!"));
-
-  /* Wait for DHCP to complete */
-  Serial.println(F("Request DHCP"));
-  const unsigned int dhcpConnectRetryInterval = 1000; // [ms]
-  unsigned int dhcpTimoutCounter = 20;                // 20 s
-  while ((dhcpTimoutCounter > 0) && !cc3000.checkDHCP())
-  {
-    dhcpTimoutCounter--;
-    delay(dhcpConnectRetryInterval);
-  }
-  if (0 == dhcpTimoutCounter)
-  {
-    Serial.println(F("Failed!"));
-    return; // bail out
+    /* Delete any old connection data on the module */
+    Serial.println(F("\nDeleting old connection profiles"));
+    if (!cc3000.deleteProfiles()) {
+      Serial.println(F("Failed!"));
+      bailOut = true;  // bail out
+    }
   }
 
-  /* Display the IP address DNS, Gateway, etc. */
-  while (!displayConnectionDetails())
+
+  if (!bailOut)
   {
-    delay(1000);
+    /* Attempt to connect to an access point */
+    if (!cc3000.connectToAP(WLAN_SSID, WLAN_PASS, WLAN_SECURITY))
+    {
+      // time out after 10 s
+      Serial.println(F("Failed!"));
+      bailOut = true;  // bail out
+    }
+  }
+
+  if (!bailOut)
+  {
+    Serial.println(F("Connected!"));
+
+    /* Wait for DHCP to complete */
+    Serial.println(F("Request DHCP"));
+    const unsigned int dhcpConnectRetryInterval = 1000; // [ms]
+    unsigned int dhcpTimoutCounter = 20;                // 20 s
+    while ((dhcpTimoutCounter > 0) && !cc3000.checkDHCP())
+    {
+      dhcpTimoutCounter--;
+      delay(dhcpConnectRetryInterval);
+    }
+    if (0 == dhcpTimoutCounter)
+    {
+      Serial.println(F("Failed!"));
+      bailOut = true;  // bail out
+    }
+  }
+
+  if (!bailOut)
+  {
+    /* Display the IP address DNS, Gateway, etc. */
+    while (!displayConnectionDetails())
+    {
+      delay(1000);
+    }
   }
 }
 
@@ -367,10 +391,10 @@ void processEchoServer()
       if ('g' == ch)
       {
         Serial.println(F("processEchoServer(): g -> start"));
-        if ((0 != cmdSeq) && (0 != ultrasonicSensorFront) && (0 != battery))
+        if ((0 != cmdSeq) /*&& (0 != ultrasonicSensorFront)*/ && (0 != battery))
         {
           if (!cmdSeq->isRunning()
-              && !ultrasonicSensorFront->isObstacleDetected()
+              /*&& !ultrasonicSensorFront->isObstacleDetected()*/
               && !battery->isBattVoltageBelowStopThreshold()
               && !battery->isBattVoltageBelowShutdownThreshold())
           {
@@ -494,8 +518,8 @@ void setup()
   //---------------------------------------------------------------------------
   // Ultrasonic Ranging
   //---------------------------------------------------------------------------
-  ultrasonicSensorFront = new UltrasonicSensorHCSR04(triggerPin, echoPin);
-  ultrasonicSensorFront->attachAdapter(new AnUltrasonicSensorAdapter(cmdSeq));
+//  ultrasonicSensorFront = new UltrasonicSensorHCSR04(triggerPin, echoPin);
+//  ultrasonicSensorFront->attachAdapter(new AnUltrasonicSensorAdapter(cmdSeq));
 
   tractionAdapter = new ATractionAdapter(ultrasonicSensorFront);
   traction->attachAdapter(tractionAdapter);
