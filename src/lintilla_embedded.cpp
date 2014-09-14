@@ -75,24 +75,25 @@ Traction* traction = 0;
 ATractionAdapter* tractionAdapter = 0;
 
 //---------------------------------------------------------------------------
-// Command Sequence
+// Test Sequence
 //---------------------------------------------------------------------------
-CmdSequence* cmdSeq = 0;
+CmdSequence* testCmdSeq = 0;
 
 //---------------------------------------------------------------------------
-// WiFi and Socket Server
+// REST Server
 //---------------------------------------------------------------------------
-void startRestServer();
-void processEchoServer();
-int lcdBacklightControl(String command);
-
-// Variables to be exposed to the REST API
-int temperature;
-int humidity;
-
 // Create aREST instance
 aREST rest = aREST();
 
+void setupRestServer();
+void startRestServer();
+
+// REST API function declarations
+int lcdBacklightControl(String command);  // light
+
+//---------------------------------------------------------------------------
+// WiFi Driver
+//---------------------------------------------------------------------------
 // These are the interrupt and control pins
 #define ADAFRUIT_CC3000_IRQ   3  // MUST be an interrupt pin!
 // These can be any two pins
@@ -206,7 +207,6 @@ void connectWiFi()
       bailOut = true;  // bail out
     }
   }
-
 
   if (!bailOut)
   {
@@ -379,78 +379,10 @@ bool isSSIDPresent(const char* searchSSID)
 void loop()
 {
   yield();
-//  processEchoServer();
 
   // Handle REST calls
   Adafruit_CC3000_ClientRef client = restServer.available();
   rest.handle(client);
-}
-
-//-----------------------------------------------------------------------------
-
-void processEchoServer()
-{
-  // Try to get a client which is connected.
-  Adafruit_CC3000_ClientRef client = restServer.available();
-
-  if (client)
-  {
-    // Check if there is data available to read.
-    if (client.available() > 0)
-    {
-      // Read a byte and write it to all clients.
-      uint8_t ch = client.read();
-      if ('g' == ch)
-      {
-        Serial.println(F("processEchoServer(): g -> start"));
-        if ((0 != cmdSeq) /*&& (0 != ultrasonicSensorFront)*/ && (0 != battery))
-        {
-          if (!cmdSeq->isRunning()
-              /*&& !ultrasonicSensorFront->isObstacleDetected()*/
-              && !battery->isBattVoltageBelowStopThreshold()
-              && !battery->isBattVoltageBelowShutdownThreshold())
-          {
-            cmdSeq->start();
-          }
-        }
-      }
-      else if ('h' == ch)
-      {
-        Serial.println(F("processEchoServer(): h -> stop"));
-        if (0 != cmdSeq)
-        {
-          cmdSeq->stop();
-        }
-      }
-      else if ('i' == ch)
-      {
-        client.print(F("Lintilla, Robot ID="));
-        if (0 != ivm)
-        {
-          client.print(ivm->getDeviceId());
-        }
-        client.write('\r');
-        client.write('\n');
-      }
-      else if ('l' == ch)
-      {
-        if (0 != mmi)
-        {
-          mmi->setBackLightOn(true);
-        }
-      }
-      else if ('o' == ch)
-      {
-        if (0 != mmi)
-        {
-          mmi->setBackLightOn(false);
-        }
-      }
-      client.write(ch);
-      client.write('\r');
-      client.write('\n');
-    }
-  }
 }
 
 //-----------------------------------------------------------------------------
@@ -487,7 +419,7 @@ void setup()
   batteryAdapter->attachBattery(battery);
   batteryAdapter->attachLintillaMmi(mmi);
   batteryAdapter->attachLintillaIvm(ivm);
-  batteryAdapter->attachCmdSequence(cmdSeq);
+  batteryAdapter->attachCmdSequence(testCmdSeq);
 
   //---------------------------------------------------------------------------
   // Speed Sensors
@@ -500,9 +432,9 @@ void setup()
   traction = new Traction();
 
   //---------------------------------------------------------------------------
-  // Command Sequence
+  // Test Command Sequence
   //---------------------------------------------------------------------------
-  cmdSeq = new CmdSequence(new ACmdAdapter(traction));
+  testCmdSeq = new CmdSequence(new ACmdAdapter(traction));
 
   const int cSpinTime     =  300;
   const int cFwdTime      =  300;
@@ -510,21 +442,21 @@ void setup()
 
   for (int i = 0; i <= 3; i++)
   {
-    new CmdMoveForward(cmdSeq, cFwdTime);
-    new CmdStop(cmdSeq, cInterDelay);
-    new CmdSpinOnPlaceRight(cmdSeq, cSpinTime);
-    new CmdStop(cmdSeq, cInterDelay);
+    new CmdMoveForward(testCmdSeq, cFwdTime);
+    new CmdStop(testCmdSeq, cInterDelay);
+    new CmdSpinOnPlaceRight(testCmdSeq, cSpinTime);
+    new CmdStop(testCmdSeq, cInterDelay);
   }
 
-  Cmd* cmd = cmdSeq->getFirstCmd();
+  Cmd* cmd = testCmdSeq->getFirstCmd();
   while (0 != cmd)
   {
-    Serial.print("cmdSeq: ");
+    Serial.print("testCmdSeq: ");
     Serial.print(cmd->getName());
     Serial.print("; t=");
     Serial.print(cmd->getTime());
     Serial.println("[ms]");
-    cmd = cmdSeq->getNextCmd();
+    cmd = testCmdSeq->getNextCmd();
   }
 
   //---------------------------------------------------------------------------
@@ -539,34 +471,41 @@ void setup()
   //---------------------------------------------------------------------------
   // MMI
   //---------------------------------------------------------------------------
-  mmi = new LintillaMmi(new ALintillaMmiAdapter(battery, cmdSeq, ivm, ultrasonicSensorFront,
+  mmi = new LintillaMmi(new ALintillaMmiAdapter(battery, testCmdSeq, ivm, ultrasonicSensorFront,
                                                 &cc3000, speedSensors));
 
   //---------------------------------------------------------------------------
-  // WiFi and REST Server
+  // WiFi
   //---------------------------------------------------------------------------
-
-  // Function to be exposed
-  rest.function("light", lcdBacklightControl);
-
-  // Give name and ID to device
-  rest.set_name("Lintilla");
-  if (0 != ivm)
-  {
-    String restId("00" + ivm->getDeviceId());
-    rest.set_id(const_cast<char*>(restId.c_str()));
-  }
-  else
-  {
-    rest.set_id("000");
-  }
-
   wifiReconnectTimer = new Timer(new WifiReconnectTimerAdapter(wifiReconnectTimer), Timer::IS_RECURRING, cWifiReconnectInterval);
   connectWiFi();
+
+  //---------------------------------------------------------------------------
+  // REST Server
+  //---------------------------------------------------------------------------
+  setupRestServer();
   startRestServer();
 }
 
 //-----------------------------------------------------------------------------
+
+void setupRestServer()
+{
+  // REST API function bindings
+  rest.function("light", lcdBacklightControl);
+
+  // Give name and ID to device
+  rest.set_name("Lintilla");
+//  if (0 != ivm)
+//  {
+//    restId+=ivm->getDeviceId();
+//    rest.set_id(const_cast<char*>(restId.c_str()));
+//  }
+//  else
+//  {
+    rest.set_id("000");
+//  }
+}
 
 void startRestServer()
 {
@@ -575,10 +514,6 @@ void startRestServer()
     // Start REST server
     restServer.begin();
     Serial.println(F("REST server listening for connections..."));
-
-//    // Start listening for connections
-//    restServer.begin();
-//    Serial.println(F("Echo Server is listening for connections..."));
   }
 }
 
@@ -607,9 +542,14 @@ void serialEvent()
   }
 }
 
-// Custom function accessible by the API
-int lcdBacklightControl(String command) {
 
+//-----------------------------------------------------------------------------
+// REST API functions
+//-----------------------------------------------------------------------------
+
+// Custom functions accessible by the API
+int lcdBacklightControl(String command)
+{
   // Get state from command
   int state = command.toInt();
   if (0 != mmi)

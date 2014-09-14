@@ -81,7 +81,6 @@ void LintillaIvm::maintainVersionChange()
   {
     // Assume uninitialized IVM memory, bring up to current version
     setIvmVersion(s_currentVersion);
-    ivmVersion = s_currentVersion;
 
     // Initialize Device ID
     if (255 == deviceId)
@@ -94,21 +93,24 @@ void LintillaIvm::maintainVersionChange()
 
   if ((s_currentVersion - 1) >= ivmVersion)
   {
-    // IVMVersion not present, set current version
+    // IVMVersion not present, write current version
     setIvmVersion(s_currentVersion);
 
-    // no BatteryVoltageSenseFactor yet, set default value
-    float initialBattSensFactor = s_battSensFactorDefault;
-    switch (deviceId)
+    if (2 > ivmVersion)
     {
-      case 1: initialBattSensFactor = s_battSensFactor1; break;
-      case 2: initialBattSensFactor = s_battSensFactor2; break;
-      case 3: initialBattSensFactor = s_battSensFactor3; break;
-      case 4: initialBattSensFactor = s_battSensFactor4; break;
-      case 5: initialBattSensFactor = s_battSensFactor5; break;
-      default:
-        break;
+      // initialize Version 2 feature: BatteryVoltageSenseFactor, set default value
+      float initialBattSensFactor = s_battSensFactorDefault;
+      switch (deviceId)
+      {
+        case 1: initialBattSensFactor = s_battSensFactor1; break;
+        case 2: initialBattSensFactor = s_battSensFactor2; break;
+        case 3: initialBattSensFactor = s_battSensFactor3; break;
+        case 4: initialBattSensFactor = s_battSensFactor4; break;
+        case 5: initialBattSensFactor = s_battSensFactor5; break;
+        default:
+          break;
+      }
+      setBattVoltageSenseFactor(initialBattSensFactor);
     }
-    setBattVoltageSenseFactor(initialBattSensFactor);
   }
 }
