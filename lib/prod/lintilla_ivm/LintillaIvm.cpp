@@ -9,6 +9,12 @@
 #include "IvmSerialEeprom.h"
 #include "LintillaIvm.h"
 
+#include "string.h"
+
+
+const char * wlan_ssid= "LintillaNet";
+const char * wlan_pass= "AnswerIs42";
+
 const float LintillaIvm::s_battSensFactorDefault = 2.000;
 const float LintillaIvm::s_battSensFactor1       = 2.430;
 const float LintillaIvm::s_battSensFactor2       = 2.450;
@@ -17,10 +23,12 @@ const float LintillaIvm::s_battSensFactor4       = 2.000;
 const float LintillaIvm::s_battSensFactor5       = 2.285;
 
 
-const unsigned char LintillaIvm::s_currentVersion = 2;
+const unsigned char LintillaIvm::s_currentVersion = 3;
 
 const unsigned int  LintillaIvm::s_ivmBattVoltSensFactAddrHigh = 2;
 const unsigned int  LintillaIvm::s_ivmBattVoltSensFactAddrLow  = 3;
+const unsigned int  LintillaIvm::s_ivmWlanSsidAddr = 4;
+const unsigned int  LintillaIvm::s_ivmWlanPassAddr = 36;
 
 LintillaIvm::LintillaIvm()
 : Ivm(new IvmSerialEeprom())
@@ -72,10 +80,30 @@ float LintillaIvm::getBattVoltageSenseFactor()
   return battVoltageSenseFactor;
 }
 
+void LintillaIvm::setWlanSSID(const char* ssid, int length)
+{
+  writeToIvm(s_ivmWlanSsidAddr, ssid, (length > wlan_max_length) ? wlan_max_length : length);
+}
+
+int LintillaIvm::getWlanSSID(char* out)
+{
+  readFromIvm(s_ivmWlanSsidAddr, out, wlan_max_length);
+}
+
+void LintillaIvm::setWlanPASS(const char* pass, int length)
+{
+  writeToIvm(s_ivmWlanPassAddr, pass, (length > wlan_max_length) ? wlan_max_length : length);
+}
+
+int LintillaIvm::getWlanPASS(char* out)
+{
+  readFromIvm(s_ivmWlanPassAddr, out, wlan_max_length);
+}
 
 void LintillaIvm::maintainVersionChange()
 {
   unsigned char ivmVersion = getIvmVersion();
+
   unsigned char deviceId   = getDeviceId();
   if (255 == ivmVersion || 0 == ivmVersion)
   {
@@ -112,5 +140,40 @@ void LintillaIvm::maintainVersionChange()
       }
       setBattVoltageSenseFactor(initialBattSensFactor);
     }
+
+    if (3 > ivmVersion)
+    {
+      setWlanSSID(wlan_ssid, strlen(wlan_ssid) + 1);
+      setWlanPASS(wlan_pass, strlen(wlan_pass) + 1);
+    }
   }
+}
+
+void LintillaIvm::writeToIvm(const unsigned int addr, const char* in,
+    int length)
+{
+  IF_IvmMemory* ivmMemory = getIvmMemory();
+  if (0 != ivmMemory)
+  {
+    for(unsigned int i = 0; i < length; ++i)
+    {
+      ivmMemory->write(addr+i, in[i]);
+    }
+  }
+}
+
+int LintillaIvm::readFromIvm(const unsigned int addr, char* out,
+    int length)
+{
+  unsigned int i = 0;
+  IF_IvmMemory* ivmMemory = getIvmMemory();
+  if (0 != ivmMemory)
+  {
+    for(i = 0; i < length; ++i)
+    {
+      out[i] = ivmMemory->read(addr+i);
+    }
+  }
+
+  return i;
 }

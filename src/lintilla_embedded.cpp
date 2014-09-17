@@ -104,8 +104,7 @@ int lcdBacklightControl(String command);  // light
 Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ, ADAFRUIT_CC3000_VBAT,
                                          SPI_CLOCK_DIV2); // you can change this clock speed but DI
 
-#define WLAN_SSID       "LintillaNet"        // cannot be longer than 32 characters!
-#define WLAN_PASS       "AnswerIs42"
+
 // Security can be WLAN_SEC_UNSEC, WLAN_SEC_WEP, WLAN_SEC_WPA or WLAN_SEC_WPA2
 #define WLAN_SECURITY   WLAN_SEC_WPA2
 
@@ -181,15 +180,16 @@ void connectWiFi()
     }
   }
 
+  char ssid[wlan_max_length];
   if (!bailOut)
   {
     displayMACAddress();
 
     /* Attempt to connect to an access point */
-    char* ssid = WLAN_SSID;             /* Max 32 chars */
+    ivm->getWlanSSID(ssid);
     Serial.print(F("\nAttempting to connect to ")); Serial.println(ssid);
 
-    if (!isSSIDPresent(WLAN_SSID))
+    if (!isSSIDPresent(ssid))
     {
       Serial.print(F("Failed! SSID "));
       Serial.print(ssid);
@@ -208,10 +208,13 @@ void connectWiFi()
     }
   }
 
+  char pass[32];
+  ivm->getWlanPASS(pass);
+
   if (!bailOut)
   {
     /* Attempt to connect to an access point */
-    if (!cc3000.connectToAP(WLAN_SSID, WLAN_PASS, WLAN_SECURITY))
+    if (!cc3000.connectToAP(ssid, pass, WLAN_SECURITY))
     {
       // time out after 10 s
       Serial.println(F("Failed!"));
