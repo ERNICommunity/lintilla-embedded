@@ -90,6 +90,9 @@ void startRestServer();
 
 // REST API function declarations
 int lcdBacklightControl(String command);  // light
+int test(String command); // test
+int stop(String command); // stop
+int move(String command); // move
 
 //---------------------------------------------------------------------------
 // WiFi Driver
@@ -496,6 +499,9 @@ void setupRestServer()
 {
   // REST API function bindings
   rest.function("light", lcdBacklightControl);
+  rest.function("test", test);
+  rest.function("stop", stop);
+  rest.function("move", move);
 
   // Give name and ID to device
   rest.set_name("Lintilla");
@@ -560,4 +566,88 @@ int lcdBacklightControl(String command)
     mmi->setBackLightOn(state);
   }
   return 1;
+}
+
+int test(String command)
+{
+  if (0 != testCmdSeq)
+  {
+    testCmdSeq->start();
+  }
+  return 1;
+}
+
+int stop(String command)
+{
+  if (0 != testCmdSeq)
+  {
+    testCmdSeq->stop();
+  }
+  return 1;
+}
+
+int move(String command)
+{
+  int retVal = 1;
+
+  Serial.print(F("move, parameters: "));
+  Serial.println(command);
+
+  bool isProtocolOk = true;
+  bool isStraight = false;
+  bool isForward = false;
+  bool isRight = false;
+  unsigned long timeMillis = 0;
+
+  if (command.startsWith("f"))
+  {
+    isStraight = true;
+    isForward = true;
+    Serial.print(F("straight forward"));
+  }
+  else if (command.startsWith("b"))
+  {
+    isStraight = true;
+    Serial.print(F("straight backward"));
+  }
+  else if (command.startsWith("l"))
+  {
+    Serial.print(F("spin on place left"));
+  }
+  else if (command.startsWith("r"))
+  {
+    isRight = true;
+    Serial.print(F("spin on place right"));
+  }
+  else
+  {
+    isProtocolOk = false;
+  }
+
+  if (isProtocolOk)
+  {
+    timeMillis = static_cast<unsigned long>(command.substring(2).toInt());
+    Serial.print(F(", t="));
+    Serial.print(timeMillis);
+    Serial.println(F("[ms]"));
+
+    if (0 != traction)
+    {
+      if (isStraight)
+      {
+        traction->moveStraight(isForward);
+      }
+      else
+      {
+        traction->spinOnPlace(isRight, 0.0);
+      }
+    }
+  }
+  else
+  {
+    Serial.println(F("move: protocol error!"));
+    retVal = 0;
+  }
+
+  return retVal;
 }

@@ -169,6 +169,12 @@ LcdKeypad* LintillaMmi::lcdKeypad()
   return m_lcdKeypad;
 }
 
+Blanking* LintillaMmi::displayBlanking()
+{
+  return m_displayBlanking;
+}
+
+
 void LintillaMmi::attachAdapter(LintillaMmiAdapter* adapter)
 {
   m_adapter = adapter;

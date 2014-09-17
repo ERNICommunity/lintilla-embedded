@@ -63,6 +63,7 @@ public:
   LintillaMmiAdapter* adapter();
 
   LcdKeypad* lcdKeypad();
+  Blanking* displayBlanking();
 
   bool isIvmAccessMode();
   bool isIvmRobotIdEditMode();
