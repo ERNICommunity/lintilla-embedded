@@ -13,6 +13,7 @@
 class LcdKeypad;
 class Blanking;
 class Timer;
+class LintillaMmiScreenFsm;
 
 //-----------------------------------------------------------------------------
 
@@ -64,6 +65,7 @@ public:
 
   LcdKeypad* lcdKeypad();
   Blanking* displayBlanking();
+  LintillaMmiScreenFsm* screenFsm();
 
   bool isIvmAccessMode();
   bool isIvmRobotIdEditMode();
@@ -82,6 +84,7 @@ private:
   Blanking* m_displayBlanking;
   LintillaMmiAdapter* m_adapter;
   Timer* m_displayTimer;
+  LintillaMmiScreenFsm* m_screenFsm;
 
   // Display Menu states
   bool m_isIvmAccessMode;
