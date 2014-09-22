@@ -67,12 +67,6 @@ public:
   Blanking* displayBlanking();
   LintillaMmiScreenFsm* screenFsm();
 
-  bool isIvmAccessMode();
-  bool isIvmRobotIdEditMode();
-
-  void setIvmAccessMode(bool isIvmAccessMode);
-  void setIvmRobotIdEditMode(bool isIvmRobotIdEditMode);
-
   bool isBacklightOn();
   void setBackLightOn(bool isBacklightOn);
   void lcdBackLightControl();
@@ -86,9 +80,6 @@ private:
   Timer* m_displayTimer;
   LintillaMmiScreenFsm* m_screenFsm;
 
-  // Display Menu states
-  bool m_isIvmAccessMode;
-  bool m_isIvmRobotIdEditMode;
   bool m_isBacklightOn;
 
 private: // forbidden default functions

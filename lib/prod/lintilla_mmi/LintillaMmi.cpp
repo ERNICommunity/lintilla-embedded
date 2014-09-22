@@ -82,8 +82,6 @@ LintillaMmi::LintillaMmi(LintillaMmiAdapter* adapter)
 , m_adapter(adapter)
 , m_displayTimer(new Timer(new DisplayTimerAdapter(this), Timer::IS_RECURRING, cUpdateDisplayInterval))
 , m_screenFsm(new LintillaMmiScreenFsm(this))
-, m_isIvmAccessMode(false)
-, m_isIvmRobotIdEditMode(false)
 , m_isBacklightOn(true)
 {
   if (0 != m_lcdKeypad)
@@ -133,26 +131,6 @@ void LintillaMmi::attachAdapter(LintillaMmiAdapter* adapter)
 LintillaMmiAdapter* LintillaMmi::adapter()
 {
   return m_adapter;
-}
-
-bool LintillaMmi::isIvmAccessMode()
-{
-  return m_isIvmAccessMode;
-}
-
-bool LintillaMmi::isIvmRobotIdEditMode()
-{
-  return m_isIvmRobotIdEditMode;
-}
-
-void LintillaMmi::setIvmAccessMode(bool isIvmAccessMode)
-{
-  m_isIvmAccessMode = isIvmAccessMode;
-}
-
-void LintillaMmi::setIvmRobotIdEditMode(bool isIvmRobotIdEditMode)
-{
-  m_isIvmRobotIdEditMode = isIvmRobotIdEditMode;
 }
 
 bool LintillaMmi::isBacklightOn()
