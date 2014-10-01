@@ -43,8 +43,11 @@ CmdSequence::~CmdSequence()
 
 void CmdSequence::start()
 {
-  m_currentCmd = m_firstCmd;
-  execCmd();
+  if (!isRunning())
+  {
+    m_currentCmd = m_firstCmd;
+    execCmd();
+  }
 }
 
 void CmdSequence::stop()
