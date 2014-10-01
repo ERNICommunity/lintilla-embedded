@@ -6,7 +6,7 @@
 #include <SPI.h>
 #include <string.h>
 #include "utility/debug.h"
-
+#include "CC3000_MDNS.h"
 #include "LintillaMmi.h"
 #include "ALintillaMmiAdapter.h"
 #include "Timer.h"
@@ -26,6 +26,12 @@
 #include "Battery.h"
 #include "LintillaBatteryAdapter.h"
 #include "aREST.h"
+
+#define USE_HARD_CODED_WIFI_CREDENTIALS 1
+#if USE_HARD_CODED_WIFI_CREDENTIALS
+#define WLAN_SSID "LintillaNet"
+#define WLAN_PASS "AnswerIs42"
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -85,6 +91,7 @@ CmdSequence* testCmdSeq = 0;
 // Create aREST instance
 aREST rest = aREST();
 
+void processRestServer();
 void setupRestServer();
 void startRestServer();
 
@@ -93,6 +100,11 @@ int lcdBacklightControl(String command);  // light
 int test(String command); // test
 int stop(String command); // stop
 int move(String command); // move
+
+//---------------------------------------------------------------------------
+// MDNS responder
+//---------------------------------------------------------------------------
+MDNSResponder* mdns = 0;
 
 //---------------------------------------------------------------------------
 // WiFi Driver
@@ -183,13 +195,20 @@ void connectWiFi()
     }
   }
 
+#if USE_HARD_CODED_WIFI_CREDENTIALS
+  const char* ssid = WLAN_SSID;
+#else
   char ssid[wlan_max_length];
+  if (0 != ivm)
+  {
+    ivm->getWlanSSID(ssid);
+  }
+#endif
   if (!bailOut)
   {
     displayMACAddress();
 
     /* Attempt to connect to an access point */
-    ivm->getWlanSSID(ssid);
     Serial.print(F("\nAttempting to connect to ")); Serial.println(ssid);
 
     if (!isSSIDPresent(ssid))
@@ -211,8 +230,15 @@ void connectWiFi()
     }
   }
 
-  char pass[32];
-  ivm->getWlanPASS(pass);
+#if USE_HARD_CODED_WIFI_CREDENTIALS
+  const char* pass = WLAN_PASS;
+#else
+  char pass[wlan_max_length];
+  if (0 != ivm)
+  {
+    ivm->getWlanPASS(pass);
+  }
+#endif
 
   if (!bailOut)
   {
@@ -386,9 +412,13 @@ void loop()
 {
   yield();
 
-  // Handle REST calls
-  Adafruit_CC3000_ClientRef client = restServer.available();
-  rest.handle(client);
+  // Handle any multicast DNS requests
+  if (0 != mdns)
+  {
+    mdns->update();
+  }
+
+  processRestServer();
 }
 
 //-----------------------------------------------------------------------------
@@ -487,13 +517,42 @@ void setup()
   connectWiFi();
 
   //---------------------------------------------------------------------------
+  // MDNSResponder
+  //---------------------------------------------------------------------------
+  mdns = new MDNSResponder();
+  char mdnsName[32];
+  char idString[4];
+  itoa(ivm->getDeviceId(), idString, 10);
+  strncat(mdnsName, "lintilla", 32);
+  strncat(mdnsName, idString, 32);
+
+  Serial.print(F("MDNS name is: "));
+  Serial.println(mdnsName);
+
+  // Start multicast DNS responder
+  if ((0 != mdns) && !mdns->begin(mdnsName, cc3000))
+  {
+    Serial.println(F("Error setting up MDNS responder!"));
+  }
+
+
+  //---------------------------------------------------------------------------
   // REST Server
   //---------------------------------------------------------------------------
-  setupRestServer();
   startRestServer();
 }
 
 //-----------------------------------------------------------------------------
+
+void processRestServer()
+{
+  if (cc3000.checkConnected())
+  {
+    // Handle REST calls
+    Adafruit_CC3000_ClientRef client = restServer.available();
+    rest.handle(client);
+  }
+}
 
 void setupRestServer()
 {
@@ -520,6 +579,8 @@ void startRestServer()
 {
   if (cc3000.checkConnected())
   {
+    setupRestServer();
+
     // Start REST server
     restServer.begin();
     Serial.println(F("REST server listening for connections..."));

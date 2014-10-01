@@ -33,3 +33,7 @@
 	path = lib/comp/aREST
 	url = git@github.com:dniklaus/aREST.git
 	branch = Branch_1.0.0
+[submodule "lib/comp/CC3000_MDNS"]
+	path = lib/comp/CC3000_MDNS
+	url = git@github.com:adafruit/CC3000_MDNS.git
+	branch = master
