@@ -60,8 +60,8 @@ public:
 const unsigned int BatteryImpl::s_DEFAULT_STARTUP_TIME = 500;
 const unsigned int BatteryImpl::s_DEFAULT_POLL_TIME = 1000;
 
-const float BatteryImpl::s_BATT_WARN_THRSHD = 6.5;
-const float BatteryImpl::s_BATT_STOP_THRSHD = 6.3;
+const float BatteryImpl::s_BATT_WARN_THRSHD = 7.5;
+const float BatteryImpl::s_BATT_STOP_THRSHD = 6.5;
 const float BatteryImpl::s_BATT_SHUT_THRSHD = 6.1;
 const float BatteryImpl::s_BATT_HYST        = 0.2;
 
