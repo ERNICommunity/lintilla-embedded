@@ -17,11 +17,17 @@ class AnUltrasonicSensorAdapter: public UltrasonicSensorAdapter
 public:
   AnUltrasonicSensorAdapter(CmdSequence* cmdSequence);
   virtual ~AnUltrasonicSensorAdapter();
-
-  void notifyObstacleDetectionChange(bool isObstacleDetected);
+  virtual void notifyObstacleDetectionChange(bool isObstacleDetected);
+  virtual void startPing();
+  virtual unsigned long getEchoTimeMicros();
 
 private:
   CmdSequence* m_cmdSequence;
+
+public:
+  static const unsigned int s_triggerPin;
+  static const unsigned int s_echoPin;
+  static const unsigned int s_echoIrq;
 
 private: // forbidden default functions
   AnUltrasonicSensorAdapter& operator = (const AnUltrasonicSensorAdapter& );  // assignment operator

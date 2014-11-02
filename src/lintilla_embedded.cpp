@@ -65,8 +65,6 @@ LintillaBatteryAdapter* batteryAdapter = 0;
 // Ultrasonic Ranging
 //---------------------------------------------------------------------------
 UltrasonicSensor* ultrasonicSensorFront = 0;
-const unsigned int triggerPin = 34;
-const unsigned int echoPin    = 36;
 unsigned long dist = UltrasonicSensor::DISTANCE_LIMIT_EXCEEDED;   // [cm]
 
 //---------------------------------------------------------------------------
@@ -412,11 +410,11 @@ void loop()
 {
   yield();
 
-  // Handle any multicast DNS requests
-  if (0 != mdns)
-  {
-    mdns->update();
-  }
+//  // Handle any multicast DNS requests
+//  if (0 != mdns)
+//  {
+//    mdns->update();
+//  }
 
   processRestServer();
 }
@@ -460,7 +458,7 @@ void setup()
   //---------------------------------------------------------------------------
   // Speed Sensors
   //---------------------------------------------------------------------------
-  speedSensors = new SpeedSensors();
+  // speedSensors = new SpeedSensors();
 
   //---------------------------------------------------------------------------
   // Motor Drivers and Speed Control
@@ -498,8 +496,8 @@ void setup()
   //---------------------------------------------------------------------------
   // Ultrasonic Ranging
   //---------------------------------------------------------------------------
-//  ultrasonicSensorFront = new UltrasonicSensorHCSR04(triggerPin, echoPin);
-//  ultrasonicSensorFront->attachAdapter(new AnUltrasonicSensorAdapter(cmdSeq));
+  ultrasonicSensorFront = new UltrasonicSensorHCSR04();
+  ultrasonicSensorFront->attachAdapter(new AnUltrasonicSensorAdapter(testCmdSeq));
 
   tractionAdapter = new ATractionAdapter(ultrasonicSensorFront);
   traction->attachAdapter(tractionAdapter);
@@ -516,24 +514,24 @@ void setup()
   wifiReconnectTimer = new Timer(new WifiReconnectTimerAdapter(wifiReconnectTimer), Timer::IS_RECURRING, cWifiReconnectInterval);
   connectWiFi();
 
-  //---------------------------------------------------------------------------
-  // MDNSResponder
-  //---------------------------------------------------------------------------
-  mdns = new MDNSResponder();
-  char mdnsName[32];
-  char idString[4];
-  itoa(ivm->getDeviceId(), idString, 10);
-  strncat(mdnsName, "lintilla", 32);
-  strncat(mdnsName, idString, 32);
-
-  Serial.print(F("MDNS name is: "));
-  Serial.println(mdnsName);
-
-  // Start multicast DNS responder
-  if ((0 != mdns) && !mdns->begin(mdnsName, cc3000))
-  {
-    Serial.println(F("Error setting up MDNS responder!"));
-  }
+//  //---------------------------------------------------------------------------
+//  // MDNSResponder
+//  //---------------------------------------------------------------------------
+//  mdns = new MDNSResponder();
+//  char mdnsName[32];
+//  char idString[4];
+//  itoa(ivm->getDeviceId(), idString, 10);
+//  strncat(mdnsName, "lintilla", 32);
+//  strncat(mdnsName, idString, 32);
+//
+//  Serial.print(F("MDNS name is: "));
+//  Serial.println(mdnsName);
+//
+//  // Start multicast DNS responder
+//  if ((0 != mdns) && !mdns->begin(mdnsName, cc3000))
+//  {
+//    Serial.println(F("Error setting up MDNS responder!"));
+//  }
 
 
   //---------------------------------------------------------------------------

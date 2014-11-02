@@ -122,11 +122,6 @@
 			<locationURI>lintilla_embeddedBlanking/Blanking</locationURI>
 		</link>
 		<link>
-			<name>plat/NewPing</name>
-			<type>2</type>
-			<locationURI>lintilla_embeddedNewPing/NewPing</locationURI>
-		</link>
-		<link>
 			<name>plat/Timer</name>
 			<type>2</type>
 			<locationURI>lintilla_embeddedTimer/Timer</locationURI>

@@ -5,10 +5,10 @@
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="it.baeyens.arduino.core.toolChain.release.256903333" moduleId="org.eclipse.cdt.core.settings" name="Release">
 				<externalSettings/>
 				<extensions>
-					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.MakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
@@ -27,7 +27,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/Wire/utility}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/LiquidCrystal/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/Blanking}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/NewPing}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/Timer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/Adafruit_CC3000}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/Adafruit_CC3000/utility}&quot;"/>
@@ -59,7 +58,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/Wire/utility}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/LiquidCrystal/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/Blanking}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/NewPing}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/Timer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/Adafruit_CC3000}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/Adafruit_CC3000/utility}&quot;"/>
