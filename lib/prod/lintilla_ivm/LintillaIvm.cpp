@@ -87,7 +87,7 @@ void LintillaIvm::setWlanSSID(const char* ssid, int length)
 
 int LintillaIvm::getWlanSSID(char* out)
 {
-  readFromIvm(s_ivmWlanSsidAddr, out, wlan_max_length);
+  return readFromIvm(s_ivmWlanSsidAddr, out, wlan_max_length);
 }
 
 void LintillaIvm::setWlanPASS(const char* pass, int length)
@@ -97,7 +97,7 @@ void LintillaIvm::setWlanPASS(const char* pass, int length)
 
 int LintillaIvm::getWlanPASS(char* out)
 {
-  readFromIvm(s_ivmWlanPassAddr, out, wlan_max_length);
+  return readFromIvm(s_ivmWlanPassAddr, out, wlan_max_length);
 }
 
 void LintillaIvm::maintainVersionChange()
@@ -143,8 +143,13 @@ void LintillaIvm::maintainVersionChange()
 
     if (3 > ivmVersion)
     {
-      setWlanSSID(wlan_ssid, strlen(wlan_ssid) + 1);
-      setWlanPASS(wlan_pass, strlen(wlan_pass) + 1);
+      char initString[32];
+      memset(&initString, 0, 32);
+      setWlanSSID(initString, 32);
+      setWlanPASS(initString, 32);
+
+      setWlanSSID(wlan_ssid, strlen(wlan_ssid));
+      setWlanPASS(wlan_pass, strlen(wlan_pass));
     }
   }
 }
