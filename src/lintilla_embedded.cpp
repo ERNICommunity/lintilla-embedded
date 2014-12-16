@@ -436,7 +436,7 @@ void setup()
   // Inventory Management
   //---------------------------------------------------------------------------
 //  #include "EEPROM.h"
-//  EEPROM.write(1, 1);
+//  EEPROM.write(1, 2); // hack to set IVM version back to one before, triggers eval. of all items in LintillaIvm::maintainVersionChange()
   ivm = new LintillaIvm();
 
   //---------------------------------------------------------------------------
