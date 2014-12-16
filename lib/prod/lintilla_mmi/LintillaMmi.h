@@ -24,6 +24,12 @@ public:
   virtual void startSequence() = 0;
   virtual void stopSequence() = 0;
 
+  virtual void setWlanSSID(const char* ssid, int length) = 0;
+  virtual int getWlanSSID(char* out) = 0;
+
+  virtual void setWlanPASS(const char* pass, int length) = 0;
+  virtual int getWlanPASS(char* out) = 0;
+
   virtual unsigned char getDeviceId() = 0;
   virtual void setDeviceId(unsigned char deviceId) = 0;
 
