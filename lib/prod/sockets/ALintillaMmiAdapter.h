@@ -31,6 +31,12 @@ public:
   void startSequence();
   void stopSequence();
 
+  void setWlanSSID(const char* ssid, int length);
+  int getWlanSSID(char* out);
+
+  void setWlanPASS(const char* pass, int length);
+  int getWlanPASS(char* out);
+
   unsigned char getDeviceId();
   void setDeviceId(unsigned char deviceId);
 

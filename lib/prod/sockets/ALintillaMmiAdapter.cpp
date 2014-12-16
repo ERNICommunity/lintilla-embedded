@@ -61,6 +61,42 @@ void ALintillaMmiAdapter::stopSequence()
   }
 }
 
+void ALintillaMmiAdapter::setWlanSSID(const char* ssid, int length)
+{
+  if (0 != m_ivm)
+  {
+    m_ivm->setWlanSSID(ssid, length);
+  }
+}
+
+int ALintillaMmiAdapter::getWlanSSID(char* out)
+{
+  int length = 0;
+  if (0 != m_ivm)
+  {
+    length = m_ivm->getWlanSSID(out);
+  }
+  return length;
+}
+
+void ALintillaMmiAdapter::setWlanPASS(const char* pass, int length)
+{
+  if (0 != m_ivm)
+  {
+    m_ivm->setWlanPASS(pass, length);
+  }
+}
+
+int ALintillaMmiAdapter::getWlanPASS(char* out)
+{
+  int length = 0;
+  if (0 != m_ivm)
+  {
+    length = m_ivm->getWlanPASS(out);
+  }
+  return length;
+}
+
 unsigned char ALintillaMmiAdapter::getDeviceId()
 {
   unsigned char deviceId = 0;
