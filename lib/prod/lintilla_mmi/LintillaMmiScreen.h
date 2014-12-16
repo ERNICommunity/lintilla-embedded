@@ -68,4 +68,24 @@ private: // forbidden default functions
   LintillaMmiIdScreen(const LintillaMmiIdScreen& src);               // copy constructor
 };
 
+//-----------------------------------------------------------------------------
+
+class LintillaMmiWLANScreen : public LintillaMmiScreen
+{
+public:
+  LintillaMmiWLANScreen(LintillaMmi* mmi);
+  virtual ~LintillaMmiWLANScreen();
+  virtual void updateDisplay();
+  virtual void setCursorUp();
+  virtual void setCursorDown();
+
+private:
+  char* m_ssid;
+  char* m_pass;
+
+private: // forbidden default functions
+  LintillaMmiWLANScreen& operator = (const LintillaMmiWLANScreen& src);  // assignment operator
+  LintillaMmiWLANScreen(const LintillaMmiWLANScreen& src);               // copy constructor
+};
+
 #endif /* LINTILLAMMISCREEN_H_ */

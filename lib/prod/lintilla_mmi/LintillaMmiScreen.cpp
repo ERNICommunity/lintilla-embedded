@@ -184,3 +184,73 @@ void LintillaMmiIdScreen::setCursorDown()
     }
   }
 }
+
+
+//-----------------------------------------------------------------------------
+
+LintillaMmiWLANScreen::LintillaMmiWLANScreen(LintillaMmi* mmi)
+: LintillaMmiScreen(mmi)
+, m_ssid(new char[32])
+, m_pass(new char[32])
+{
+  if ((0 != m_ssid) && (0 != m_pass) && (0 != mmi) && (0 != mmi->adapter()))
+  {
+    memset(m_ssid, 0, 32);
+    memset(m_pass, 0, 32);
+
+    mmi->adapter()->getWlanSSID(m_ssid);
+    mmi->adapter()->getWlanPASS(m_pass);
+  }
+}
+
+LintillaMmiWLANScreen::~LintillaMmiWLANScreen()
+{
+  delete [] m_pass; m_pass = 0;
+  delete [] m_ssid; m_ssid = 0;
+}
+
+void LintillaMmiWLANScreen::updateDisplay()
+{
+  if ((0 != mmi()) && (0 != mmi()->lcdKeypad()) && (0 != mmi()->adapter()) && (0 != mmi()->displayBlanking()))
+  {
+    mmi()->lcdKeypad()->setCursor(0, 0);
+
+    mmi()->lcdKeypad()->print("SSID: ");
+    mmi()->lcdKeypad()->print(m_ssid);
+    mmi()->lcdKeypad()->print("   ");
+
+    mmi()->lcdKeypad()->setCursor(0, 1);
+
+    mmi()->lcdKeypad()->print("PASS: ");
+    mmi()->lcdKeypad()->print(m_pass);
+    mmi()->lcdKeypad()->print("   ");
+  }
+}
+
+void LintillaMmiWLANScreen::setCursorUp()
+{
+  if (0 != mmi())
+  {
+    if (isEditMode() && (0 != mmi()->adapter()))
+    {
+    }
+    else
+    {
+      mmi()->setBackLightOn(true);
+    }
+  }
+}
+
+void LintillaMmiWLANScreen::setCursorDown()
+{
+  if (0 != mmi())
+  {
+    if (isEditMode() && (0 != mmi()->adapter()))
+    {
+    }
+    else
+    {
+      mmi()->setBackLightOn(false);
+    }
+  }
+}

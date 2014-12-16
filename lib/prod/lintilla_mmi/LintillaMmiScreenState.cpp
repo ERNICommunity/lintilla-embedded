@@ -114,9 +114,16 @@ const char* LintillaMmiIdScreenState::toString()
 
 void LintillaMmiIdScreenState::select(LintillaMmiScreenFsm* fsm)
 {
-  if (screen()->isEditMode())
+  if ((0 != screen()) && (0 != fsm))
   {
-    screen()->setEditMode(false);
+    if (screen()->isEditMode())
+    {
+      screen()->setEditMode(false);
+    }
+    else
+    {
+      fsm->changeState(LintillaMmiWlanScreenState::Instance());
+    }
   }
 }
 
@@ -159,6 +166,76 @@ void LintillaMmiIdScreenState::down(LintillaMmiScreenFsm* fsm)
 }
 
 void LintillaMmiIdScreenState::entry(LintillaMmiScreenFsm* fsm)
+{
+  Serial.println(toString());
+  updateDisplay();
+}
+
+//-----------------------------------------------------------------------------
+
+LintillaMmiScreenState* LintillaMmiWlanScreenState::s_instance = 0;
+
+LintillaMmiScreenState* LintillaMmiWlanScreenState::Instance()
+{
+  if (0 == s_instance)
+  {
+    s_instance = new LintillaMmiWlanScreenState();
+  }
+  return s_instance;
+}
+
+const char* LintillaMmiWlanScreenState::toString()
+{
+  return "WlanScreenState";
+}
+
+void LintillaMmiWlanScreenState::select(LintillaMmiScreenFsm* fsm)
+{
+  if (screen()->isEditMode())
+  {
+    screen()->setEditMode(false);
+  }
+}
+
+void LintillaMmiWlanScreenState::left(LintillaMmiScreenFsm* fsm)
+{
+  if (0 != screen())
+  {
+    if (!screen()->isEditMode())
+    {
+      screen()->setEditMode(true);
+    }
+  }
+}
+
+void LintillaMmiWlanScreenState::right(LintillaMmiScreenFsm* fsm)
+{
+  if ((0 != fsm) && (0 != screen()))
+  {
+    if (!screen()->isEditMode())
+    {
+      fsm->changeState(LintillaMmiHomeScreenState::Instance());
+    }
+  }
+}
+
+void LintillaMmiWlanScreenState::up(LintillaMmiScreenFsm* fsm)
+{
+  if (0 != screen())
+  {
+    screen()->setCursorUp();
+  }
+}
+
+void LintillaMmiWlanScreenState::down(LintillaMmiScreenFsm* fsm)
+{
+  if (0 != screen())
+  {
+    screen()->setCursorDown();
+  }
+}
+
+void LintillaMmiWlanScreenState::entry(LintillaMmiScreenFsm* fsm)
 {
   Serial.println(toString());
   updateDisplay();

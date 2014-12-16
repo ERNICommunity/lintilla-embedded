@@ -14,6 +14,11 @@
 LintillaMmiScreenFsm::LintillaMmiScreenFsm(LintillaMmi* mmi)
 : m_state(0)
 {
+  m_state = LintillaMmiWlanScreenState::Instance();
+  m_state->attachScreen(new LintillaMmiWLANScreen(mmi));
+  Serial.print("LintillaMmiScreenFsm ctor: created state ");
+  Serial.println(m_state->toString());
+
   m_state = LintillaMmiIdScreenState::Instance();
   m_state->attachScreen(new LintillaMmiIdScreen(mmi));
   Serial.print("LintillaMmiScreenFsm ctor: created state ");

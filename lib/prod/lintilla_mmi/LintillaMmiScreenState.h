@@ -102,4 +102,33 @@ private: // forbidden default functions
 
 };
 
+//-----------------------------------------------------------------------------
+
+class LintillaMmiWlanScreenState : public LintillaMmiScreenState
+{
+private:
+  LintillaMmiWlanScreenState() { }
+
+public:
+  static LintillaMmiScreenState* Instance();
+
+  virtual ~LintillaMmiWlanScreenState() { }
+
+  virtual void select(LintillaMmiScreenFsm* fsm);
+  virtual void left(LintillaMmiScreenFsm* fsm)  ;
+  virtual void right(LintillaMmiScreenFsm* fsm) ;
+  virtual void up(LintillaMmiScreenFsm* fsm)    ;
+  virtual void down(LintillaMmiScreenFsm* fsm)  ;
+  virtual void entry(LintillaMmiScreenFsm* fsm) ;
+
+  virtual const char* toString();
+
+private:
+  static LintillaMmiScreenState* s_instance;
+
+private: // forbidden default functions
+  LintillaMmiWlanScreenState& operator = (const LintillaMmiWlanScreenState& src); // assignment operator
+  LintillaMmiWlanScreenState(const LintillaMmiWlanScreenState& src);              // copy constructor
+
+};
 #endif /* LINTILLAMMISCREENSTATE_H_ */
