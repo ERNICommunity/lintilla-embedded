@@ -6,7 +6,7 @@
 #include <SPI.h>
 #include <string.h>
 #include "utility/debug.h"
-#include "CC3000_MDNS.h"
+//#include "CC3000_MDNS.h"
 #include "LintillaMmi.h"
 #include "ALintillaMmiAdapter.h"
 #include "Timer.h"
@@ -102,7 +102,7 @@ int move(String command); // move
 //---------------------------------------------------------------------------
 // MDNS responder
 //---------------------------------------------------------------------------
-MDNSResponder* mdns = 0;
+//MDNSResponder* mdns = 0;
 
 //---------------------------------------------------------------------------
 // WiFi Driver
