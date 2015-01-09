@@ -3,12 +3,12 @@
 :: Configured Settings
 ::-----------------------------------------------------------------------------
 :: Arduino IDE (see http://arduino.cc/en/Main/OldSoftwareReleases) 
-set ArduinoDownloadUrl=http://downloads.arduino.cc
+set ArduinoDownloadUrl=http://arduino.cc/download.php?f=
 set ArduinoVer=1.5.6-r2
 
 :: Eclipse Arduino Workbench Bundle (see http://www.baeyens.it/eclipse/download.php)
 set EclipseArduinoDownloadUrl=http://www.baeyens.it/eclipse/download/product
-set EclipseArduinoVer=2014-09-06_02-06-03
+set EclipseArduinoVer=2014-12-28_02-06-00
 
 :: Expected Project Location (Eclipse CDT cannot deal with relative paths)
 set ArduinoProjects=C:\git\arduino-projects
@@ -132,6 +132,10 @@ call build.bat
 if %errorlevel% == 0 goto end
 :: revert src/.project that have been made dirty by the failing build
 %Git% checkout -- %ProjectHome%\src\.project
+
+:: run second build
+call build.bat
+if %errorlevel% == 0 goto end
 
 :error
 msg "%username%" An error occured!
