@@ -27,12 +27,12 @@ This downloads and installs all needed tools to build this and work on this proj
         
         C:\git\arduino-projects\Tools\eclipseArduino_revs\win64.2014-09-06_02-06-03\eclipseArduino
 
-Don’t get discouraged by an error message popping up potentially, just click OK and ignore it. This is not sorted out yet, but hopefully will be fixed soon.
+The workspace is now prepared and the project is built now already.
 
 Run the Eclipse Arduino Workbench with this batch:
 
     C:\git\arduino-projects\lintilla-embedded\eclipseArduino.bat
 
-In the Eclipse Arduino Workbench select the lintilla_embedded entry in the Project Explorer (on the left-hand side) and press the Verify button, this compiles the project. 
+In the Eclipse Arduino Workbench select the lintilla_embedded entry in the Project Explorer (on the left-hand side) and press the Verify button, this compiles the project (and the red error icons will disappear). 
 
 ![](https://github.com/ERNICommunity/lintilla-embedded/wiki/pictures/select_proj_and_press_verify.png)
