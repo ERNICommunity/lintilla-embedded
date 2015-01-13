@@ -70,7 +70,7 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.CMD.PA
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.CMD.PATH/value=${A.TOOLS.AVRDUDE.CMD.PATH}
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.CMD/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.CMD/operation=replace
-environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.CMD/value=${A.TOOLS.BOSSAC.CMD}
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.CMD/value=${A.TOOLS.AVRDUDE.CMD}
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.COMPILER.AR.CMD/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.COMPILER.AR.CMD/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.COMPILER.AR.CMD/value=avr-ar
@@ -127,7 +127,7 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.NAME/o
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.NAME/value=Arduino Mega or Mega 2560
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.PATH/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.PATH/operation=replace
-environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.PATH/value=${A.TOOLS.BOSSAC.PATH}
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.PATH/value=${A.TOOLS.AVRDUDE.PATH}
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.PID.0/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.PID.0/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.PID.0/value=0x0010
@@ -224,6 +224,9 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIM
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIME.IDE.VERSION/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIME.IDE.VERSION/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIME.IDE.VERSION/value=156-r2
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIME.PLATFORM.PATH/delimiter=;
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIME.PLATFORM.PATH/operation=replace
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.RUNTIME.PLATFORM.PATH/value=C\:/git/arduino-projects/lintilla-embedded/tools/arduino/hardware/arduino/avr
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.SOFTWARE/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.SOFTWARE/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.SOFTWARE/value=ARDUINO
@@ -307,7 +310,7 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.B
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.BOARD_NAME/value=Arduino Mega or Mega 2560
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.COM_PORT/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.COM_PORT/operation=replace
-environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.COM_PORT/value=COM24
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.COM_PORT/value=COM4
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.COM_PROGMR/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.COM_PROGMR/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.COM_PROGMR/value=Default
@@ -346,6 +349,6 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.W
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.WARNING_LEVEL/value=\ -w 
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/PATH/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/PATH/operation=replace
-environment/project/it.baeyens.arduino.core.toolChain.release.256903333/PATH/value=${A.COMPILER.PATH}${PathDelimiter}${A.BUILD.GENERIC.PATH}${PathDelimiter}${A.RUNTIME.IDE.PATH}/hardware/tools/avr/utils/bin${PathDelimiter}${PATH}
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/PATH/value=${A.COMPILER.PATH}${PathDelimiter}${A.BUILD.GENERIC.PATH}${PathDelimiter}${A.RUNTIME.IDE.PATH}/hardware/tools/avr/utils/bin${PathDelimiter}${A.RUNTIME.IDE.PATH}${PathDelimiter}${PATH}
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/append=true
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/appendContributed=true
