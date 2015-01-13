@@ -8,7 +8,7 @@ set ArduinoVer=1.5.6-r2
 
 :: Eclipse Arduino Workbench Bundle (see http://www.baeyens.it/eclipse/download.php)
 set EclipseArduinoDownloadUrl=http://www.baeyens.it/eclipse/download/product
-set EclipseArduinoVer=2014-12-28_02-06-00
+set EclipseArduinoVer=2015-01-13_02-06-58
 
 :: Expected Project Location (Eclipse CDT cannot deal with relative paths)
 set ArduinoProjects=C:\git\arduino-projects
