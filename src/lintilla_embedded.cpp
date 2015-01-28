@@ -65,7 +65,6 @@ LintillaBatteryAdapter* batteryAdapter = 0;
 // Ultrasonic Ranging
 //---------------------------------------------------------------------------
 UltrasonicSensor* ultrasonicSensorFront = 0;
-unsigned long dist = UltrasonicSensor::DISTANCE_LIMIT_EXCEEDED;   // [cm]
 
 //---------------------------------------------------------------------------
 // Wheel Speed Sensors
