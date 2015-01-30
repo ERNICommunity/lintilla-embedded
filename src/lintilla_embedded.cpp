@@ -5,7 +5,7 @@
 #include <ccspi.h>
 #include <SPI.h>
 #include <string.h>
-#include "utility/debug.h"
+//#include "utility/debug.h"
 //#include "CC3000_MDNS.h"
 #include "LintillaMmi.h"
 #include "ALintillaMmiAdapter.h"
@@ -26,6 +26,7 @@
 #include "Battery.h"
 #include "LintillaBatteryAdapter.h"
 #include "aREST.h"
+#include "RamUtils.h"
 
 #define USE_HARD_CODED_WIFI_CREDENTIALS 1
 #if USE_HARD_CODED_WIFI_CREDENTIALS
@@ -46,7 +47,7 @@ class RamDebugTimerAdapter : public TimerAdapter
 {
   void timeExpired()
   {
-    Serial.print("Free RAM: "); Serial.println(getFreeRam(), DEC);
+    Serial.print("Free RAM: "); Serial.println(RamUtils::getFreeRam(), DEC);
   }
 };
 
@@ -173,7 +174,7 @@ void connectWiFi()
   bool bailOut = false;
 
   Serial.println(F("\nconnectWifi(): using CC3000 driver!"));
-  Serial.print("Free RAM: "); Serial.println(getFreeRam(), DEC);
+  Serial.print("Free RAM: "); Serial.println(RamUtils::getFreeRam(), DEC);
 
   /* Initialize the module */
   Serial.println(F("\nInitializing..."));
@@ -428,7 +429,7 @@ void setup()
   //---------------------------------------------------------------------------
   Serial.begin(115200);
   Serial.println(F("\nHello from Lintilla!"));
-  Serial.print("Free RAM: "); Serial.println(getFreeRam(), DEC);
+  Serial.print("Free RAM: "); Serial.println(RamUtils::getFreeRam(), DEC);
   ramDebugTimer = new Timer(new RamDebugTimerAdapter(), Timer::IS_RECURRING, c_ramDbgInterval);
 
   //---------------------------------------------------------------------------
