@@ -34,9 +34,17 @@ LintillaMmiScreenFsm::~LintillaMmiScreenFsm()
 {
   delete LintillaMmiIdScreenState::Instance()->screen();
   LintillaMmiIdScreenState::Instance()->attachScreen(0);
+  delete LintillaMmiIdScreenState::Instance();
 
   delete LintillaMmiHomeScreenState::Instance()->screen();
   LintillaMmiHomeScreenState::Instance()->attachScreen(0);
+  delete LintillaMmiHomeScreenState::Instance();
+
+  delete LintillaMmiWlanScreenState::Instance()->screen();
+  LintillaMmiWlanScreenState::Instance()->attachScreen(0);
+  delete LintillaMmiWlanScreenState::Instance();
+
+  m_state = 0;
 }
 
 void LintillaMmiScreenFsm::select()
