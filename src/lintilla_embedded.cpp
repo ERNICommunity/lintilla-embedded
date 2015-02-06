@@ -27,6 +27,8 @@
 #include "LintillaBatteryAdapter.h"
 #include "aREST.h"
 #include "RamUtils.h"
+#include "Wire.h"
+#include "FreeSixIMU.h"
 
 #define USE_HARD_CODED_WIFI_CREDENTIALS 1
 #if USE_HARD_CODED_WIFI_CREDENTIALS
@@ -66,6 +68,11 @@ LintillaBatteryAdapter* batteryAdapter = 0;
 // Ultrasonic Ranging
 //---------------------------------------------------------------------------
 UltrasonicSensor* ultrasonicSensorFront = 0;
+
+//---------------------------------------------------------------------------
+// FreeSixIMU for Yaw-Controller
+//---------------------------------------------------------------------------
+FreeSixIMU* my6IMU = 0;
 
 //---------------------------------------------------------------------------
 // Wheel Speed Sensors
@@ -498,6 +505,13 @@ void setup()
   //---------------------------------------------------------------------------
   ultrasonicSensorFront = new UltrasonicSensorHCSR04();
   ultrasonicSensorFront->attachAdapter(new AnUltrasonicSensorAdapter(testCmdSeq));
+
+  my6IMU = new FreeSixIMU();
+
+  Wire.begin();
+  delay(5);
+  my6IMU->init();
+  delay(20);
 
   tractionAdapter = new ATractionAdapter(ultrasonicSensorFront);
   traction->attachAdapter(tractionAdapter);

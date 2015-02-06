@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <FIMU_ADXL345.h>
 #define FIMU_ACC_ADDR ADXL345_ADDR_ALT_LOW // SDO connected to GND
 #include <FIMU_ITG3200.h>
+#include <FIMU_HMC58X3.h>
 
 
 #ifndef FreeSixIMU_h
@@ -60,8 +61,9 @@ class FreeSixIMU
     void getAngles(float * angles);
     
     
-	ADXL345 acc;
+    ADXL345 acc;
     ITG3200 gyro;
+    HMC58X3 magn;
     
     int* raw_acc, raw_gyro, raw_magn;
     
