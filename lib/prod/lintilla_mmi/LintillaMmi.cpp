@@ -92,20 +92,33 @@ LintillaMmi::LintillaMmi(LintillaMmiAdapter* adapter)
 
 LintillaMmi::~LintillaMmi()
 {
-  delete m_displayBlanking;
-  m_displayBlanking = 0;
+  delete m_lcdKeypad->adapter();
+  m_lcdKeypad->attachAdapter(0);
 
+  delete m_screenFsm;
+  m_screenFsm = 0;
+  
   delete m_displayTimer->adapter();
   m_displayTimer->attachAdapter(0);
 
   delete m_displayTimer;
   m_displayTimer = 0;
 
-  delete m_lcdKeypad->adapter();
-  m_lcdKeypad->attachAdapter(0);
+  delete m_displayBlanking;
+  m_displayBlanking = 0;
 
   delete m_lcdKeypad;
   m_lcdKeypad = 0;
+}
+
+void LintillaMmi::attachAdapter(LintillaMmiAdapter* adapter)
+{
+  m_adapter = adapter;
+}
+
+LintillaMmiAdapter* LintillaMmi::adapter()
+{
+  return m_adapter;
 }
 
 LcdKeypad* LintillaMmi::lcdKeypad()
@@ -121,16 +134,6 @@ Blanking* LintillaMmi::displayBlanking()
 LintillaMmiScreenFsm* LintillaMmi::screenFsm()
 {
   return m_screenFsm;
-}
-
-void LintillaMmi::attachAdapter(LintillaMmiAdapter* adapter)
-{
-  m_adapter = adapter;
-}
-
-LintillaMmiAdapter* LintillaMmi::adapter()
-{
-  return m_adapter;
 }
 
 bool LintillaMmi::isBacklightOn()
