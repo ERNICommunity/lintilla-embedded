@@ -1,5 +1,20 @@
 @echo off
 ::-----------------------------------------------------------------------------
+:: Paths
+::-----------------------------------------------------------------------------
+set SCRIPT_DIR=%~dp0%
+set ProjectHome=%SCRIPT_DIR:~0,-1%
+set WorkspaceDir=%ProjectHome%\workspace
+set ThisProjTools=%ProjectHome%\tools
+
+
+::-----------------------------------------------------------------------------
+:: Load Script Environment / Configuration
+::-----------------------------------------------------------------------------
+for /f "delims=" %%x in (%ProjectHome%\env.config) do (set "%%x")
+
+
+::-----------------------------------------------------------------------------
 :: Get the OS Variant
 ::-----------------------------------------------------------------------------
 IF "%PROCESSOR_ARCHITECTURE%;%PROCESSOR_ARCHITEW6432%"=="x86;" (
@@ -10,14 +25,6 @@ IF "%PROCESSOR_ARCHITECTURE%;%PROCESSOR_ARCHITEW6432%"=="x86;" (
   set Vm-args=-Xms40m -Xmx512m -XX:MaxPermSize=512m -XX:-UseCompressedOops
 )
 
-::-----------------------------------------------------------------------------
-:: Paths
-::-----------------------------------------------------------------------------
-set SCRIPT_DIR=%~dp0%
-set ProjectHome=%SCRIPT_DIR%
-set WorkspaceDir=%ProjectHome%\workspace
-set ThisProjTools=%ProjectHome%\tools
-
-%ThisProjTools%\eclipseArduino\eclipsec.exe -data %WorkspaceDir% -nosplash --launcher.suppressErrors -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild lintilla_embedded -vmargs -Dorg.eclipse.cdt.core.console=org.eclipse.cdt.core.systemConsole %Vm-args%
+%ThisProjTools%\eclipseArduino\eclipsec.exe -data %WorkspaceDir% -nosplash --launcher.suppressErrors -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild %WB-Project-Name% -vmargs -Dorg.eclipse.cdt.core.console=org.eclipse.cdt.core.systemConsole %Vm-args%
 
 EXIT /B %ERRORLEVEL%
