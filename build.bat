@@ -15,6 +15,11 @@ for /f "delims=" %%x in (%ProjectHome%\env.config) do (set "%%x")
 
 
 ::-----------------------------------------------------------------------------
+:: Build Target Name
+::-----------------------------------------------------------------------------
+::set buildTarget=arduino_6dof_test ::to be set in env.config
+
+::-----------------------------------------------------------------------------
 :: Get the OS Variant
 ::-----------------------------------------------------------------------------
 IF "%PROCESSOR_ARCHITECTURE%;%PROCESSOR_ARCHITEW6432%"=="x86;" (
@@ -25,6 +30,6 @@ IF "%PROCESSOR_ARCHITECTURE%;%PROCESSOR_ARCHITEW6432%"=="x86;" (
   set Vm-args=-Xms40m -Xmx512m -XX:MaxPermSize=512m -XX:-UseCompressedOops
 )
 
-%ThisProjTools%\eclipseArduino\eclipsec.exe -data %WorkspaceDir% -nosplash --launcher.suppressErrors -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild %WB-Project-Name% -vmargs -Dorg.eclipse.cdt.core.console=org.eclipse.cdt.core.systemConsole %Vm-args%
+%ThisProjTools%\eclipseArduino\eclipsec.exe -data %WorkspaceDir% -nosplash --launcher.suppressErrors -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild %buildTarget% -vmargs -Dorg.eclipse.cdt.core.console=org.eclipse.cdt.core.systemConsole %Vm-args%
 
 EXIT /B %ERRORLEVEL%
