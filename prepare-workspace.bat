@@ -1,18 +1,33 @@
 @echo off
 ::-----------------------------------------------------------------------------
+:: Paths
+::-----------------------------------------------------------------------------
+set SCRIPT_DIR=%~dp0%
+set ProjectHome=%SCRIPT_DIR:~0,-1%
+set WorkspaceDir=%ProjectHome%\workspace
+set ArduinoTools=%ProjectHome%\..\Tools
+set ThisProjTools=%ProjectHome%\tools
+
+::-----------------------------------------------------------------------------
+:: Load Script Environment / Configuration
+::-----------------------------------------------------------------------------
+for /f "delims=" %%x in (%ProjectHome%\env.config) do (set "%%x")
+
+
+::-----------------------------------------------------------------------------
 :: Configured Settings
 ::-----------------------------------------------------------------------------
 :: Arduino IDE (see http://arduino.cc/en/Main/OldSoftwareReleases) 
-set ArduinoDownloadUrl=http://arduino.cc/download.php?f=
-set ArduinoVer=1.5.6-r2
+::set ArduinoDownloadUrl=http://arduino.cc/download.php?f=
+::set ArduinoVer=1.5.6-r2 ::to be set in env.config
 
 :: Eclipse Arduino Workbench Bundle (see http://www.baeyens.it/eclipse/download.php)
-set EclipseArduinoDownloadUrl=http://www.baeyens.it/eclipse/download/product
-set EclipseArduinoVer=2015-01-13_02-06-58
+::set EclipseArduinoDownloadUrl=http://www.baeyens.it/eclipse/download/product
+::set EclipseArduinoVer=2015-01-13_02-06-58 ::to be set in env.config
 
 :: Expected Project Location (Eclipse CDT cannot deal with relative paths)
-set ArduinoProjects=C:\git\arduino-projects
-set ExpectedProjectHome=%ArduinoProjects%\lintilla-embedded\
+:: set ArduinoProjects=C:\git\arduino-projects ::to be set in env.config
+set ExpectedProjectHome=%ArduinoProjects%\%ProjectSubDir%
 
 ::-----------------------------------------------------------------------------
 :: Get the OS Variant
@@ -22,15 +37,6 @@ IF "%PROCESSOR_ARCHITECTURE%;%PROCESSOR_ARCHITEW6432%"=="x86;" (
 ) ELSE (
   set OsVariant=win64
 )
-
-::-----------------------------------------------------------------------------
-:: Paths
-::-----------------------------------------------------------------------------
-set SCRIPT_DIR=%~dp0%
-set ProjectHome=%SCRIPT_DIR%
-set WorkspaceDir=%ProjectHome%\workspace
-set ArduinoTools=%ProjectHome%\..\Tools
-set ThisProjTools=%ProjectHome%\tools
 
 ::-----------------------------------------------------------------------------
 :: Assert correct path

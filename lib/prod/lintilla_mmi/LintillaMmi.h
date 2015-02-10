@@ -20,6 +20,8 @@ class LintillaMmiScreenFsm;
 class LintillaMmiAdapter
 {
 public:
+  virtual ~LintillaMmiAdapter() { }
+  
   virtual bool isSeqRunning() = 0;
   virtual void startSequence() = 0;
   virtual void stopSequence() = 0;
@@ -47,8 +49,6 @@ public:
 
   virtual long int getLeftWheelSpeed() = 0;
   virtual long int getRightWheelSpeed() = 0;
-
-  virtual ~LintillaMmiAdapter() { }
 
 protected:
   LintillaMmiAdapter() { }
