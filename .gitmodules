@@ -40,3 +40,6 @@
 [submodule "lib/plat/utils/mem"]
 	path = lib/plat/utils/mem
 	url = git@github.com:dniklaus/arduino-utils-mem.git
+[submodule "lib/plat/debug-cli"]
+	path = lib/plat/debug-cli
+	url = git@github.com:dniklaus/debug-cli.git
