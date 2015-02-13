@@ -42,4 +42,4 @@
 	url = git@github.com:dniklaus/arduino-utils-mem.git
 [submodule "lib/plat/debug-cli"]
 	path = lib/plat/debug-cli
-	url = git@github.com:dniklaus/debug-cli.git
+	url = git@github.com:ERNICommunity/debug-cli.git
