@@ -7,9 +7,9 @@
 
 #include "CmdAdapter.h"
 #include "CmdSequence.h"
-#include "Cmd.h"
+#include "CmdHandler.h"
 
-Cmd::Cmd(CmdSequence* cmdSeq, unsigned int timeMillis, const char* name)
+CmdHandler::CmdHandler(CmdSequence* cmdSeq, unsigned int timeMillis, const char* name)
 : m_cmdSeq(cmdSeq)
 , m_timeMillis(timeMillis)
 , m_name(name)
@@ -21,7 +21,7 @@ Cmd::Cmd(CmdSequence* cmdSeq, unsigned int timeMillis, const char* name)
   }
 }
 
-Cmd::~Cmd()
+CmdHandler::~CmdHandler()
 {
   if (0 != m_cmdSeq)
   {
@@ -29,33 +29,33 @@ Cmd::~Cmd()
   }
 }
 
-void Cmd::setTime(unsigned int timeMillis)
+void CmdHandler::setTime(unsigned int timeMillis)
 {
   m_timeMillis = timeMillis;
 }
 
-unsigned int Cmd::getTime()
+unsigned int CmdHandler::getTime()
 {
   return m_timeMillis;
 }
 
-Cmd* Cmd::next()
+CmdHandler* CmdHandler::next()
 {
   return m_next;
 }
 
-void Cmd::setNext(Cmd* next)
+void CmdHandler::setNext(CmdHandler* next)
 {
   m_next = next;
 }
 
-const char* Cmd::getName()
+const char* CmdHandler::getName()
 {
   return m_name;
 }
 
 
-CmdSequence* Cmd::cmdSequence()
+CmdSequence* CmdHandler::cmdSequence()
 {
   return m_cmdSeq;
 }
@@ -63,7 +63,7 @@ CmdSequence* Cmd::cmdSequence()
 //-----------------------------------------------------------------------------
 
 CmdStop::CmdStop(CmdSequence* cmdSeq, unsigned int timeMillis)
-: Cmd(cmdSeq, timeMillis, "CmdStop")
+: CmdHandler(cmdSeq, timeMillis, "CmdStop")
 { }
 
 void CmdStop::execute()
@@ -77,7 +77,7 @@ void CmdStop::execute()
 //-----------------------------------------------------------------------------
 
 CmdMoveForward::CmdMoveForward(CmdSequence* cmdSeq, unsigned int timeMillis)
-: Cmd(cmdSeq, timeMillis, "CmdMoveForward")
+: CmdHandler(cmdSeq, timeMillis, "CmdMoveForward")
 { }
 
 void CmdMoveForward::execute()
@@ -91,7 +91,7 @@ void CmdMoveForward::execute()
 //-----------------------------------------------------------------------------
 
 CmdMoveBackward::CmdMoveBackward(CmdSequence* cmdSeq, unsigned int timeMillis)
-: Cmd(cmdSeq, timeMillis, "CmdMoveBackward")
+: CmdHandler(cmdSeq, timeMillis, "CmdMoveBackward")
 { }
 
 void CmdMoveBackward::execute()
@@ -105,7 +105,7 @@ void CmdMoveBackward::execute()
 //-----------------------------------------------------------------------------
 
 CmdSpinOnPlaceLeft::CmdSpinOnPlaceLeft(CmdSequence* cmdSeq, unsigned int timeMillis, float angle)
-: Cmd(cmdSeq, timeMillis, "CmdSpinOnPlaceLeft")
+: CmdHandler(cmdSeq, timeMillis, "CmdSpinOnPlaceLeft")
 , m_angle(angle)
 { }
 
@@ -120,7 +120,7 @@ void CmdSpinOnPlaceLeft::execute()
 //-----------------------------------------------------------------------------
 
 CmdSpinOnPlaceRight::CmdSpinOnPlaceRight(CmdSequence* cmdSeq, unsigned int timeMillis, float angle)
-: Cmd(cmdSeq, timeMillis, "CmdSpinOnPlaceRight")
+: CmdHandler(cmdSeq, timeMillis, "CmdSpinOnPlaceRight")
 , m_angle(angle)
 { }
 

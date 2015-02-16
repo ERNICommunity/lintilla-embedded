@@ -40,3 +40,6 @@
 [submodule "lib/plat/utils/mem"]
 	path = lib/plat/utils/mem
 	url = git@github.com:dniklaus/arduino-utils-mem.git
+[submodule "lib/comp/CmdArduino"]
+	path = lib/comp/CmdArduino
+	url = git@github.com:fakufaku/CmdArduino.git

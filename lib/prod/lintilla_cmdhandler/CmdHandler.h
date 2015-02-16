@@ -1,30 +1,30 @@
 /*
- * Cmd.h
+ * CmdHandler.h
  *
  *  Created on: 10.03.2014
  *      Author: niklausd
  */
 
-#ifndef CMD_H_
-#define CMD_H_
+#ifndef CMDHANDLER_H_
+#define CMDHANDLER_H_
 
 class CmdSequence;
 
-class Cmd
+class CmdHandler
 {
 protected:
-  Cmd(CmdSequence* cmdSeq, unsigned int timeMillis, const char* name);
+  CmdHandler(CmdSequence* cmdSeq, unsigned int timeMillis, const char* name);
 
 public:
-  virtual ~Cmd();
+  virtual ~CmdHandler();
 
   void setTime(unsigned int millis);
   unsigned int getTime();
 
   virtual void execute() = 0;
 
-  Cmd* next();
-  void setNext(Cmd* next);
+  CmdHandler* next();
+  void setNext(CmdHandler* next);
 
   const char* getName();
 
@@ -34,16 +34,16 @@ private:
   CmdSequence*  m_cmdSeq;
   unsigned int  m_timeMillis;
   const char*   m_name;
-  Cmd*          m_next;
+  CmdHandler*          m_next;
 
 private: // forbidden default functions
-  Cmd& operator = (const Cmd& src); // assignment operator
-  Cmd(const Cmd& src);              // copy constructor
+  CmdHandler& operator = (const CmdHandler& src); // assignment operator
+  CmdHandler(const CmdHandler& src);              // copy constructor
 };
 
 //-----------------------------------------------------------------------------
 
-class CmdStop : public Cmd
+class CmdStop : public CmdHandler
 {
 public:
   CmdStop(CmdSequence* cmdSeq, unsigned int timeMillis);
@@ -57,7 +57,7 @@ private: // forbidden default functions
 
 //-----------------------------------------------------------------------------
 
-class CmdMoveForward : public Cmd
+class CmdMoveForward : public CmdHandler
 {
 public:
   CmdMoveForward(CmdSequence* cmdSeq, unsigned int timeMillis);
@@ -71,7 +71,7 @@ private: // forbidden default functions
 
 //-----------------------------------------------------------------------------
 
-class CmdMoveBackward : public Cmd
+class CmdMoveBackward : public CmdHandler
 {
 public:
   CmdMoveBackward(CmdSequence* cmdSeq, unsigned int timeMillis);
@@ -85,7 +85,7 @@ private: // forbidden default functions
 
 //-----------------------------------------------------------------------------
 
-class CmdSpinOnPlaceLeft : public Cmd
+class CmdSpinOnPlaceLeft : public CmdHandler
 {
 public:
   CmdSpinOnPlaceLeft(CmdSequence* cmdSeq, unsigned int timeMillis, float angle = 0.0);
@@ -102,7 +102,7 @@ private: // forbidden default functions
 
 //-----------------------------------------------------------------------------
 
-class CmdSpinOnPlaceRight : public Cmd
+class CmdSpinOnPlaceRight : public CmdHandler
 {
 public:
   CmdSpinOnPlaceRight(CmdSequence* cmdSeq, unsigned int timeMillis, float angle = 0.0);
@@ -119,4 +119,4 @@ private: // forbidden default functions
 
 //-----------------------------------------------------------------------------
 
-#endif /* CMD_H_ */
+#endif /* CMDHANDLER_H_ */

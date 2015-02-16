@@ -82,6 +82,11 @@
 			<locationURI>lintilla_embeddedBattery/Battery</locationURI>
 		</link>
 		<link>
+			<name>comp/CmdArduino</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedCmdArduino/CmdArduino</locationURI>
+		</link>
+		<link>
 			<name>comp/FreeSixIMU</name>
 			<type>2</type>
 			<locationURI>lintilla_embeddedFreeSixIMU/FreeSixIMU</locationURI>
