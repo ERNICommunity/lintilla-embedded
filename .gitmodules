@@ -43,3 +43,6 @@
 [submodule "lib/comp/CmdArduino"]
 	path = lib/comp/CmdArduino
 	url = git@github.com:fakufaku/CmdArduino.git
+[submodule "lib/plat/debug-cli"]
+	path = lib/plat/debug-cli
+	url = git@github.com:ERNICommunity/debug-cli.git

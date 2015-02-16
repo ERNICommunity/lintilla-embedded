@@ -3,6 +3,7 @@
 
 #include <Adafruit_CC3000.h>
 #include <ccspi.h>
+#include <CmdHandler.h>
 #include <SPI.h>
 #include <string.h>
 //#include "utility/debug.h"
@@ -21,7 +22,6 @@
 #include "LintillaIvm.h"
 #include "ACmdAdapter.h"
 #include "CmdSequence.h"
-#include "Cmd.h"
 #include "DistanceCount.h"
 #include "Battery.h"
 #include "LintillaBatteryAdapter.h"
@@ -29,11 +29,14 @@
 #include "RamUtils.h"
 #include "Wire.h"
 #include "FreeSixIMU.h"
+#include "Cmd.h"
 
+#define USE_WIFI 0
 #define USE_HARD_CODED_WIFI_CREDENTIALS 1
 #if USE_HARD_CODED_WIFI_CREDENTIALS
 #define WLAN_SSID "LintillaNet"
 #define WLAN_PASS "AnswerIs42"
+#define DEBUG_RAM 0  //Printing free Ram space with serial monitor
 #endif
 
 //-----------------------------------------------------------------------------
@@ -168,6 +171,7 @@ uint16_t checkFirmwareVersion(void);
 void displayMACAddress(void);
 bool displayConnectionDetails(void);
 bool isSSIDPresent(const char* searchSSID);
+void hello(int arg_cnt, char **args);
 
 //---------------------------------------------------------------------------
 // Lintilla MMI
@@ -422,8 +426,10 @@ void loop()
 //  {
 //    mdns->update();
 //  }
-
+  cmdPoll();
+#if USE_WIFI
   processRestServer();
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -434,10 +440,17 @@ void setup()
   //---------------------------------------------------------------------------
   // Debugging
   //---------------------------------------------------------------------------
-  Serial.begin(115200);
+  cmdInit(115200); //contains Serial.begin(115200);
   Serial.println(F("\nHello from Lintilla!"));
   Serial.print("Free RAM: "); Serial.println(RamUtils::getFreeRam(), DEC);
+#if DEBUG_RAM
+  // Print free RAM periodically
+  Serial.print("Free RAM: "); Serial.println(RamUtils::getFreeRam(), DEC);
   ramDebugTimer = new Timer(new RamDebugTimerAdapter(), Timer::IS_RECURRING, c_ramDbgInterval);
+#endif
+
+  // adding CLI Commands
+  cmdAdd("hello", hello);
 
   //---------------------------------------------------------------------------
   // Inventory Management
@@ -489,7 +502,7 @@ void setup()
     new CmdStop(testCmdSeq, cInterDelay);
   }
 
-  Cmd* cmd = testCmdSeq->getFirstCmd();
+  CmdHandler* cmd = testCmdSeq->getFirstCmd();
   while (0 != cmd)
   {
     Serial.print("testCmdSeq: ");
@@ -525,8 +538,10 @@ void setup()
   //---------------------------------------------------------------------------
   // WiFi
   //---------------------------------------------------------------------------
+#if USE_WIFI
   wifiReconnectTimer = new Timer(new WifiReconnectTimerAdapter(wifiReconnectTimer), Timer::IS_RECURRING, cWifiReconnectInterval);
   connectWiFi();
+#endif
 
 //  //---------------------------------------------------------------------------
 //  // MDNSResponder
@@ -723,4 +738,9 @@ int move(String command)
   }
 
   return retVal;
+}
+
+void hello(int arg_cnt, char **args)
+{
+  Serial.println("Hello world.");
 }
