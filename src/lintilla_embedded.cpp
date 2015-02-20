@@ -30,13 +30,17 @@
 #include "Wire.h"
 #include "FreeSixIMU.h"
 #include "Cmd.h"
+#include "DbgCliNode.h"
+#include "DbgCliTopic.h"
+#include "DbgCliCommand.h"
+#include <LintillaMmiScreenFsm.h>
 
-#define USE_WIFI 0
+#define DEBUG_RAM 0  //Printing free Ram space with serial monitor
+#define USE_WIFI 1
 #define USE_HARD_CODED_WIFI_CREDENTIALS 1
 #if USE_HARD_CODED_WIFI_CREDENTIALS
 #define WLAN_SSID "LintillaNet"
 #define WLAN_PASS "AnswerIs42"
-#define DEBUG_RAM 0  //Printing free Ram space with serial monitor
 #endif
 
 //-----------------------------------------------------------------------------
@@ -46,6 +50,48 @@ void(* resetFunc) (void) = 0; //declare reset function at address 0 => will 'use
 //-----------------------------------------------------------------------------
 // Debugging
 //-----------------------------------------------------------------------------
+DbgCli_Node* dbgCliRootNode = 0;
+class DbgCli_Command_Select : public DbgCli_Command
+{
+private:
+  LintillaMmi* m_mmi;
+public:
+  DbgCli_Command_Select(LintillaMmi* mmi)
+  : DbgCli_Command("dbg mmi screen", "sel", "Emulate SELECT button pressed.")
+  , m_mmi(mmi)
+  { }
+
+  virtual void execute(unsigned int argc, const char** args, unsigned int idxToFirstArgToHandle)
+  {
+    if (0 != m_mmi)
+	{
+      m_mmi->screenFsm()->select();
+    }
+  }
+};
+
+class DbgCli_Command_Right : public DbgCli_Command
+{
+private:
+  LintillaMmi* m_mmi;
+public:
+  DbgCli_Command_Right(LintillaMmi* mmi)
+  : DbgCli_Command("dbg mmi screen", "r", "Emulate RIGHT button pressed.")
+  , m_mmi(mmi)
+  { }
+
+  virtual void execute(unsigned int argc, const char** args, unsigned int idxToFirstArgToHandle)
+  {
+    if (0 != m_mmi)
+    {
+      m_mmi->screenFsm()->right();
+    }
+  }
+};
+
+void dbgCliExecute(int arg_cnt, char** args);
+void hello(int arg_cnt, char** args);
+
 Timer* ramDebugTimer = 0;
 const unsigned int c_ramDbgInterval = 20000;
 class RamDebugTimerAdapter : public TimerAdapter
@@ -60,6 +106,31 @@ class RamDebugTimerAdapter : public TimerAdapter
 // Inventory Management
 //---------------------------------------------------------------------------
 LintillaIvm* ivm = 0;
+
+bool isLintillaHw()
+{
+  typedef enum
+  {
+    LintillaIdMin = 0,
+    LintillaId01  = 1,
+    LintillaId02  = 2,
+    LintillaId03  = 3,
+    LintillaId04  = 4,
+    LintillaId05  = 5,
+    LintillaIdMax = 6
+  } LintillaIds;
+  bool isLHw = false;
+  unsigned char deviceId = 0;
+  if (0 != ivm)
+  {
+    deviceId = ivm->getDeviceId();
+  }
+  if ((LintillaIdMin < deviceId) && (deviceId < LintillaIdMax))
+  {
+    isLHw = true;
+  }
+  return isLHw;
+}
 
 //-----------------------------------------------------------------------------
 // Battery Voltage Surveillance
@@ -151,7 +222,7 @@ public:
 
   void timeExpired()
   {
-    if (!cc3000.checkConnected())
+    if (!cc3000.checkConnected() && isLintillaHw())
     {
       Serial.print("Lintilla lost WiFi connection, reconnecting!!\n");
       delay(2000);
@@ -171,7 +242,6 @@ uint16_t checkFirmwareVersion(void);
 void displayMACAddress(void);
 bool displayConnectionDetails(void);
 bool isSSIDPresent(const char* searchSSID);
-void hello(int arg_cnt, char **args);
 
 //---------------------------------------------------------------------------
 // Lintilla MMI
@@ -428,7 +498,10 @@ void loop()
 //  }
   cmdPoll();
 #if USE_WIFI
-  processRestServer();
+  if (isLintillaHw())
+  {
+    processRestServer();
+  }
 #endif
 }
 
@@ -440,9 +513,12 @@ void setup()
   //---------------------------------------------------------------------------
   // Debugging
   //---------------------------------------------------------------------------
+  DbgCli_Node::AssignRootNode(new DbgCli_Topic("", "dbg", "Lintilla Debug CLI Root Node."));
+  dbgCliRootNode = DbgCli_Node::RootNode();
+  new DbgCli_Topic("dbg", "mmi", "MMI Node.");
+  new DbgCli_Topic("dbg mmi", "screen", "MMI Screen Node.");
   cmdInit(115200); //contains Serial.begin(115200);
   Serial.println(F("\nHello from Lintilla!"));
-  Serial.print("Free RAM: "); Serial.println(RamUtils::getFreeRam(), DEC);
 #if DEBUG_RAM
   // Print free RAM periodically
   Serial.print("Free RAM: "); Serial.println(RamUtils::getFreeRam(), DEC);
@@ -451,6 +527,7 @@ void setup()
 
   // adding CLI Commands
   cmdAdd("hello", hello);
+  cmdAdd("dbg", dbgCliExecute);
 
   //---------------------------------------------------------------------------
   // Inventory Management
@@ -459,21 +536,24 @@ void setup()
 //  EEPROM.write(1, 2); // hack to set IVM version back to one before, triggers eval. of all items in LintillaIvm::maintainVersionChange()
   ivm = new LintillaIvm();
 
-  //---------------------------------------------------------------------------
-  // Battery Voltage Surveillance
-  //---------------------------------------------------------------------------
   Serial.println("IVM:");
   Serial.println("---------------------------------------------------");
   Serial.print("ID: "); Serial.println(ivm->getDeviceId());
   Serial.print("IVM V."); Serial.println(ivm->getIvmVersion());
   Serial.print("BattVoltSenseFactor = "); Serial.println(ivm->getBattVoltageSenseFactor());
   Serial.println("---------------------------------------------------");
-  batteryAdapter = new LintillaBatteryAdapter();
-  battery = new Battery(batteryAdapter);
-  batteryAdapter->attachBattery(battery);
-  batteryAdapter->attachLintillaMmi(mmi);
-  batteryAdapter->attachLintillaIvm(ivm);
-  batteryAdapter->attachCmdSequence(testCmdSeq);
+  if (isLintillaHw())
+  {
+    //---------------------------------------------------------------------------
+    // Battery Voltage Surveillance
+    //---------------------------------------------------------------------------
+    batteryAdapter = new LintillaBatteryAdapter();
+    battery = new Battery(batteryAdapter);
+    batteryAdapter->attachBattery(battery);
+    batteryAdapter->attachLintillaMmi(mmi);
+    batteryAdapter->attachLintillaIvm(ivm);
+    batteryAdapter->attachCmdSequence(testCmdSeq);
+  }
 
   //---------------------------------------------------------------------------
   // Speed Sensors
@@ -534,13 +614,18 @@ void setup()
   //---------------------------------------------------------------------------
   mmi = new LintillaMmi(new ALintillaMmiAdapter(battery, testCmdSeq, ivm, ultrasonicSensorFront,
                                                 &cc3000, speedSensors));
+  new DbgCli_Command_Select(mmi);
+  new DbgCli_Command_Right(mmi);
 
   //---------------------------------------------------------------------------
   // WiFi
   //---------------------------------------------------------------------------
 #if USE_WIFI
-  wifiReconnectTimer = new Timer(new WifiReconnectTimerAdapter(wifiReconnectTimer), Timer::IS_RECURRING, cWifiReconnectInterval);
-  connectWiFi();
+  if (isLintillaHw())
+  {
+    wifiReconnectTimer = new Timer(new WifiReconnectTimerAdapter(wifiReconnectTimer), Timer::IS_RECURRING, cWifiReconnectInterval);
+    connectWiFi();
+  }
 #endif
 
 //  //---------------------------------------------------------------------------
@@ -613,32 +698,6 @@ void startRestServer()
     Serial.println(F("REST server listening for connections..."));
   }
 }
-
-//-----------------------------------------------------------------------------
-
-/*
- SerialEvent occurs whenever a new data comes in the
- hardware serial RX.  This routine is run between each
- time loop() runs, so using delay inside loop can delay
- response.  Multiple bytes of data may be available.
- */
-void serialEvent()
-{
-  while (Serial.available())
-  {
-    // get the new byte:
-    char inChar = (char)Serial.read();
-    if ('i' == inChar)
-    {
-      Serial.println("i received");
-    }
-    else if ('d' == inChar)
-    {
-      Serial.println("d received");
-    }
-  }
-}
-
 
 //-----------------------------------------------------------------------------
 // REST API functions
@@ -740,7 +799,30 @@ int move(String command)
   return retVal;
 }
 
+//-----------------------------------------------------------------------------
+// Arduino Cmd I/F
+//-----------------------------------------------------------------------------
 void hello(int arg_cnt, char **args)
 {
   Serial.println("Hello world.");
+}
+
+void dbgCliExecute(int arg_cnt, char **args)
+{
+  Serial.print("dbgCliExecute, arg_cnt=");
+  Serial.print(arg_cnt);
+  for (int i = 0; i < arg_cnt; i++)
+  {
+    Serial.print(", args[");
+    Serial.print(i);
+    Serial.print("]=");
+    Serial.print(args[i]);
+  }
+  Serial.println("");
+
+  if (0 != dbgCliRootNode)
+  {
+    const unsigned int firstArgToHandle = 1;
+    dbgCliRootNode->execute(static_cast<unsigned int>(arg_cnt), const_cast<const char**>(args), firstArgToHandle);
+  }
 }
