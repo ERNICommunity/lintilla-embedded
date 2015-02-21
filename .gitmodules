@@ -46,4 +46,4 @@
 [submodule "lib/plat/debug-cli"]
 	path = lib/plat/debug-cli
 	url = git@github.com:ERNICommunity/debug-cli.git
-        branch = didi-1st-trial
+        branch = master
