@@ -510,20 +510,23 @@ void loop()
 //The setup function is called once at startup of the sketch
 void setup()
 {
-  //---------------------------------------------------------------------------
-  // Debugging
-  //---------------------------------------------------------------------------
-  DbgCli_Node::AssignRootNode(new DbgCli_Topic("", "dbg", "Lintilla Debug CLI Root Node."));
-  dbgCliRootNode = DbgCli_Node::RootNode();
-  new DbgCli_Topic("dbg", "mmi", "MMI Node.");
-  new DbgCli_Topic("dbg mmi", "screen", "MMI Screen Node.");
   cmdInit(115200); //contains Serial.begin(115200);
+
   Serial.println(F("\nHello from Lintilla!"));
+
 #if DEBUG_RAM
   // Print free RAM periodically
   Serial.print("Free RAM: "); Serial.println(RamUtils::getFreeRam(), DEC);
   ramDebugTimer = new Timer(new RamDebugTimerAdapter(), Timer::IS_RECURRING, c_ramDbgInterval);
 #endif
+
+  //---------------------------------------------------------------------------
+  // Debug Cli
+  //---------------------------------------------------------------------------
+  DbgCli_Node::AssignRootNode(new DbgCli_Topic("", "dbg", "Lintilla Debug CLI Root Node."));
+  dbgCliRootNode = DbgCli_Node::RootNode();
+  new DbgCli_Topic("dbg", "mmi", "MMI Node.");
+  new DbgCli_Topic("dbg mmi", "screen", "MMI Screen Node.");
 
   // adding CLI Commands
   cmdAdd("hello", hello);
