@@ -50,42 +50,16 @@ void(* resetFunc) (void) = 0; //declare reset function at address 0 => will 'use
 //-----------------------------------------------------------------------------
 // Debugging
 //-----------------------------------------------------------------------------
-DbgCli_Node* dbgCliRootNode = 0;
-class DbgCli_Command_Select : public DbgCli_Command
+class DbgCli_Command_FreeRam : public DbgCli_Command
 {
-private:
-  LintillaMmi* m_mmi;
 public:
-  DbgCli_Command_Select(LintillaMmi* mmi)
-  : DbgCli_Command("dbg mmi screen", "sel", "Emulate SELECT button pressed.")
-  , m_mmi(mmi)
+  DbgCli_Command_FreeRam()
+  : DbgCli_Command("dbg", "ram", "Show free RAM space.")
   { }
 
-  virtual void execute(unsigned int argc, const char** args, unsigned int idxToFirstArgToHandle)
+  void execute(unsigned int argc, const char** args, unsigned int idxToFirstArgToHandle)
   {
-    if (0 != m_mmi)
-	{
-      m_mmi->screenFsm()->select();
-    }
-  }
-};
-
-class DbgCli_Command_Right : public DbgCli_Command
-{
-private:
-  LintillaMmi* m_mmi;
-public:
-  DbgCli_Command_Right(LintillaMmi* mmi)
-  : DbgCli_Command("dbg mmi screen", "r", "Emulate RIGHT button pressed.")
-  , m_mmi(mmi)
-  { }
-
-  virtual void execute(unsigned int argc, const char** args, unsigned int idxToFirstArgToHandle)
-  {
-    if (0 != m_mmi)
-    {
-      m_mmi->screenFsm()->right();
-    }
+    Serial.print(F("Free RAM: ")); Serial.println(RamUtils::getFreeRam(), DEC);
   }
 };
 
@@ -524,10 +498,7 @@ void setup()
   // Debug Cli
   //---------------------------------------------------------------------------
   DbgCli_Node::AssignRootNode(new DbgCli_Topic("", "dbg", "Lintilla Debug CLI Root Node."));
-  dbgCliRootNode = DbgCli_Node::RootNode();
-  new DbgCli_Topic("dbg", "mmi", "MMI Node.");
-  new DbgCli_Topic("dbg mmi", "screen", "MMI Screen Node.");
-
+  new DbgCli_Command_FreeRam();
   // adding CLI Commands
   cmdAdd("hello", hello);
   cmdAdd("dbg", dbgCliExecute);
@@ -617,8 +588,6 @@ void setup()
   //---------------------------------------------------------------------------
   mmi = new LintillaMmi(new ALintillaMmiAdapter(battery, testCmdSeq, ivm, ultrasonicSensorFront,
                                                 &cc3000, speedSensors));
-  new DbgCli_Command_Select(mmi);
-  new DbgCli_Command_Right(mmi);
 
   //---------------------------------------------------------------------------
   // WiFi
@@ -812,6 +781,7 @@ void hello(int arg_cnt, char **args)
 
 void dbgCliExecute(int arg_cnt, char **args)
 {
+#if 0
   Serial.print("dbgCliExecute, arg_cnt=");
   Serial.print(arg_cnt);
   for (int i = 0; i < arg_cnt; i++)
@@ -822,10 +792,10 @@ void dbgCliExecute(int arg_cnt, char **args)
     Serial.print(args[i]);
   }
   Serial.println("");
-
-  if (0 != dbgCliRootNode)
+#endif
+  if (0 != DbgCli_Node::RootNode())
   {
     const unsigned int firstArgToHandle = 1;
-    dbgCliRootNode->execute(static_cast<unsigned int>(arg_cnt), const_cast<const char**>(args), firstArgToHandle);
+    DbgCli_Node::RootNode()->execute(static_cast<unsigned int>(arg_cnt), const_cast<const char**>(args), firstArgToHandle);
   }
 }

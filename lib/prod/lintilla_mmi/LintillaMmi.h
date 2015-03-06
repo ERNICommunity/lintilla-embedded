@@ -14,6 +14,8 @@ class LcdKeypad;
 class Blanking;
 class Timer;
 class LintillaMmiScreenFsm;
+class DbgCli_Topic;
+class LintillaMmiDbgCmd_Key;
 
 //-----------------------------------------------------------------------------
 
@@ -87,6 +89,9 @@ private:
   LintillaMmiScreenFsm* m_screenFsm;
 
   bool m_isBacklightOn;
+
+  DbgCli_Topic* m_dbgCliTopic;
+  LintillaMmiDbgCmd_Key* m_dbgCliCmd_Key;
 
 private: // forbidden default functions
   LintillaMmi& operator = (const LintillaMmi& src);  // assignment operator

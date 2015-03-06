@@ -12,6 +12,8 @@
 #include "Timer.h"
 #include "LintillaMmi.h"
 #include "LintillaMmiScreenFsm.h"
+#include "DbgCliTopic.h"
+#include "LintillaMmiDbgCmd.h"
 
 //-----------------------------------------------------------------------------
 
@@ -83,6 +85,8 @@ LintillaMmi::LintillaMmi(LintillaMmiAdapter* adapter)
 , m_displayTimer(new Timer(new DisplayTimerAdapter(this), Timer::IS_RECURRING, cUpdateDisplayInterval))
 , m_screenFsm(new LintillaMmiScreenFsm(this))
 , m_isBacklightOn(true)
+, m_dbgCliTopic(new DbgCli_Topic("dbg", "mmi", "MMI Node."))
+, m_dbgCliCmd_Key(new LintillaMmiDbgCmd_Key(this))
 {
   if (0 != m_lcdKeypad)
   {
@@ -92,6 +96,12 @@ LintillaMmi::LintillaMmi(LintillaMmiAdapter* adapter)
 
 LintillaMmi::~LintillaMmi()
 {
+  delete m_dbgCliCmd_Key;
+  m_dbgCliCmd_Key = 0;
+
+  delete m_dbgCliTopic;
+  m_dbgCliTopic = 0;
+
   delete m_lcdKeypad->adapter();
   m_lcdKeypad->attachAdapter(0);
 
