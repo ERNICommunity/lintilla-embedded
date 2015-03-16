@@ -36,7 +36,7 @@
 #include <LintillaMmiScreenFsm.h>
 
 #define DEBUG_RAM 0  //Printing free Ram space with serial monitor
-#define USE_WIFI 1
+#define USE_WIFI 0
 #define USE_HARD_CODED_WIFI_CREDENTIALS 1
 #if USE_HARD_CODED_WIFI_CREDENTIALS
 #define WLAN_SSID "LintillaNet"

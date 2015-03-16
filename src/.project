@@ -137,6 +137,11 @@
 			<locationURI>lintilla_embeddeddebug_cli/debug_cli</locationURI>
 		</link>
 		<link>
+			<name>plat/debug_trace</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddeddebug_trace/debug_trace</locationURI>
+		</link>
+		<link>
 			<name>prod/lintilla_cmdhandler</name>
 			<type>2</type>
 			<locationURI>lintilla_embeddedlintilla_cmdhandler/lintilla_cmdhandler</locationURI>
