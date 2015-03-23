@@ -34,6 +34,7 @@
 #include "DbgCliTopic.h"
 #include "DbgCliCommand.h"
 #include <LintillaMmiScreenFsm.h>
+#include "DbgTracePort.h"
 
 #define DEBUG_RAM 0  //Printing free Ram space with serial monitor
 #define USE_WIFI 0
@@ -67,12 +68,26 @@ void dbgCliExecute(int arg_cnt, char** args);
 void hello(int arg_cnt, char** args);
 
 Timer* ramDebugTimer = 0;
-const unsigned int c_ramDbgInterval = 20000;
+const unsigned int c_ramDbgInterval = 5000;
 class RamDebugTimerAdapter : public TimerAdapter
 {
+private:
+  DbgTrace_Port* m_trPort;
+
+public:
+  RamDebugTimerAdapter()
+  : m_trPort(new DbgTrace_Port("dbg/ram"))
+  {
+    if (0 != m_trPort)
+    {
+      m_trPort->setLevel(DbgTrace_Port::debug);
+    }
+  }
+
+private:
   void timeExpired()
   {
-    Serial.print("Free RAM: "); Serial.println(RamUtils::getFreeRam(), DEC);
+    TR_PRINT(m_trPort, DbgTrace_Port::debug, RamUtils::getFreeRam());
   }
 };
 
