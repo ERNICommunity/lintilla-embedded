@@ -23,9 +23,9 @@ This downloads and installs all needed tools to build this and work on this proj
         
         C:\git\arduino-projects\Tools\arduino_revs\arduino-1.5.6-r2
 
-* Eclipse Arduino Workbench Version 2014-09-06_02-06-03:
+* Eclipse Arduino Workbench Version 2015-03-25_02-06-02:
         
-        C:\git\arduino-projects\Tools\eclipseArduino_revs\win64.2014-09-06_02-06-03\eclipseArduino
+        C:\git\arduino-projects\Tools\eclipseArduino_revs\win64.2015-03-25_02-06-02\eclipseArduino
 
 The workspace is now prepared and the project is built now already.
 
