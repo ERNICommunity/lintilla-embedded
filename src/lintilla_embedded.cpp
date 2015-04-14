@@ -4,6 +4,7 @@
 #include <Adafruit_CC3000.h>
 #include <ccspi.h>
 #include <CmdHandler.h>
+#include <DbgTraceLevel.h>
 #include <SPI.h>
 #include <string.h>
 //#include "utility/debug.h"
@@ -80,14 +81,14 @@ public:
   {
     if (0 != m_trPort)
     {
-      m_trPort->setLevel(DbgTrace_Port::debug);
+      m_trPort->setLevel(DbgTraceLevel::debug);
     }
   }
 
 private:
   void timeExpired()
   {
-    TR_PRINT(m_trPort, DbgTrace_Port::debug, RamUtils::getFreeRam());
+    TR_PRINT(m_trPort, DbgTraceLevel::debug, RamUtils::getFreeRam());
   }
 };
 
