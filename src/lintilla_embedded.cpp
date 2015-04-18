@@ -56,7 +56,7 @@ class DbgCli_Command_FreeRam : public DbgCli_Command
 {
 public:
   DbgCli_Command_FreeRam()
-  : DbgCli_Command("dbg", "ram", "Show free RAM space.")
+  : DbgCli_Command(DbgCli_Node::RootNode(), "ram", "Show free RAM space.")
   { }
 
   void execute(unsigned int argc, const char** args, unsigned int idxToFirstArgToHandle)
@@ -513,7 +513,7 @@ void setup()
   //---------------------------------------------------------------------------
   // Debug Cli
   //---------------------------------------------------------------------------
-  DbgCli_Node::AssignRootNode(new DbgCli_Topic("", "dbg", "Lintilla Debug CLI Root Node."));
+  DbgCli_Node::AssignRootNode(new DbgCli_Topic(0, "dbg", "Lintilla Debug CLI Root Node."));
   new DbgCli_Command_FreeRam();
   // adding CLI Commands
   cmdAdd("hello", hello);

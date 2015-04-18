@@ -11,7 +11,7 @@
 #include "LintillaMmiDbgCmd.h"
 
 LintillaMmiDbgCmd_Key::LintillaMmiDbgCmd_Key(LintillaMmi* mmi)
-: DbgCli_Command("dbg mmi", "key", "Emulate LcdKeypad key entry.")
+: DbgCli_Command(DbgCli_Node::RootNode()->getNode("dbg", "mmi"), "key", "Emulate LcdKeypad key entry.")
 , m_mmi(mmi)
 { }
 
