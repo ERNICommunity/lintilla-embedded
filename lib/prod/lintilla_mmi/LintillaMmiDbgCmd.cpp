@@ -9,9 +9,10 @@
 #include "LintillaMmi.h"
 #include "LintillaMmiScreenFsm.h"
 #include "LintillaMmiDbgCmd.h"
+#include "DbgCliTopic.h"
 
 LintillaMmiDbgCmd_Key::LintillaMmiDbgCmd_Key(LintillaMmi* mmi)
-: DbgCli_Command("dbg mmi", "key", "Emulate LcdKeypad key entry.")
+: DbgCli_Command(mmi->getCliTopic(), "key", "Emulate LcdKeypad key entry.")
 , m_mmi(mmi)
 { }
 

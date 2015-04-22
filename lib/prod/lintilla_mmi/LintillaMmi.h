@@ -81,6 +81,8 @@ public:
 
   void updateDisplay();
 
+  DbgCli_Topic* getCliTopic() { return m_dbgCliTopic; }
+
 private:
   LcdKeypad* m_lcdKeypad;
   Blanking* m_displayBlanking;
