@@ -4,7 +4,6 @@
 #include <Adafruit_CC3000.h>
 #include <ccspi.h>
 #include <CmdHandler.h>
-#include <DbgTraceLevel.h>
 #include <SPI.h>
 #include <string.h>
 //#include "utility/debug.h"
@@ -34,10 +33,13 @@
 #include "DbgCliNode.h"
 #include "DbgCliTopic.h"
 #include "DbgCliCommand.h"
-#include <LintillaMmiScreenFsm.h>
 #include "DbgTracePort.h"
+#include "DbgTraceContext.h"
+#include "DbgTraceOut.h"
+#include "DbgPrintConsole.h"
+#include "LintillaMmiScreenFsm.h"
 
-#define DEBUG_RAM 0  //Printing free Ram space with serial monitor
+#define DEBUG_RAM 1  //Printing free Ram space with serial monitor
 #define USE_WIFI 0
 #define USE_HARD_CODED_WIFI_CREDENTIALS 1
 #if USE_HARD_CODED_WIFI_CREDENTIALS
@@ -52,11 +54,12 @@ void(* resetFunc) (void) = 0; //declare reset function at address 0 => will 'use
 //-----------------------------------------------------------------------------
 // Debugging
 //-----------------------------------------------------------------------------
+
 class DbgCli_Command_FreeRam : public DbgCli_Command
 {
 public:
   DbgCli_Command_FreeRam()
-  : DbgCli_Command("dbg", "ram", "Show free RAM space.")
+  : DbgCli_Command(DbgCli_Node::RootNode(), "ram", "Show free RAM space.")
   { }
 
   void execute(unsigned int argc, const char** args, unsigned int idxToFirstArgToHandle)
@@ -68,27 +71,29 @@ public:
 void dbgCliExecute(int arg_cnt, char** args);
 void hello(int arg_cnt, char** args);
 
+DbgTrace_Port* testPort;
+
 Timer* ramDebugTimer = 0;
 const unsigned int c_ramDbgInterval = 5000;
 class RamDebugTimerAdapter : public TimerAdapter
 {
 private:
-  DbgTrace_Port* m_trPort;
+//  DbgTrace_Port* m_trPort;
 
 public:
-  RamDebugTimerAdapter()
-  : m_trPort(new DbgTrace_Port("dbg/ram"))
-  {
-    if (0 != m_trPort)
-    {
-      m_trPort->setLevel(DbgTraceLevel::debug);
-    }
-  }
+  RamDebugTimerAdapter() { }
+//  : m_trPort(new DbgTrace_Port("dbg/ram"))
+//  {
+//    if (0 != m_trPort)
+//    {
+//      m_trPort->setLevel(DbgTrace_Level::debug);
+//    }
+//  }
 
 private:
   void timeExpired()
   {
-    TR_PRINT(m_trPort, DbgTraceLevel::debug, RamUtils::getFreeRam());
+    TR_PRINT(testPort, DbgTrace_Level::debug, RamUtils::getFreeRam());
   }
 };
 
@@ -513,12 +518,27 @@ void setup()
   //---------------------------------------------------------------------------
   // Debug Cli
   //---------------------------------------------------------------------------
-  DbgCli_Node::AssignRootNode(new DbgCli_Topic("", "dbg", "Lintilla Debug CLI Root Node."));
+  DbgCli_Node::AssignRootNode(new DbgCli_Topic(0, "dbg", "Lintilla Debug CLI Root Node."));
   new DbgCli_Command_FreeRam();
   // adding CLI Commands
   cmdAdd("hello", hello);
   cmdAdd("dbg", dbgCliExecute);
 
+  //---------------------------------------------------------------------------
+  // Debug Trace
+  //---------------------------------------------------------------------------
+
+  DbgCli_Topic* traceTopic = new DbgCli_Topic(DbgCli_Node::RootNode(), "DbgTrace", "Modify debug trace");
+  DbgTrace_Context* traceContext = new DbgTrace_Context(traceTopic);
+  DbgTrace_Out* traceConsoleOut = new DbgTrace_Out("traceConsoleOut", new DbgPrint_Console());
+  traceContext->addTraceOut(traceConsoleOut);
+
+  testPort = traceContext->getTracePort("testPort");
+  if(0 != testPort)
+  {
+    testPort->setOut(traceConsoleOut);
+    testPort->setLevel(DbgTrace_Level::debug);
+  }
   //---------------------------------------------------------------------------
   // Inventory Management
   //---------------------------------------------------------------------------
