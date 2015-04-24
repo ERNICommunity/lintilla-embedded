@@ -37,6 +37,8 @@
 #include "DbgTraceContext.h"
 #include "DbgTraceOut.h"
 #include "DbgPrintConsole.h"
+#include "DbgTraceLevel.h"
+
 #include "LintillaMmiScreenFsm.h"
 
 #define DEBUG_RAM 1  //Printing free Ram space with serial monitor
@@ -64,14 +66,14 @@ public:
 
   void execute(unsigned int argc, const char** args, unsigned int idxToFirstArgToHandle)
   {
-    Serial.print(F("Free RAM: ")); Serial.println(RamUtils::getFreeRam(), DEC);
+    Serial.print(F("Free RAM: ")); Serial.print(RamUtils::getFreeRam(), DEC); Serial.println(" [bytes]");
   }
 };
 
 void dbgCliExecute(int arg_cnt, char** args);
 void hello(int arg_cnt, char** args);
 
-DbgTrace_Port* testPort;
+DbgTrace_Port* ramTestPort;
 
 Timer* ramDebugTimer = 0;
 const unsigned int c_ramDbgInterval = 5000;
@@ -93,7 +95,7 @@ public:
 private:
   void timeExpired()
   {
-    TR_PRINT(testPort, DbgTrace_Level::debug, RamUtils::getFreeRam());
+    TR_PRINT_LONG(ramTestPort, DbgTrace_Level::debug, RamUtils::getFreeRam());
   }
 };
 
@@ -511,7 +513,7 @@ void setup()
 
 #if DEBUG_RAM
   // Print free RAM periodically
-  Serial.print("Free RAM: "); Serial.println(RamUtils::getFreeRam(), DEC);
+  Serial.print("Free RAM: "); Serial.print(RamUtils::getFreeRam(), DEC); Serial.println(" [bytes]");
   ramDebugTimer = new Timer(new RamDebugTimerAdapter(), Timer::IS_RECURRING, c_ramDbgInterval);
 #endif
 
@@ -528,16 +530,16 @@ void setup()
   // Debug Trace
   //---------------------------------------------------------------------------
 
-  DbgCli_Topic* traceTopic = new DbgCli_Topic(DbgCli_Node::RootNode(), "DbgTrace", "Modify debug trace");
+  DbgCli_Topic* traceTopic = new DbgCli_Topic(DbgCli_Node::RootNode(), "tr", "Modify debug trace");
   DbgTrace_Context* traceContext = new DbgTrace_Context(traceTopic);
-  DbgTrace_Out* traceConsoleOut = new DbgTrace_Out("traceConsoleOut", new DbgPrint_Console());
+  DbgTrace_Out* traceConsoleOut = new DbgTrace_Out(DbgTrace_Context::getContext(), "traceConsoleOut", new DbgPrint_Console());
   traceContext->addTraceOut(traceConsoleOut);
 
-  testPort = traceContext->getTracePort("testPort");
-  if(0 != testPort)
+  ramTestPort = new DbgTrace_Port(DbgTrace_Context::getContext(), "ram", DbgTrace_Context::getContext()->getTraceOut("traceConsoleOut"), DbgTrace_Level::notice);
+  if(0 != ramTestPort)
   {
-    testPort->setOut(traceConsoleOut);
-    testPort->setLevel(DbgTrace_Level::debug);
+    ramTestPort->setOut(DbgTrace_Context::getContext()->getTraceOut("traceConsoleOut"));
+    ramTestPort->setLevel(DbgTrace_Level::debug);
   }
   //---------------------------------------------------------------------------
   // Inventory Management

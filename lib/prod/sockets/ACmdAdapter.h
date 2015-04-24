@@ -11,6 +11,7 @@
 #include <CmdAdapter.h>
 
 class Traction;
+class DbgTrace_Port;
 
 class ACmdAdapter: public CmdAdapter
 {
@@ -26,6 +27,7 @@ public:
 
 private:
   Traction* m_traction;
+  DbgTrace_Port* m_trPort;
 
 private: // forbidden default functions
   ACmdAdapter& operator = (const ACmdAdapter& );  // assignment operator
