@@ -48,6 +48,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/debug_cli}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/CmdArduino}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/debug_trace}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/LiquidCrystal}&quot;"/>
 								</option>
 								<inputType id="it.baeyens.arduino.compiler.cpp.sketch.input.1529140506" name="CPP source files" superClass="it.baeyens.arduino.compiler.cpp.sketch.input"/>
 							</tool>
@@ -82,6 +83,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/debug_cli}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/CmdArduino}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/debug_trace}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/LiquidCrystal}&quot;"/>
 								</option>
 								<inputType id="it.baeyens.arduino.compiler.c.sketch.input.1692972044" name="C Source Files" superClass="it.baeyens.arduino.compiler.c.sketch.input"/>
 							</tool>

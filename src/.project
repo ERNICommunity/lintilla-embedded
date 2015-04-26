@@ -49,7 +49,7 @@
 		<link>
 			<name>Libraries/LiquidCrystal</name>
 			<type>2</type>
-			<locationURI>ArduinoLibPath/LiquidCrystal</locationURI>
+			<locationURI>ArduinoPivateLibPath/LiquidCrystal</locationURI>
 		</link>
 		<link>
 			<name>Libraries/SPI</name>
