@@ -42,7 +42,7 @@ bool ALintillaMmiAdapter::isSeqRunning()
 
 void ALintillaMmiAdapter::startSequence()
 {
-  if ((0 != m_cmdSeq) && (!isObstacleDetected()) && (!isBattVoltageBelowWarnThreshold()))
+  if ((0 != m_cmdSeq) && (!isObstacleDetected()) && (!isBattVoltageBelowStopThreshold()))
   {
     if ((0 != m_speedSensors) && (0 != m_speedSensors->lDistCount()) && (0 != m_speedSensors->rDistCount()))
     {
