@@ -23,7 +23,7 @@
 	branch = Branch_1.0.2
 [submodule "lib/comp/PID"]
 	path = lib/comp/PID
-	url = git@github.com:ERNICommunity/Arduino-PID-Library.git
+	url = https://github.com/ERNICommunity/Arduino-PID-Library.git
 	branch = Branch_1.1.0
 [submodule "lib/comp/ivm"]
 	path = lib/comp/ivm
@@ -45,8 +45,8 @@
 	url = https://github.com/fakufaku/CmdArduino.git
 [submodule "lib/plat/debug-cli"]
 	path = lib/plat/debug-cli
-	url = git@github.com:ERNICommunity/debug-cli.git
+	url = https://github.com/ERNICommunity/debug-cli.git
         branch = master
 [submodule "lib/plat/debug-trace"]
 	path = lib/plat/debug-trace
-	url = git@github.com:ERNICommunity/dbg-trace.git
+	url = https://github.com/ERNICommunity/dbg-trace.git
