@@ -21,6 +21,7 @@ public:
 
   void stopAction();
   void moveForwardAction();
+  void moveControlledForwardAction();
   void moveBackwardAction();
   void spinOnPlaceLeftAction(float angle);
   void spinOnPlaceRightAction(float angle);

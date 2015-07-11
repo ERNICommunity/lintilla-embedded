@@ -107,6 +107,11 @@
 			<locationURI>lintilla_embeddedMotorPWM/MotorPWM</locationURI>
 		</link>
 		<link>
+			<name>comp/PID_v1</name>
+			<type>2</type>
+			<locationURI>lintilla_embeddedPID_v1/PID_v1</locationURI>
+		</link>
+		<link>
 			<name>comp/UltrasonicRanging</name>
 			<type>2</type>
 			<locationURI>lintilla_embeddedUltrasonicRanging/UltrasonicRanging</locationURI>

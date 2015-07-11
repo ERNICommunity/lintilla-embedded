@@ -34,7 +34,7 @@ private:
   CmdSequence*  m_cmdSeq;
   unsigned int  m_timeMillis;
   const char*   m_name;
-  CmdHandler*          m_next;
+  CmdHandler*   m_next;
 
 private: // forbidden default functions
   CmdHandler& operator = (const CmdHandler& src); // assignment operator
@@ -67,6 +67,20 @@ public:
 private: // forbidden default functions
   CmdMoveForward& operator = (const CmdMoveForward& src); // assignment operator
   CmdMoveForward(const CmdMoveForward& src);              // copy constructor
+};
+
+//-----------------------------------------------------------------------------
+
+class CmdMoveControlledForward : public CmdHandler
+{
+public:
+  CmdMoveControlledForward(CmdSequence* cmdSeq, unsigned int timeMillis);
+  virtual ~CmdMoveControlledForward() { }
+  virtual void execute();
+
+private: // forbidden default functions
+  CmdMoveControlledForward& operator = (const CmdMoveControlledForward& src); // assignment operator
+  CmdMoveControlledForward(const CmdMoveControlledForward& src);              // copy constructor
 };
 
 //-----------------------------------------------------------------------------

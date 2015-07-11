@@ -16,6 +16,9 @@ class Timer;
 class TractionAdapter
 {
 public:
+  virtual float getYawAngle() = 0;
+  virtual void setTargetAngle(double targetAngle) = 0;
+  virtual float computeSpeedDiff() = 0;
   virtual void notifyDirectionChange(bool isForward) = 0;
   virtual ~TractionAdapter() { }
 
@@ -42,6 +45,8 @@ public:
   void motorStop();
   void moveBackward();
   void moveForward();
+  void moveControlledForward();
+  void readjustAngle();
   void moveStraight(bool forward);
   void spinOnPlace(bool right, float angle);
 
@@ -57,7 +62,10 @@ private:
   int m_speed_value_motor_left;
   int m_speed_value_motor_right;
   bool m_isLeftMotorFwd;
-  bool m_isRightMotorFwd ;
+  bool m_isRightMotorFwd;
+  float m_targetAngle;
+  unsigned int m_controlledMovementTime;
+  Timer* m_pidTimer;
 
   // Constants
   static const int MOTOR_SPEED_STRAIGHT;
@@ -74,6 +82,8 @@ private:
   // H-bridge leg 2
   static const int MOTOR_2A_PIN;
   static const int MOTOR_4A_PIN;
+
+  static const unsigned int PID_SAMPLING_RATE;
 
 private: // forbidden default functions
   Traction& operator= (const Traction& src);  // assignment operator

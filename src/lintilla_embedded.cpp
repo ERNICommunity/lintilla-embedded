@@ -30,6 +30,7 @@
 #include "Wire.h"
 #include "FreeSixIMU.h"
 #include "Cmd.h"
+#include "PID_v1.h"
 #include "DbgCliNode.h"
 #include "DbgCliTopic.h"
 #include "DbgCliCommand.h"
@@ -141,9 +142,15 @@ LintillaBatteryAdapter* batteryAdapter = 0;
 UltrasonicSensor* ultrasonicSensorFront = 0;
 
 //---------------------------------------------------------------------------
-// FreeSixIMU for Yaw-Controller
+// FreeSixIMU
 //---------------------------------------------------------------------------
 FreeSixIMU* my6IMU = 0;
+
+//---------------------------------------------------------------------------
+// PID controllers for each wheel
+//---------------------------------------------------------------------------
+PID* pidLeftWheel = 0;
+PID* pidRightWheel = 0;
 
 //---------------------------------------------------------------------------
 // Wheel Speed Sensors
@@ -579,14 +586,18 @@ void setup()
   const int cSpinTime     =  300;
   const int cFwdTime      =  300;
   const int cInterDelay   =  500;
+  const int cCtrlFwd      = 6000;
 
-  for (int i = 0; i <= 3; i++)
-  {
-    new CmdMoveForward(testCmdSeq, cFwdTime);
-    new CmdStop(testCmdSeq, cInterDelay);
-    new CmdSpinOnPlaceRight(testCmdSeq, cSpinTime);
-    new CmdStop(testCmdSeq, cInterDelay);
-  }
+//  for (int i = 0; i <= 3; i++)
+//  {
+//    new CmdMoveForward(testCmdSeq, cFwdTime);
+//    new CmdStop(testCmdSeq, cInterDelay);
+//    new CmdSpinOnPlaceRight(testCmdSeq, cSpinTime);
+//    new CmdStop(testCmdSeq, cInterDelay);
+//  }
+  new CmdMoveControlledForward(testCmdSeq, cCtrlFwd);
+  new CmdStop(testCmdSeq, cInterDelay);
+
 
   CmdHandler* cmd = testCmdSeq->getFirstCmd();
   while (0 != cmd)
@@ -605,6 +616,9 @@ void setup()
   ultrasonicSensorFront = new UltrasonicSensorHCSR04();
   ultrasonicSensorFront->attachAdapter(new AnUltrasonicSensorAdapter(testCmdSeq));
 
+  //---------------------------------------------------------------------------
+  // Yaw controller with FreeSixIMU
+  //---------------------------------------------------------------------------
   my6IMU = new FreeSixIMU();
 
   Wire.begin();
@@ -612,7 +626,7 @@ void setup()
   my6IMU->init();
   delay(20);
 
-  tractionAdapter = new ATractionAdapter(ultrasonicSensorFront);
+  tractionAdapter = new ATractionAdapter(ultrasonicSensorFront, my6IMU);
   traction->attachAdapter(tractionAdapter);
 
   //---------------------------------------------------------------------------
