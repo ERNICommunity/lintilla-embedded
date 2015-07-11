@@ -35,7 +35,7 @@
 	branch = Branch_1.0.0
 [submodule "lib/comp/CC3000_MDNS"]
 	path = lib/comp/CC3000_MDNS
-	url = git@github.com:adafruit/CC3000_MDNS.git
+	url = https://github.com/adafruit/CC3000_MDNS.git
 	branch = master
 [submodule "lib/plat/utils/mem"]
 	path = lib/plat/utils/mem
