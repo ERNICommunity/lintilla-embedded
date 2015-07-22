@@ -5,9 +5,9 @@
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="it.baeyens.arduino.core.toolChain.release.256903333" moduleId="org.eclipse.cdt.core.settings" name="Release">
 				<externalSettings/>
 				<extensions>
-					<extension id="org.eclipse.cdt.core.MakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.MakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 				</extensions>
 			</storageModule>
@@ -16,7 +16,7 @@
 					<folderInfo id="it.baeyens.arduino.core.toolChain.release.256903333.1352017262" name="/" resourcePath="">
 						<toolChain id="it.baeyens.arduino.core.toolChain.release.1514108176" name="it.baeyens.arduino.core.toolChain.release" superClass="it.baeyens.arduino.core.toolChain.release">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="it.baeyens.arduino.targetplatform.1751335175" name="Arduino Target" osList="all" superClass="it.baeyens.arduino.targetplatform"/>
-							<builder buildPath="${workspace_loc:/lintilla_embedded}/Release" id="it.baeyens.arduino.sketch.builder.707678475" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Arduino sketch builder" superClass="it.baeyens.arduino.sketch.builder"/>
+							<builder buildPath="${workspace_loc:/lintilla_embedded}/Release" id="it.baeyens.arduino.sketch.builder.656624288" keepEnvironmentInBuildfile="false" name="Arduino sketch builder" superClass="it.baeyens.arduino.sketch.builder"/>
 							<tool id="it.baeyens.arduino.tool.sketch.compiler.cpp.842239146" name="Arduino C++ Compiler" superClass="it.baeyens.arduino.tool.sketch.compiler.cpp">
 								<option id="it.baeyens.arduino.compiler.cpp.sketch.option.incpath.1192832908" name="Include Paths (-I)" superClass="it.baeyens.arduino.compiler.cpp.sketch.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/arduino/core}&quot;"/>
@@ -25,6 +25,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/SPI}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/Wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/Wire/utility}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/LiquidCrystal}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/LiquidCrystal/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/Blanking}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/Timer}&quot;"/>
@@ -33,6 +34,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/FreeSixIMU}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/IVM}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/LcdKeypad}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/LiquidTWI2}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/MotorPWM}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/UltrasonicRanging}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/prod/lintilla_cmdhandler}&quot;"/>
@@ -48,7 +50,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/debug_cli}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/CmdArduino}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/debug_trace}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/LiquidCrystal}&quot;"/>
 								</option>
 								<inputType id="it.baeyens.arduino.compiler.cpp.sketch.input.1529140506" name="CPP source files" superClass="it.baeyens.arduino.compiler.cpp.sketch.input"/>
 							</tool>
@@ -60,9 +61,11 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/SPI}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/Wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/Wire/utility}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/LiquidCrystal}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/LiquidCrystal/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/Blanking}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/Timer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/LiquidTWI2}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/Adafruit_CC3000}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/Adafruit_CC3000/utility}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/FreeSixIMU}&quot;"/>
@@ -83,7 +86,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/debug_cli}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/comp/CmdArduino}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/plat/debug_trace}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lintilla_embedded/Libraries/LiquidCrystal}&quot;"/>
 								</option>
 								<inputType id="it.baeyens.arduino.compiler.c.sketch.input.1692972044" name="C Source Files" superClass="it.baeyens.arduino.compiler.c.sketch.input"/>
 							</tool>

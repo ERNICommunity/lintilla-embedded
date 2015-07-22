@@ -14,6 +14,8 @@
 #include "LintillaMmiScreenFsm.h"
 #include "DbgCliTopic.h"
 #include "LintillaMmiDbgCmd.h"
+#include "DbgTraceContext.h"
+#include "DbgTracePort.h"
 
 //-----------------------------------------------------------------------------
 
@@ -39,36 +41,38 @@ public:
 
 //-----------------------------------------------------------------------------
 
-class MyLcdKeypadAdapter : public LcdKeypadAdapter
+class MmiLcdKeypadAdapter : public LcdKeypadAdapter
 {
 public:
-  MyLcdKeypadAdapter(LintillaMmi* mmi)
+  MmiLcdKeypadAdapter(LintillaMmi* mmi)
   : m_mmi(mmi)
+  , m_trPort(new DbgTrace_Port(DbgTrace_Context::getContext(), "mmiLcdKey", DbgTrace_Context::getContext()->getTraceOut("trConOut"), DbgTrace_Level::info))
   { }
 
 private:
   LintillaMmi* m_mmi;
+  DbgTrace_Port* m_trPort;
 
 public:
   void handleKeyChanged(LcdKeypad::Key newKey)
   {
-    Serial.print("MyLcdKeypadAdapter::handleKeyChanged(), newKey: ");
-    Serial.println((LcdKeypad::NO_KEY == newKey)     ? "NO_KEY"     :
-                   (LcdKeypad::SELECT_KEY == newKey) ? "SELECT_KEY" :
-                   (LcdKeypad::LEFT_KEY == newKey)   ? "LEFT_KEY"   :
-                   (LcdKeypad::UP_KEY == newKey)     ? "UP_KEY"     :
-                   (LcdKeypad::DOWN_KEY == newKey)   ? "DOWN_KEY"   :
-                   (LcdKeypad::RIGHT_KEY == newKey)  ? "RIGHT_KEY"  : "OOPS!! Invalid value!!");
+    TR_PRINT_STR(m_trPort, DbgTrace_Level::debug, "handleKeyChanged(), newKey: ");
+    TR_PRINT_STR(m_trPort, DbgTrace_Level::debug, (LcdKeypad::NO_KEY == newKey)     ? "NO_KEY"     :
+                                                  (LcdKeypad::SELECT_KEY == newKey) ? "SELECT_KEY" :
+                                                  (LcdKeypad::LEFT_KEY == newKey)   ? "LEFT_KEY"   :
+                                                  (LcdKeypad::UP_KEY == newKey)     ? "UP_KEY"     :
+                                                  (LcdKeypad::DOWN_KEY == newKey)   ? "DOWN_KEY"   :
+                                                  (LcdKeypad::RIGHT_KEY == newKey)  ? "RIGHT_KEY"  : "OOPS!! Invalid value!!");
 
     if ((0 != m_mmi) && (0 != m_mmi->screenFsm()))
     {
       switch (newKey)
       {
-        case LcdKeypad::SELECT_KEY: m_mmi->screenFsm()->select(); break;
-        case LcdKeypad::LEFT_KEY: m_mmi->screenFsm()->left();     break;
-        case LcdKeypad::RIGHT_KEY: m_mmi->screenFsm()->right();   break;
-        case LcdKeypad::UP_KEY: m_mmi->screenFsm()->up();         break;
-        case LcdKeypad::DOWN_KEY: m_mmi->screenFsm()->down();     break;
+        case LcdKeypad::SELECT_KEY : m_mmi->screenFsm()->select(); break;
+        case LcdKeypad::LEFT_KEY   : m_mmi->screenFsm()->left();   break;
+        case LcdKeypad::RIGHT_KEY  : m_mmi->screenFsm()->right();  break;
+        case LcdKeypad::UP_KEY     : m_mmi->screenFsm()->up();     break;
+        case LcdKeypad::DOWN_KEY   : m_mmi->screenFsm()->down();   break;
         default:
           break;
       }
@@ -79,7 +83,8 @@ public:
 //-----------------------------------------------------------------------------
 
 LintillaMmi::LintillaMmi(LintillaMmiAdapter* adapter)
-: m_lcdKeypad(new LcdKeypad())
+//: m_lcdKeypad(new LcdKeypad(LcdKeypad::MCPT_MCP23017, 0x20, LcdKeypad::LCD_DT_TWI2))
+: m_lcdKeypad(new LcdKeypad(LcdKeypad::LCD_DT_CRYST))
 , m_displayBlanking(new Blanking())
 , m_adapter(adapter)
 , m_displayTimer(new Timer(new DisplayTimerAdapter(this), Timer::IS_RECURRING, cUpdateDisplayInterval))
@@ -90,7 +95,7 @@ LintillaMmi::LintillaMmi(LintillaMmiAdapter* adapter)
 {
   if (0 != m_lcdKeypad)
   {
-    m_lcdKeypad->attachAdapter(new MyLcdKeypadAdapter(this));
+    m_lcdKeypad->attachAdapter(new MmiLcdKeypadAdapter(this));
   }
 }
 

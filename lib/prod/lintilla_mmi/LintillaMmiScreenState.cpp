@@ -195,6 +195,10 @@ void LintillaMmiWlanScreenState::select(LintillaMmiScreenFsm* fsm)
   {
     screen()->setEditMode(false);
   }
+  else
+  {
+    fsm->changeState(LintillaMmiHomeScreenState::Instance());
+  }
 }
 
 void LintillaMmiWlanScreenState::left(LintillaMmiScreenFsm* fsm)
