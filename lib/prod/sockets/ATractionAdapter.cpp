@@ -7,8 +7,8 @@
 
 #include <ATractionAdapter.h>
 
-#define KP_DEFAULT 10.0
-#define KI_DEFAULT 10.0
+#define KP_DEFAULT 1
+#define KI_DEFAULT 0.5
 #define KD_DEFAULT 0.0
 
 ATractionAdapter::ATractionAdapter(UltrasonicSensor* ultrasonicSensor, FreeSixIMU* sixImuSensor)
@@ -25,6 +25,7 @@ ATractionAdapter::ATractionAdapter(UltrasonicSensor* ultrasonicSensor, FreeSixIM
 //  m_ultrasonicSensor->setIsObstacleDetectionActive(true);
   m_pid = new PID(&m_yawActualAngle, &m_calculatedSpeedDiff, &m_yawTargetAngle,
       m_Kp, m_Ki, m_Kd, DIRECT);
+  m_pid->SetMode(1);
 }
 
 ATractionAdapter::~ATractionAdapter()
@@ -55,6 +56,5 @@ float ATractionAdapter::computeSpeedDiff()
 {
   m_yawActualAngle = getYawAngle();
   m_pid->Compute();
-  Serial.print(m_calculatedSpeedDiff);
   return m_calculatedSpeedDiff;
 }

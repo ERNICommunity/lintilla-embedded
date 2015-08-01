@@ -8,6 +8,7 @@
 #ifndef TRACTION_H_
 #define TRACTION_H_
 
+class DbgTrace_Port;
 class MotorPWM;
 class Timer;
 
@@ -57,6 +58,7 @@ private:
   MotorPWM* m_motorL;
   MotorPWM* m_motorR;
   TractionAdapter* m_adapter;
+  DbgTrace_Port* m_tracePort;
 
   // value for motor speed
   int m_speed_value_motor_left;
@@ -64,7 +66,6 @@ private:
   bool m_isLeftMotorFwd;
   bool m_isRightMotorFwd;
   float m_targetAngle;
-  unsigned int m_controlledMovementTime;
   Timer* m_pidTimer;
 
   // Constants
