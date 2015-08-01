@@ -104,7 +104,7 @@
 		<link>
 			<name>comp/LiquidTWI2</name>
 			<type>2</type>
-			<locationURI>lintilla_embeddedLiquidTWI2/LiquidTWI2</locationURI>
+			<locationURI>lintilla_embeddedLiquidTWI2</locationURI>
 		</link>
 		<link>
 			<name>comp/MotorPWM</name>
@@ -194,6 +194,10 @@
 		<variable>
 			<name>ArduinoPlatformPath</name>
 			<value>file:/C:/git/arduino-projects/lintilla-embedded/tools/arduino/hardware/arduino/avr</value>
+		</variable>
+		<variable>
+			<name>lintilla_embeddedLiquidTWI2</name>
+			<value>file:/C:/git/arduino-projects/lintilla-embedded/lib/comp/LiquidTWI2</value>
 		</variable>
 	</variableList>
 </projectDescription>
