@@ -5,9 +5,9 @@
  *      Author: niklausd
  */
 
-#include "CmdAdapter.h"
-#include "CmdSequence.h"
-#include "CmdHandler.h"
+#include <CmdAdapter.h>
+#include <CmdHandler.h>
+#include <CmdSequence.h>
 
 CmdHandler::CmdHandler(CmdSequence* cmdSeq, unsigned int timeMillis, const char* name)
 : m_cmdSeq(cmdSeq)
@@ -85,6 +85,20 @@ void CmdMoveForward::execute()
   if ((0 != cmdSequence()) && (0 != cmdSequence()->adapter()))
   {
     cmdSequence()->adapter()->moveForwardAction();
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+CmdMoveControlledForward::CmdMoveControlledForward(CmdSequence* cmdSeq, unsigned int timeMillis)
+: CmdHandler(cmdSeq, timeMillis, "CmdMoveControlledForward")
+{ }
+
+void CmdMoveControlledForward::execute()
+{
+  if ((0 != cmdSequence()) && (0 != cmdSequence()->adapter()))
+  {
+    cmdSequence()->adapter()->moveControlledForwardAction();
   }
 }
 

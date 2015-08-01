@@ -191,9 +191,12 @@ const char* LintillaMmiWlanScreenState::toString()
 
 void LintillaMmiWlanScreenState::select(LintillaMmiScreenFsm* fsm)
 {
-  if (screen()->isEditMode())
+  if ((0 != fsm) && (0 != screen()))
   {
-    screen()->setEditMode(false);
+    if (!screen()->isEditMode())
+    {
+      fsm->changeState(LintillaMmiHomeScreenState::Instance());
+    }
   }
   else
   {
@@ -208,6 +211,10 @@ void LintillaMmiWlanScreenState::left(LintillaMmiScreenFsm* fsm)
     if (!screen()->isEditMode())
     {
       screen()->setEditMode(true);
+    }
+    else
+    {
+      screen()->setEditMode(false);
     }
   }
 }

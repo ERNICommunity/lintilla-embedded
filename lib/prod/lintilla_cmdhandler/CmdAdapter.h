@@ -18,6 +18,8 @@ public:
 
   virtual void moveForwardAction() { }
 
+  virtual void moveControlledForwardAction() {}
+
   virtual void moveBackwardAction() { }
 
   virtual void spinOnPlaceLeftAction(float angle) { }

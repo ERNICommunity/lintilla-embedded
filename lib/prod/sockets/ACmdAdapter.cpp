@@ -27,7 +27,6 @@ void ACmdAdapter::stopAction()
   {
     m_traction->motorStop();
     TR_PRINT_STR(m_trPort, DbgTrace_Level::info, "stopAction()");
-//    Serial.print("ACmdAdapter::stopAction()\n");
   }
 }
 
@@ -37,7 +36,15 @@ void ACmdAdapter::moveForwardAction()
   {
     m_traction->moveForward();
     TR_PRINT_STR(m_trPort, DbgTrace_Level::info, "moveForwardAction()");
-//    Serial.print("ACmdAdapter::moveForwardAction()\n");
+  }
+}
+
+void ACmdAdapter::moveControlledForwardAction()
+{
+  if (0 != m_traction)
+  {
+    m_traction->moveControlledForward();
+    TR_PRINT_STR(m_trPort, DbgTrace_Level::info, "moveControlledForwardAction()");
   }
 }
 
@@ -47,7 +54,6 @@ void ACmdAdapter::moveBackwardAction()
   {
     m_traction->moveBackward();
     TR_PRINT_STR(m_trPort, DbgTrace_Level::info, "moveBackwardAction()");
-//    Serial.print("ACmdAdapter::moveBackwardAction()\n");
   }
 }
 
@@ -57,7 +63,6 @@ void ACmdAdapter::spinOnPlaceLeftAction(float angle)
   {
     m_traction->spinOnPlace(false, angle);
     TR_PRINT_STR(m_trPort, DbgTrace_Level::info, "spinOnPlaceLeftAction()");
-//    Serial.print("ACmdAdapter::spinOnPlaceLeftAction()\n");
   }
 }
 
@@ -67,6 +72,5 @@ void ACmdAdapter::spinOnPlaceRightAction(float angle)
   {
     m_traction->spinOnPlace(true, angle);
     TR_PRINT_STR(m_trPort, DbgTrace_Level::info, "spinOnPlaceRightAction()");
-//    Serial.print("ACmdAdapter::spinOnPlaceRightAction()\n");
   }
 }
