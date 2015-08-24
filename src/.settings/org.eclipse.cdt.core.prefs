@@ -37,7 +37,7 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.CORE.PATH/value=${A.RUNTIME.PLATFORM.PATH}/cores/${A.BUILD.CORE}
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.CORE/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.CORE/operation=replace
-environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.CORE/value=arduino
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.CORE/value=${JANTJE.BUILD_CORE}
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.EXTRA_FLAGS/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.EXTRA_FLAGS/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.EXTRA_FLAGS/value=
@@ -67,7 +67,7 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.VARIANT.PATH/value=${A.RUNTIME.PLATFORM.PATH}/variants/${A.BUILD.VARIANT}
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.VARIANT/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.VARIANT/operation=replace
-environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.VARIANT/value=mega
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.VARIANT/value=${JANTJE.BUILD_VARIANT}
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.CMD.PATH/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.CMD.PATH/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.CMD.PATH/value=${A.TOOLS.AVRDUDE.CMD.PATH}
@@ -130,10 +130,10 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.DTS/value=3600
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.LOCAL/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.LOCAL/operation=replace
-environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.LOCAL/value=1438444467
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.LOCAL/value=1440425326
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.UTC/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.UTC/operation=replace
-environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.UTC/value=1438437267
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.UTC/value=1440418126
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.ZONE/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.ZONE/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.ZONE/value=3600
@@ -329,9 +329,15 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.B
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.BOARD_NAME/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.BOARD_NAME/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.BOARD_NAME/value=Arduino Mega or Mega 2560
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.BUILD_CORE/delimiter=;
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.BUILD_CORE/operation=replace
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.BUILD_CORE/value=arduino
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.BUILD_VARIANT/delimiter=;
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.BUILD_VARIANT/operation=replace
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.BUILD_VARIANT/value=mega
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.COM_PORT/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.COM_PORT/operation=replace
-environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.COM_PORT/value=COM23
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.COM_PORT/value=COM28
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.COM_PROGMR/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.COM_PROGMR/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.COM_PROGMR/value=Default
@@ -359,6 +365,9 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.P
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.PROCESSOR/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.PROCESSOR/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.PROCESSOR/value=ATmega2560 (Mega 2560)
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.REFERENCED_PLATFORM_FILE/delimiter=;
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.REFERENCED_PLATFORM_FILE/operation=replace
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.REFERENCED_PLATFORM_FILE/value=
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.SIZE.SWITCH/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.SIZE.SWITCH/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/JANTJE.SIZE.SWITCH/value=${A.RECIPE.SIZE.PATTERN}
