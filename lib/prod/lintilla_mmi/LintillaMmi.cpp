@@ -84,7 +84,7 @@ public:
 
 LintillaMmi::LintillaMmi(LintillaMmiAdapter* adapter)
 //: m_lcdKeypad(new LcdKeypad(LcdKeypad::MCPT_MCP23017, 0x20, LcdKeypad::LCD_DT_TWI2))
-: m_lcdKeypad(new LcdKeypad(LcdKeypad::LCD_DT_CRYST))
+: m_lcdKeypad(new LcdKeypad())
 , m_displayBlanking(new Blanking())
 , m_adapter(adapter)
 , m_displayTimer(new Timer(new DisplayTimerAdapter(this), Timer::IS_RECURRING, cUpdateDisplayInterval))
