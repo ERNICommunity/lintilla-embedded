@@ -69,7 +69,7 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.PROJECT_NAME/value=${ProjName}
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.USB_FLAGS/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.USB_FLAGS/operation=replace
-environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.USB_FLAGS/value=-DUSB_VID\=${A.BUILD.VID} -DUSB_PID\=${A.BUILD.PID} '-DUSB_MANUFACTURER\=${A.BUILD.USB_MANUFACTURER}' '-DUSB_PRODUCT\=${A.BUILD.USB_PRODUCT}'
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.USB_FLAGS/value=-DUSB_VID\=${A.BUILD.VID} -DUSB_PID\=${A.BUILD.PID} -DUSB_MANUFACTURER\=\\"${A.BUILD.USB_MANUFACTURER}\\" -DUSB_PRODUCT\=\\"${A.BUILD.USB_PRODUCT}\\"
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.USB_MANUFACTURER/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.USB_MANUFACTURER/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.BUILD.USB_MANUFACTURER/value="Unknown"
@@ -111,7 +111,7 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.COMPIL
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.COMPILER.C.ELF.EXTRA_FLAGS/value=
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.COMPILER.C.ELF.FLAGS/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.COMPILER.C.ELF.FLAGS/operation=replace
-environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.COMPILER.C.ELF.FLAGS/value=${A.COMPILER.WARNING_FLAGS} -Os -Wl,--gc-sections
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.COMPILER.C.ELF.FLAGS/value=${A.COMPILER.WARNING_FLAGS} -Os -Wl,--gc-sections,--relax
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.COMPILER.C.EXTRA_FLAGS/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.COMPILER.C.EXTRA_FLAGS/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.COMPILER.C.EXTRA_FLAGS/value=
@@ -190,6 +190,9 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.CONSOL
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.CONSOLE.OUTPUT.FILE/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.CONSOLE.OUTPUT.FILE/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.CONSOLE.OUTPUT.FILE/value=stdout.txt
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.CUSTOM_CPU/delimiter=;
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.CUSTOM_CPU/operation=replace
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.CUSTOM_CPU/value=mega_atmega2560
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EDITOR.DIVIDER.SIZE/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EDITOR.DIVIDER.SIZE/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EDITOR.DIVIDER.SIZE/value=2
@@ -219,16 +222,16 @@ environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.DTS/value=0
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.LOCAL/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.LOCAL/operation=replace
-environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.LOCAL/value=1447777104
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.LOCAL/value=1447986109
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.UTC/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.UTC/operation=replace
-environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.UTC/value=1447773504
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.UTC/value=1447982509
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.ZONE/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.ZONE/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.EXTRA.TIME.ZONE/value=3600
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.LAST.IDE.1.6.5.DATERUN/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.LAST.IDE.1.6.5.DATERUN/operation=replace
-environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.LAST.IDE.1.6.5.DATERUN/value=1447773265
+environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.LAST.IDE.1.6.5.DATERUN/value=1447982499
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.LAST.IDE.1.6.5.HARDWAREPATH/delimiter=;
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.LAST.IDE.1.6.5.HARDWAREPATH/operation=replace
 environment/project/it.baeyens.arduino.core.toolChain.release.256903333/A.LAST.IDE.1.6.5.HARDWAREPATH/value=C\:\\git\\arduino-projects\\lintilla-embedded\\tools\\arduino\\hardware
