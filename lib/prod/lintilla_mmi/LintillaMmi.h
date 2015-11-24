@@ -91,6 +91,7 @@ private:
   LintillaMmiScreenFsm* m_screenFsm;
 
   bool m_isBacklightOn;
+  bool m_newIsBacklightOn;
 
   DbgCli_Topic* m_dbgCliTopic;
   LintillaMmiDbgCmd_Key* m_dbgCliCmd_Key;

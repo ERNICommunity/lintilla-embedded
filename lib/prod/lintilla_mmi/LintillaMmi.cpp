@@ -88,7 +88,8 @@ LintillaMmi::LintillaMmi(LintillaMmiAdapter* adapter)
 , m_adapter(adapter)
 , m_displayTimer(new Timer(new DisplayTimerAdapter(this), Timer::IS_RECURRING, cUpdateDisplayInterval))
 , m_screenFsm(new LintillaMmiScreenFsm(this))
-, m_isBacklightOn(true)
+, m_isBacklightOn(false)
+, m_newIsBacklightOn(true)
 , m_dbgCliTopic(new DbgCli_Topic(DbgCli_Node::RootNode(), "mmi", "MMI Node."))
 , m_dbgCliCmd_Key(new LintillaMmiDbgCmd_Key(this))
 {
@@ -157,19 +158,27 @@ bool LintillaMmi::isBacklightOn()
 
 void LintillaMmi::setBackLightOn(bool isBacklightOn)
 {
-  m_isBacklightOn = isBacklightOn;
+  m_newIsBacklightOn = isBacklightOn;
+  if (m_newIsBacklightOn != m_isBacklightOn)
+  {
+    lcdBackLightControl();
+  }
 }
 
 void LintillaMmi::lcdBackLightControl()
 {
   if (adapter()->isBattVoltageBelowStopThreshold())
   {
-    m_isBacklightOn = false;
+    m_newIsBacklightOn = false;
   }
 
   if (0 != m_lcdKeypad)
   {
-    m_lcdKeypad->setBackLightOn(m_isBacklightOn);
+    if (m_newIsBacklightOn != m_isBacklightOn)
+    {
+      m_isBacklightOn = m_newIsBacklightOn;
+      m_lcdKeypad->setBackLightOn(m_isBacklightOn);
+    }
   }
 }
 
