@@ -20,7 +20,7 @@
 [submodule "lib/comp/lcdkeypad"]
 	path = lib/comp/lcdkeypad
 	url = https://github.com/dniklaus/arduino-display-lcdkeypad.git
-	branch = Branch_3.0.0
+	branch = Branch_3.1.0
 [submodule "lib/comp/PID"]
 	path = lib/comp/PID
 	url = https://github.com/ERNICommunity/Arduino-PID-Library.git
@@ -51,7 +51,3 @@
 	path = lib/plat/debug-trace
 	url = https://github.com/ERNICommunity/dbg-trace.git
 	branch = Branch_v0.1.0-alpha
-[submodule "lib/comp/LiquidTWI2"]
-	path = lib/comp/LiquidTWI2
-	url = https://github.com/lincomatic/LiquidTWI2.git
-	branch = master

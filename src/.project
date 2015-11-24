@@ -102,11 +102,6 @@
 			<locationURI>lintilla_embeddedLcdKeypad/LcdKeypad</locationURI>
 		</link>
 		<link>
-			<name>comp/LiquidTWI2</name>
-			<type>2</type>
-			<locationURI>lintilla_embeddedLiquidTWI2</locationURI>
-		</link>
-		<link>
 			<name>comp/MotorPWM</name>
 			<type>2</type>
 			<locationURI>lintilla_embeddedMotorPWM/MotorPWM</locationURI>
