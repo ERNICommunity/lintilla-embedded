@@ -80,18 +80,8 @@ Timer* ramDebugTimer = 0;
 const unsigned int c_ramDbgInterval = 5000;
 class RamDebugTimerAdapter : public TimerAdapter
 {
-private:
-//  DbgTrace_Port* m_trPort;
-
 public:
   RamDebugTimerAdapter() { }
-//  : m_trPort(new DbgTrace_Port("dbg/ram"))
-//  {
-//    if (0 != m_trPort)
-//    {
-//      m_trPort->setLevel(DbgTrace_Level::debug);
-//    }
-//  }
 
 private:
   void timeExpired()
@@ -535,7 +525,7 @@ void setup()
   DbgTrace_Context* traceContext = new DbgTrace_Context(traceTopic);
   new DbgTrace_Out(DbgTrace_Context::getContext(), "trConOut", new DbgPrint_Console());
 
-  ramTestPort = new DbgTrace_Port(DbgTrace_Context::getContext(), "ram", DbgTrace_Context::getContext()->getTraceOut("trConOut"), DbgTrace_Level::debug);
+  ramTestPort = new DbgTrace_Port(DbgTrace_Context::getContext(), "ram", DbgTrace_Context::getContext()->getTraceOut("trConOut"), DbgTrace_Level::info);
 
 #if DEBUG_RAM
   // Print free RAM periodically
@@ -586,7 +576,7 @@ void setup()
   const int cSpinTime     =  300;
   const int cFwdTime      =  300;
   const int cInterDelay   =  500;
-  const int cCtrlFwd      = 6000;
+  const int cCtrlFwdTime  = 6000;
 
 //  for (int i = 0; i <= 3; i++)
 //  {
@@ -597,7 +587,6 @@ void setup()
 //  }
   new CmdMoveControlledForward(testCmdSeq, cCtrlFwd);
   new CmdStop(testCmdSeq, cInterDelay);
-
 
   CmdHandler* cmd = testCmdSeq->getFirstCmd();
   while (0 != cmd)
