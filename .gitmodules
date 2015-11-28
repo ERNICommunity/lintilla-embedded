@@ -50,4 +50,4 @@
 [submodule "lib/plat/debug-trace"]
 	path = lib/plat/debug-trace
 	url = https://github.com/ERNICommunity/dbg-trace.git
-	branch = Branch_v0.1.0-alpha
+	branch = master
