@@ -585,7 +585,7 @@ void setup()
 //    new CmdSpinOnPlaceRight(testCmdSeq, cSpinTime);
 //    new CmdStop(testCmdSeq, cInterDelay);
 //  }
-  new CmdMoveControlledForward(testCmdSeq, cCtrlFwd);
+  new CmdMoveControlledForward(testCmdSeq, cCtrlFwdTime);
   new CmdStop(testCmdSeq, cInterDelay);
 
   CmdHandler* cmd = testCmdSeq->getFirstCmd();
