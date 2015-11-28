@@ -53,8 +53,6 @@ private:
 };
 
 
-
-
 Traction::Traction(TractionAdapter* adapter)
 : m_motorL(new SN754410_Driver(SPEED_PIN1, MOTOR_1A_PIN, MOTOR_2A_PIN))
 , m_motorR(new SN754410_Driver(SPEED_PIN2, MOTOR_3A_PIN, MOTOR_4A_PIN))
@@ -65,9 +63,8 @@ Traction::Traction(TractionAdapter* adapter)
 , m_isRightMotorFwd(false)
 , m_targetAngle(0.0)
 , m_pidTimer(new Timer(new ControllerTimerAdapter(this), Timer::IS_RECURRING))
-, m_tracePort(new DbgTrace_Port(DbgTrace_Context::getContext(), "trac", DbgTrace_Context::getContext()->getTraceOut("traceConsoleOut"), DbgTrace_Level::debug))
-{
-}
+, m_tracePort(new DbgTrace_Port("trac", "traceConsoleOut", DbgTrace_Level::debug))
+{ }
 
 Traction::~Traction()
 {

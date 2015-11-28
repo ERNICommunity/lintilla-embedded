@@ -525,7 +525,7 @@ void setup()
   DbgTrace_Context* traceContext = new DbgTrace_Context(traceTopic);
   new DbgTrace_Out(DbgTrace_Context::getContext(), "trConOut", new DbgPrint_Console());
 
-  ramTestPort = new DbgTrace_Port(DbgTrace_Context::getContext(), "ram", DbgTrace_Context::getContext()->getTraceOut("trConOut"), DbgTrace_Level::info);
+  ramTestPort = new DbgTrace_Port("ram", "trConOut", DbgTrace_Level::info);
 
 #if DEBUG_RAM
   // Print free RAM periodically
