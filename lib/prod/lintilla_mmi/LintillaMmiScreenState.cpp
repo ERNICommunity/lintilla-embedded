@@ -6,7 +6,7 @@
  */
 
 #include "Arduino.h"
-
+#include "DbgTracePort.h"
 #include <LintillaMmi.h>
 #include <LintillaMmiScreenFsm.h>
 #include <LintillaMmiScreenState.h>
@@ -90,7 +90,11 @@ void LintillaMmiHomeScreenState::down(LintillaMmiScreenFsm* fsm)
 
 void LintillaMmiHomeScreenState::entry(LintillaMmiScreenFsm* fsm)
 {
-  Serial.println(toString());
+  if (0 != fsm)
+  {
+    TR_PRINT_STR(fsm->trPort(), DbgTrace_Level::debug, "LintillaMmiHomeScreenState::entry() on state:");
+    TR_PRINT_STR(fsm->trPort(), DbgTrace_Level::debug, toString());
+  }
   updateDisplay();
 }
 
@@ -167,7 +171,11 @@ void LintillaMmiIdScreenState::down(LintillaMmiScreenFsm* fsm)
 
 void LintillaMmiIdScreenState::entry(LintillaMmiScreenFsm* fsm)
 {
-  Serial.println(toString());
+  if (0 != fsm)
+  {
+    TR_PRINT_STR(fsm->trPort(), DbgTrace_Level::debug, "LintillaMmiIdScreenState::entry() on state:");
+    TR_PRINT_STR(fsm->trPort(), DbgTrace_Level::debug, toString());
+  }
   updateDisplay();
 }
 
@@ -248,6 +256,10 @@ void LintillaMmiWlanScreenState::down(LintillaMmiScreenFsm* fsm)
 
 void LintillaMmiWlanScreenState::entry(LintillaMmiScreenFsm* fsm)
 {
-  Serial.println(toString());
+  if (0 != fsm)
+  {
+    TR_PRINT_STR(fsm->trPort(), DbgTrace_Level::debug, "LintillaMmiWlanScreenState::entry() on state:");
+    TR_PRINT_STR(fsm->trPort(), DbgTrace_Level::debug, toString());
+  }
   updateDisplay();
 }

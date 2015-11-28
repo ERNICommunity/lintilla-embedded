@@ -7,7 +7,6 @@
 
 #include "Arduino.h"
 #include "Traction.h"
-#include "DbgTraceContext.h"
 #include "DbgTracePort.h"
 #include "ACmdAdapter.h"
 

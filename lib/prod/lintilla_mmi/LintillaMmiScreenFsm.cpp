@@ -5,7 +5,7 @@
  *      Author: niklausd
  */
 #include "Arduino.h"
-
+#include "DbgTracePort.h"
 #include <LintillaMmi.h>
 #include <LintillaMmiScreen.h>
 #include <LintillaMmiScreenFsm.h>
@@ -13,21 +13,22 @@
 
 LintillaMmiScreenFsm::LintillaMmiScreenFsm(LintillaMmi* mmi)
 : m_state(0)
+, m_trPort(new DbgTrace_Port("mmifsm", "trConOut", DbgTrace_Level::info))
 {
   m_state = LintillaMmiWlanScreenState::Instance();
   m_state->attachScreen(new LintillaMmiWLANScreen(mmi));
-  Serial.print("LintillaMmiScreenFsm ctor: created state ");
-  Serial.println(m_state->toString());
+  TR_PRINT_STR(m_trPort , DbgTrace_Level::info, "LintillaMmiScreenFsm ctor: created state");
+  TR_PRINT_STR(m_trPort , DbgTrace_Level::info, m_state->toString());
 
   m_state = LintillaMmiIdScreenState::Instance();
   m_state->attachScreen(new LintillaMmiIdScreen(mmi));
-  Serial.print("LintillaMmiScreenFsm ctor: created state ");
-  Serial.println(m_state->toString());
+  TR_PRINT_STR(m_trPort , DbgTrace_Level::info, "LintillaMmiScreenFsm ctor: created state");
+  TR_PRINT_STR(m_trPort , DbgTrace_Level::info, m_state->toString());
 
   m_state = LintillaMmiHomeScreenState::Instance();
   m_state->attachScreen(new LintillaMmiHomeScreen(mmi));
-  Serial.print("LintillaMmiScreenFsm ctor: created state ");
-  Serial.println(m_state->toString());
+  TR_PRINT_STR(m_trPort , DbgTrace_Level::info, "LintillaMmiScreenFsm ctor: created state");
+  TR_PRINT_STR(m_trPort , DbgTrace_Level::info, m_state->toString());
 }
 
 LintillaMmiScreenFsm::~LintillaMmiScreenFsm()
@@ -51,8 +52,8 @@ void LintillaMmiScreenFsm::select()
 {
   if (0 != m_state)
   {
-    Serial.print("LintillaMmiScreenFsm::select() on state: ");
-    Serial.println(m_state->toString());
+    TR_PRINT_STR(m_trPort , DbgTrace_Level::debug, "LintillaMmiScreenFsm::select() on state:");
+    TR_PRINT_STR(m_trPort , DbgTrace_Level::debug, m_state->toString());
     m_state->select(this);
   }
 }
@@ -105,3 +106,9 @@ void LintillaMmiScreenFsm::updateDisplay()
     m_state->updateDisplay();
   }
 }
+
+DbgTrace_Port* LintillaMmiScreenFsm::trPort()
+{
+  return m_trPort;
+}
+

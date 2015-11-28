@@ -10,6 +10,7 @@
 
 class LintillaMmi;
 class LintillaMmiScreenState;
+class DbgTrace_Port;
 
 class LintillaMmiScreenFsm
 {
@@ -27,8 +28,11 @@ public:
 
   void updateDisplay();
 
+  DbgTrace_Port* trPort();
+
 private:
   LintillaMmiScreenState* m_state;
+  DbgTrace_Port* m_trPort;
 
 private: // forbidden default functions
   LintillaMmiScreenFsm& operator = (const LintillaMmiScreenFsm& src);  // assignment operator
