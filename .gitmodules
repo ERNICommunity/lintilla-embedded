@@ -46,7 +46,7 @@
 [submodule "lib/plat/debug-cli"]
 	path = lib/plat/debug-cli
 	url = https://github.com/ERNICommunity/debug-cli.git
-	branch = master
+	branch = Branch_1.0.0
 [submodule "lib/plat/debug-trace"]
 	path = lib/plat/debug-trace
 	url = https://github.com/ERNICommunity/dbg-trace.git
