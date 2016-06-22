@@ -6,7 +6,3 @@
 	path = lib/comp/ultrasonicranging
 	url = https://github.com/dniklaus/arduino-driver-ultrasonicranging.git
 	branch = Branch_2.0.1
-[submodule "lib/comp/lcdkeypad"]
-	path = lib/comp/lcdkeypad
-	url = https://github.com/dniklaus/arduino-display-lcdkeypad.git
-	branch = Branch_3.1.2
