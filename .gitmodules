@@ -1,4 +1,0 @@
-[submodule "lib/comp/motorpwm"]
-	path = lib/comp/motorpwm
-	url = https://github.com/dniklaus/arduino-driver-motorpwm.git
-	branch = Branch_1.0.1
