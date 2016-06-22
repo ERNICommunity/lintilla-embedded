@@ -2,7 +2,3 @@
 	path = lib/comp/motorpwm
 	url = https://github.com/dniklaus/arduino-driver-motorpwm.git
 	branch = Branch_1.0.1
-[submodule "lib/comp/ultrasonicranging"]
-	path = lib/comp/ultrasonicranging
-	url = https://github.com/dniklaus/arduino-driver-ultrasonicranging.git
-	branch = Branch_2.0.1
