@@ -32,7 +32,3 @@
 [submodule "lib/comp/CmdArduino"]
 	path = lib/comp/CmdArduino
 	url = https://github.com/fakufaku/CmdArduino.git
-[submodule "lib/plat/debug-cli"]
-	path = lib/plat/debug-cli
-	url = https://github.com/ERNICommunity/debug-cli.git
-	branch = Branch_1.0.0
