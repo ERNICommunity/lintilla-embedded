@@ -14,7 +14,3 @@
 	path = lib/comp/PID
 	url = https://github.com/ERNICommunity/Arduino-PID-Library.git
 	branch = Branch_1.1.0
-[submodule "lib/comp/ivm"]
-	path = lib/comp/ivm
-	url = https://github.com/dniklaus/arduino-utils-ivm.git
-	branch = Branch_1.0.1
