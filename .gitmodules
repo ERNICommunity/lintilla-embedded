@@ -22,3 +22,6 @@
 [submodule "lib/blanking"]
 	path = lib/blanking
 	url = https://github.com/dniklaus/arduino-utils-blanking.git
+[submodule "lib/memutils"]
+	path = lib/memutils
+	url = https://github.com/dniklaus/arduino-utils-mem.git

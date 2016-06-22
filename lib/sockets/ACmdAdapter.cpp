@@ -12,7 +12,7 @@
 
 ACmdAdapter::ACmdAdapter(Traction* traction)
 : m_traction(traction)
-, m_trPort(new DbgTrace_Port("cmdAd", "trConOut", DbgTrace_Level::debug))
+, m_trPort(new DbgTrace_Port("cmdAd", DbgTrace_Level::debug))
 { }
 
 ACmdAdapter::~ACmdAdapter()

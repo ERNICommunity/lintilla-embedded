@@ -46,7 +46,7 @@ class MmiLcdKeypadAdapter : public LcdKeypadAdapter
 public:
   MmiLcdKeypadAdapter(LintillaMmi* mmi)
   : m_mmi(mmi)
-  , m_trPort(new DbgTrace_Port("mmiLcdKey", "trConOut", DbgTrace_Level::info))
+  , m_trPort(new DbgTrace_Port("mmiLcdKey", DbgTrace_Level::info))
   { }
 
 private:

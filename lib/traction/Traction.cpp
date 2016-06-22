@@ -63,7 +63,7 @@ Traction::Traction(TractionAdapter* adapter)
 , m_isRightMotorFwd(false)
 , m_targetAngle(0.0)
 , m_pidTimer(new Timer(new ControllerTimerAdapter(this), Timer::IS_RECURRING))
-, m_tracePort(new DbgTrace_Port("trac", "traceConsoleOut", DbgTrace_Level::debug))
+, m_tracePort(new DbgTrace_Port("trac", DbgTrace_Level::debug))
 { }
 
 Traction::~Traction()

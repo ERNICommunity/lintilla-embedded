@@ -13,7 +13,7 @@
 
 LintillaMmiScreenFsm::LintillaMmiScreenFsm(LintillaMmi* mmi)
 : m_state(0)
-, m_trPort(new DbgTrace_Port("mmifsm", "trConOut", DbgTrace_Level::info))
+, m_trPort(new DbgTrace_Port("mmifsm", DbgTrace_Level::info))
 {
   m_state = LintillaMmiWlanScreenState::Instance();
   m_state->attachScreen(new LintillaMmiWLANScreen(mmi));
