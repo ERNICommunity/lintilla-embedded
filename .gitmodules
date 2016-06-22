@@ -10,7 +10,3 @@
 	path = lib/comp/lcdkeypad
 	url = https://github.com/dniklaus/arduino-display-lcdkeypad.git
 	branch = Branch_3.1.2
-[submodule "lib/comp/PID"]
-	path = lib/comp/PID
-	url = https://github.com/ERNICommunity/Arduino-PID-Library.git
-	branch = Branch_1.1.0
