@@ -1,6 +1,5 @@
 // Do not remove the include below
-#include "lintilla_embedded.h"
-
+#include "Arduino.h"
 #include <Adafruit_CC3000.h>
 #include <ccspi.h>
 #include <CmdHandler.h>

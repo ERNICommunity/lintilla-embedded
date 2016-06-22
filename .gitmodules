@@ -1,0 +1,24 @@
+[submodule "lib/ultrasonicranging"]
+	path = lib/ultrasonicranging
+	url = https://github.com/dniklaus/arduino-driver-ultrasonicranging.git
+[submodule "lib/motorpwm"]
+	path = lib/motorpwm
+	url = https://github.com/dniklaus/arduino-driver-motorpwm.git
+[submodule "lib/lcdkeypad"]
+	path = lib/lcdkeypad
+	url = https://github.com/dniklaus/arduino-display-lcdkeypad.git
+[submodule "lib/ivm"]
+	path = lib/ivm
+	url = https://github.com/dniklaus/arduino-utils-ivm.git
+[submodule "lib/timer"]
+	path = lib/timer
+	url = https://github.com/dniklaus/arduino-utils-timer.git
+[submodule "lib/dbg-trace"]
+	path = lib/dbg-trace
+	url = https://github.com/ERNICommunity/dbg-trace.git
+[submodule "lib/dbg-cli"]
+	path = lib/dbg-cli
+	url = https://github.com/ERNICommunity/debug-cli.git
+[submodule "lib/blanking"]
+	path = lib/blanking
+	url = https://github.com/dniklaus/arduino-utils-blanking.git
