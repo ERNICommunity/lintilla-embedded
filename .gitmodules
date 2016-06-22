@@ -1,7 +1,3 @@
-[submodule "lib/plat/blanking"]
-	path = lib/plat/blanking
-	url = https://github.com/dniklaus/arduino-utils-blanking.git
-	branch = Branch_1.0.1
 [submodule "lib/comp/Adafruit_CC3000"]
 	path = lib/comp/Adafruit_CC3000
 	url = https://github.com/adafruit/Adafruit_CC3000_Library
