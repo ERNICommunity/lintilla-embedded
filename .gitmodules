@@ -29,6 +29,3 @@
 	path = lib/comp/CC3000_MDNS
 	url = https://github.com/adafruit/CC3000_MDNS.git
 	branch = master
-[submodule "lib/comp/CmdArduino"]
-	path = lib/comp/CmdArduino
-	url = https://github.com/fakufaku/CmdArduino.git
