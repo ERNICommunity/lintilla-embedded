@@ -5,7 +5,7 @@
  *      Author: niklausd
  */
 
-#include "../Battery.h"
+#include "Battery.h"
 #include "BatteryImpl.h"
 
 Battery::Battery(BatteryAdapter* adapter)

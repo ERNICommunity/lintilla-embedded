@@ -28,8 +28,8 @@ public:
   LintillaMmi* mmi() { return m_mmi; }
 
 private:
-  bool m_isEditMode;
   LintillaMmi* m_mmi;
+  bool m_isEditMode;
 
 private: // forbidden default functions
   LintillaMmiScreen& operator = (const LintillaMmiScreen& src);  // assignment operator

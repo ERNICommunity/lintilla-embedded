@@ -6,7 +6,7 @@
  */
 
 #include "BatteryImpl.h"
-#include "../Battery.h"
+#include "Battery.h"
 #include "BatteryVoltageEvalFsm.h"
 
 BatteryVoltageEvalFsm::BatteryVoltageEvalFsm(BatteryImpl* battImpl)
