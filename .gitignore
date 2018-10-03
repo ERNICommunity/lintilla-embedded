@@ -16,3 +16,5 @@
 /.cproject
 /.settings
 /.pioenvs
+.pioenvs
+.piolibdeps
