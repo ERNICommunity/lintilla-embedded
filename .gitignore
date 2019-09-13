@@ -18,3 +18,4 @@
 /.pioenvs
 .pioenvs
 .piolibdeps
+/.pio/build
