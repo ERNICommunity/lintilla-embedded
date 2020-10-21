@@ -2,6 +2,8 @@
 lintilla-embedded
 =================
 
+:warning: **REPOSITORY NOT ACTIVE SINCE 2019 Dependabot alerts in git security settings disabled**
+
 Arduino Robot SW.
 
 See also the [wiki](https://github.com/ERNICommunity/lintilla-embedded/wiki) for more information.
