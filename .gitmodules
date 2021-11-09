@@ -1,12 +1,3 @@
-[submodule "lib/ultrasonicranging"]
-	path = lib/ultrasonicranging
-	url = https://github.com/dniklaus/arduino-driver-ultrasonicranging.git
-[submodule "lib/motorpwm"]
-	path = lib/motorpwm
-	url = https://github.com/dniklaus/arduino-driver-motorpwm.git
-[submodule "lib/lcdkeypad"]
-	path = lib/lcdkeypad
-	url = https://github.com/dniklaus/arduino-display-lcdkeypad.git
 [submodule "lib/ivm"]
 	path = lib/ivm
 	url = https://github.com/dniklaus/arduino-utils-ivm.git
