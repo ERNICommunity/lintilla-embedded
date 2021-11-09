@@ -4,12 +4,6 @@
 [submodule "lib/timer"]
 	path = lib/timer
 	url = https://github.com/dniklaus/arduino-utils-timer.git
-[submodule "lib/dbg-trace"]
-	path = lib/dbg-trace
-	url = https://github.com/ERNICommunity/dbg-trace.git
-[submodule "lib/dbg-cli"]
-	path = lib/dbg-cli
-	url = https://github.com/ERNICommunity/debug-cli.git
 [submodule "lib/blanking"]
 	path = lib/blanking
 	url = https://github.com/dniklaus/arduino-utils-blanking.git
