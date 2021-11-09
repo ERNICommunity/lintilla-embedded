@@ -52,7 +52,6 @@
 #include <LcdKeypad.h>
 #include "LintillaMmiScreenFsm.h"
 
-#define DEBUG_RAM 1  //Printing free Ram space with serial monitor
 #define USE_WIFI 0
 #define USE_HARD_CODED_WIFI_CREDENTIALS 1
 #if USE_HARD_CODED_WIFI_CREDENTIALS
