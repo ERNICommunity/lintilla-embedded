@@ -19,3 +19,5 @@
 .pioenvs
 .piolibdeps
 /.pio/build
+/.vscode
+/.pio
