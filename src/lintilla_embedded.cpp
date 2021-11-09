@@ -69,38 +69,6 @@ void(* resetFunc) (void) = 0; //declare reset function at address 0 => will 'use
 //-----------------------------------------------------------------------------
 SerialCommand* sCmd = 0;
 
-//class DbgCli_Command_FreeRam : public DbgCli_Command
-//{
-//public:
-//  DbgCli_Command_FreeRam()
-//  : DbgCli_Command(DbgCli_Node::RootNode(), "ram", "Show free RAM space.")
-//  { }
-//
-//  void execute(unsigned int argc, const char** args, unsigned int idxToFirstArgToHandle)
-//  {
-//    Serial.print(F("Free RAM: ")); Serial.print(RamUtils::getFreeRam(), DEC); Serial.println(" [bytes]");
-//  }
-//};
-//
-//void dbgCliExecute(int arg_cnt, char** args);
-//void hello(int arg_cnt, char** args);
-//
-//DbgTrace_Port* ramTestPort;
-//
-//Timer* ramDebugTimer = 0;
-//const unsigned int c_ramDbgInterval = 5000;
-//class RamDebugTimerAdapter : public TimerAdapter
-//{
-//public:
-//  RamDebugTimerAdapter() { }
-//
-//private:
-//  void timeExpired()
-//  {
-//    TR_PRINT_LONG(ramTestPort, DbgTrace_Level::debug, RamUtils::getFreeRam());
-//  }
-//};
-
 //---------------------------------------------------------------------------
 // Inventory Management
 //---------------------------------------------------------------------------
@@ -499,7 +467,7 @@ void loop()
     sCmd->readSerial();     // process serial commands
   }
 
-  yield();
+  scheduleTimers();
 
 //  // Handle any multicast DNS requests
 //  if (0 != mdns)
@@ -519,35 +487,8 @@ void loop()
 //The setup function is called once at startup of the sketch
 void setup()
 {
-  setupDebugEnv();
-//  cmdInit(115200); //contains Serial.begin(115200);
-//
-//  Serial.println(F("\nHello from Lintilla!"));
-//
-//  //---------------------------------------------------------------------------
-//  // Debug Cli
-//  //---------------------------------------------------------------------------
-//  DbgCli_Node::AssignRootNode(new DbgCli_Topic(0, "dbg", "Lintilla Debug CLI Root Node."));
-//  new DbgCli_Command_FreeRam();
-//  // adding CLI Commands
-//  cmdAdd("hello", hello);
-//  cmdAdd("dbg", dbgCliExecute);
-//
-//  //---------------------------------------------------------------------------
-//  // Debug Trace
-//  //---------------------------------------------------------------------------
-//
-//  DbgCli_Topic* traceTopic = new DbgCli_Topic(DbgCli_Node::RootNode(), "tr", "Modify debug trace");
-//  DbgTrace_Context* traceContext = new DbgTrace_Context(traceTopic);
-//  new DbgTrace_Out(DbgTrace_Context::getContext(), "trConOut", new DbgPrint_Console());
-//
-//  ramTestPort = new DbgTrace_Port("ram", "trConOut", DbgTrace_Level::info);
-//
-//#if DEBUG_RAM
-//  // Print free RAM periodically
-//  Serial.print("Free RAM: "); Serial.print(RamUtils::getFreeRam(), DEC); Serial.println(" [bytes]");
-//  ramDebugTimer = new Timer(new RamDebugTimerAdapter(), Timer::IS_RECURRING, c_ramDbgInterval);
-//#endif
+  setupProdDebugEnv();
+
   //---------------------------------------------------------------------------
   // Inventory Management
   //---------------------------------------------------------------------------
@@ -821,32 +762,3 @@ int move(String command)
 
   return retVal;
 }
-
-////-----------------------------------------------------------------------------
-//// Arduino Cmd I/F
-////-----------------------------------------------------------------------------
-//void hello(int arg_cnt, char **args)
-//{
-//  Serial.println("Hello world.");
-//}
-//
-//void dbgCliExecute(int arg_cnt, char **args)
-//{
-//#if 0
-//  Serial.print("dbgCliExecute, arg_cnt=");
-//  Serial.print(arg_cnt);
-//  for (int i = 0; i < arg_cnt; i++)
-//  {
-//    Serial.print(", args[");
-//    Serial.print(i);
-//    Serial.print("]=");
-//    Serial.print(args[i]);
-//  }
-//  Serial.println("");
-//#endif
-//  if (0 != DbgCli_Node::RootNode())
-//  {
-//    const unsigned int firstArgToHandle = 1;
-//    DbgCli_Node::RootNode()->execute(static_cast<unsigned int>(arg_cnt), const_cast<const char**>(args), firstArgToHandle);
-//  }
-//}
