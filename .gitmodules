@@ -1,6 +1,0 @@
-[submodule "lib/ivm"]
-	path = lib/ivm
-	url = https://github.com/dniklaus/arduino-utils-ivm.git
-[submodule "lib/blanking"]
-	path = lib/blanking
-	url = https://github.com/dniklaus/arduino-utils-blanking.git
