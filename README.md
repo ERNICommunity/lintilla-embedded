@@ -1,4 +1,3 @@
-[![Stories in Ready](https://badge.waffle.io/ERNICommunity/lintilla-embedded.png?label=ready&title=Ready)](https://waffle.io/ERNICommunity/lintilla-embedded)
 lintilla-embedded
 =================
 
